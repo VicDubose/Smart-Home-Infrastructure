@@ -117,5 +117,69 @@ The system manages a live residential automation environment including:
 
 ### Development
 - Git / GitHub configuration management
+- 
+========================
+HOME NETWORK + HA ⇄ APPLE HOME
+========================
+
+## Physical Network Topology
+
+ASCII DIAGRAM (real cabling)
+
+Internet
+   │
+   │ (Public IP)
+┌──▼──────────────────────────┐
+│ Spectrum Gateway (BRIDGE)   │  Modem-only
+└──┬──────────────────────────┘
+   │ WAN
+┌──▼──────────────────────────────────┐
+│ ASUS ZenWiFi Pro ET12 (PRIMARY)     │  Router / NAT / DHCP / Wi-Fi
+│ • 2.5G LAN ────────────────┐        │
+└──┬─────────────────────────┘        │
+   │                                  │
+   │  Wired backhaul (2.5G ↔ 2.5G)    │
+┌──▼────────────────────────────┐     │
+│ ASUS ZenWiFi Pro ET12 (NODE)  │  AiMesh Node
+│ • 1G LAN → Cisco Switch       │
+│ • 1G LAN → Xbox One X         │
+│ • WAN unused                  │
+└──┬────────────────────────────┘
+   │
+   │  1G uplink
+┌──▼───────────────────────────────┐
+│ Cisco Catalyst 2960-C (L2)       │
+│ • G0/1: Uplink from Node LAN 1G  │
+│ • FE ports (100 Mbps):           │
+│    - Home Assistant Green        │
+│    - Eufy Security Hub           │
+│    - RDP thin client / server    │
+│    - Other low-bandwidth IoT     │
+└──────────────────────────────────┘
+
+---
+
+## Control Architecture
+
+```mermaid
+flowchart LR
+    USERS[Users / Family] --> AH[Apple Home<br/>Front End]
+    AH --> SIRI[Siri / Home Hubs]
+
+    HA[Home Assistant Green<br/>Back End Logic] --> HK[HomeKit Bridge]
+    HK --> AH
+
+    RDP[RDP / Ubuntu / Docker Host] --> EUFYBRIDGE[Eufy Bridge]
+    RDP --> APSCRAPER[Alabama Power Scraper]
+
+    EUFYBRIDGE --> HA
+    APSCRAPER --> HA
+
+    HA --> ENERGY[Energy Logic]
+    HA --> HVAC[HVAC Logic]
+    HA --> PRESENCE[Presence / Occupancy Logic]
+    HA --> ALERTS[Virtual Alert Flags]
+
+    ALERTS --> HK
 - YAML-based automation architecture
 - Python automation scripts
