@@ -181,5 +181,10 @@ flowchart LR
     HA --> ALERTS[Virtual Alert Flags]
 
     ALERTS --> HK
+
+### Implementation
 - YAML-based automation architecture
 - Python automation scripts
+
+```
+
