@@ -118,46 +118,54 @@ The system manages a live residential automation environment including:
 ### Development
 - Git / GitHub configuration management
 - 
-========================
+
 HOME NETWORK + HA ⇄ APPLE HOME
-========================
+
 
 ## Physical Network Topology
 
+```text
 ASCII DIAGRAM (real cabling)
 
-Internet
+ Internet
    │
-   │ (Public IP)
+   │ (Public IP →)
 ┌──▼──────────────────────────┐
-│ Spectrum Gateway (BRIDGE)   │  Modem-only
+│ Spectrum Gateway (BRIDGE)   │  modem-only
 └──┬──────────────────────────┘
    │ WAN
 ┌──▼──────────────────────────────────┐
-│ ASUS ZenWiFi Pro ET12 (PRIMARY)     │  Router / NAT / DHCP / Wi-Fi
-│ • 2.5G LAN ────────────────┐        │
-└──┬─────────────────────────┘        │
+│ ASUS ZenWiFi Pro ET12  (PRIMARY)    │  Router / NAT / DHCP / Wi-Fi
+│ • LAN 2.5G ──────────────┐          │
+└──┬───────────────────────┘          │
    │                                  │
-   │  Wired backhaul (2.5G ↔ 2.5G)    │
-┌──▼────────────────────────────┐     │
-│ ASUS ZenWiFi Pro ET12 (NODE)  │  AiMesh Node
-│ • 1G LAN → Cisco Switch       │
-│ • 1G LAN → Xbox One X         │
-│ • WAN unused                  │
-└──┬────────────────────────────┘
+   │  (Wired Backhaul 2.5G ↔ 2.5G)    │
+┌──▼────────────────────────┐         │
+│ ASUS ZenWiFi Pro ET12     │  NODE / AiMesh
+│ • LAN 1G →────────────┐   │
+│ • LAN 1G → Xbox       │   │
+│ • WAN unused          │
+└──┬────────────────────┘
    │
-   │  1G uplink
-┌──▼───────────────────────────────┐
-│ Cisco Catalyst 2960-C (L2)       │
-│ • G0/1: Uplink from Node LAN 1G  │
-│ • FE ports (100 Mbps):           │
-│    - Home Assistant Green        │
-│    - Eufy Security Hub           │
-│    - RDP thin client / server    │
-│    - Other low-bandwidth IoT     │
-└──────────────────────────────────┘
-
----
+   │  (1G uplink)
+┌──▼───────────────────────────────────────────┐
+│ Cisco Catalyst 2960-C (L2)                   │
+│ G0/1  ← Uplink from Node LAN 1G              │
+│                                             │
+│ ─── Infrastructure Segment ───────────────── │
+│  • Home Assistant Green                      │
+│  • Eufy Security Hub                         │
+│                                             │
+│ ─── Lab / Server Segment ─────────────────── │
+│  • Remote Desktop host (Ubuntu / Docker)     │
+│  • Automation scripts / dev environment      │
+│                                             │
+│ ─── IoT / Low-Bandwidth Segment ──────────── │
+│  • Smart home IoT devices                    │
+│  • Sensors / hubs                            │
+│  • Other low-bandwidth endpoints             │
+└──────────────────────────────────────────────┘
+```
 
 ## Control Architecture
 
@@ -181,10 +189,7 @@ flowchart LR
     HA --> ALERTS[Virtual Alert Flags]
 
     ALERTS --> HK
-
+```
 ### Implementation
 - YAML-based automation architecture
 - Python automation scripts
-
-```
-
