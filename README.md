@@ -3,7 +3,9 @@ Residential smart home lab integrating Home Assistant, network infrastructure, v
 
 # Smart Home Infrastructure & Automation Lab
 
-![System Architecture](diagrams/home_system_overview.png)
+<p align="center">
+  <img src="diagrams/home_system_overview.png" width="850">
+</p>
 
 A portfolio repository documenting the architecture and automation systems used in my residential smart home lab.
 
