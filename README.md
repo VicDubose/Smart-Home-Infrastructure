@@ -179,10 +179,17 @@ flowchart LR
     HA[Home Assistant Green<br/>Back End Logic] --> HK[HomeKit Bridge]
     HK --> AH
 
-    RDP[RDP / Ubuntu / Docker Host] --> EUFYBRIDGE[Eufy Bridge]
-    RDP --> APSCRAPER[Alabama Power Scraper]
+    EUFYSERVER[Eufy Security Server]
+    RDP[RDP / Ubuntu / Docker Host]
+    EUFYBRIDGE[Eufy Bridge]
 
+    APSCRAPER[Alabama Power Scraper]
+
+    EUFYSERVER --> RDP
+    RDP --> EUFYBRIDGE
     EUFYBRIDGE --> HA
+
+    RDP --> APSCRAPER
     APSCRAPER --> HA
 
     HA --> ENERGY[Energy Logic]
