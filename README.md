@@ -122,6 +122,10 @@ The system manages a live residential automation environment including:
 - 
 
 HOME NETWORK + HA ⇄ APPLE HOME
+HA – Home Assistant
+HK – HomeKit Bridge
+AH – Apple Home
+RDP – Remote development host
 
 
 ## Physical Network Topology
