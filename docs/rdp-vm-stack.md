@@ -148,7 +148,7 @@ Containerization allows services to operate independently while maintaining effi
 | --------------------- | ------------------------------------------------- |
 | Jellyfin              | Media streaming server                            |
 | Eufy Bridge           | Integrates Eufy cameras with Home Assistant       |
-| Alabama Power Scraper | Collects hourly utility usage data for automation |
+| Alabama Power Scraper | Collects daily utility usage data for automation  | 
 
 Containers provide several advantages:
 
