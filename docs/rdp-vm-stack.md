@@ -92,6 +92,37 @@ Mini Desktop Ryzen Server
 | Storage  | 2 512 SSDs and 1TB HDD      |
 
 The system is capable of running **multiple virtual machines and containers simultaneously while maintaining low system load**.
+---
+
+Resource Allocation
+
+System Resources
+* CPU: 4 cores / 8 threads
+* Memory: 32 GB RAM
+* Storage: 2 × 512GB SSD + 1TB HDD
+ra mk
+---
+
+Memory Allocation
+* Windows 11 VM: 10 GB
+* EVE-NG VM: 14 GB 
+* Host + Docker: Remaining (~8 GB)
+	
+
+⸻
+
+CPU Allocation
+* Windows 11 VM: 2 vCPU 
+* EVE-NG VM: 4 vCPU
+* Host + Docker: Remaining threads
+
+---
+Storage Allocation
+* Windows 11 VM: 150 GB
+* EVE-NG VM: 170 GB
+* Remaining SSD storage: reserved for host system, Docker, and future expansion
+* 1TB HDD: dedicated to Jellyfin media storage
+	
 
 ---
 
