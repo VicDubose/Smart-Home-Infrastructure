@@ -89,7 +89,7 @@ Mini Desktop Ryzen Server
 | -------- | --------------------------- |
 | CPU      | 8 cores allocated to Ubuntu |
 | Memory   | ~98 GB RAM                  |
-| Storage  | Multiple SSD drives         |
+| Storage  | 2 512 SSDs and 1TB HDD      |
 
 The system is capable of running **multiple virtual machines and containers simultaneously while maintaining low system load**.
 
