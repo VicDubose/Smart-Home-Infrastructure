@@ -337,18 +337,3 @@ Key benefits of the infrastructure design include:
 The system demonstrates how a **single server can support multiple infrastructure roles while maintaining operational simplicity**.
 
 ---
-
-If you'd like, I can also add **one more diagram that would massively strengthen this repo**:
-
-A **"Full Infrastructure Map"** showing how:
-
-* Home Assistant
-* the RDP server
-* Apple Home
-* Eufy bridge
-* Power scraper
-* network topology
-
-**all connect together in one diagram.**
-
-
