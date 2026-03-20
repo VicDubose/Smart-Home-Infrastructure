@@ -255,7 +255,7 @@ The infrastructure uses multiple SSD drives with clearly defined roles.
 | ----------------- | ---------------------------------------------------- |
 | System SSD        | Ubuntu Server operating system and container runtime |
 | VM Storage SSD    | Virtual machine disk images                          |
-| Media Storage SSD | Jellyfin media library                               |
+| Media Storage HDD | Jellyfin media library                               |
 
 Separating storage workloads ensures stable disk performance for virtual machines and media streaming.
 
