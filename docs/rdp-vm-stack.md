@@ -94,14 +94,6 @@ Mini Desktop Ryzen Server
 The system is capable of running **multiple virtual machines and containers simultaneously while maintaining low system load**.
 ---
 
-Resource Allocation
-
-System Resources
-* CPU: 4 cores / 8 threads
-* Memory: 32 GB RAM
-* Storage: 2 × 512GB SSD + 1TB HDD
----
-
 Memory Allocation
 * Windows 11 VM: 10 GB
 * EVE-NG VM: 14 GB 
