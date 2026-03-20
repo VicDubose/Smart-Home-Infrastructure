@@ -100,7 +100,6 @@ System Resources
 * CPU: 4 cores / 8 threads
 * Memory: 32 GB RAM
 * Storage: 2 × 512GB SSD + 1TB HDD
-ra mk
 ---
 
 Memory Allocation
