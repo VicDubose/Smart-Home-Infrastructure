@@ -188,6 +188,7 @@ Purpose
 * router and switch simulation
 * firewall testing
 * enterprise topology experiments
+* Hybrid network typology
 
 Supported lab devices include:
 
