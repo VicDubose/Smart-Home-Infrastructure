@@ -17,7 +17,7 @@ Instead, it selectively publishes only the entities that are useful for:
 
 ## Architecture in Practice
 
-<img src="../screenshots/IMG_1317.png" width="200"/>
+<img src="../Screenshots/IMG_1317.png" width="300"/>
 
 This is the real Apple Home interface powered by the HomeKit Bridge.  
 Everything visible here is intentionally exposed — nothing more.
@@ -28,108 +28,137 @@ Everything visible here is intentionally exposed — nothing more.
 
 The bridge follows a strict **allowlist-first approach**:
 
-- expose only useful, human-facing entities  
-- hide noisy infrastructure entities  
-- keep Tesla / Powerwall / router telemetry out of Apple Home  
-- prevent adaptive recovery and HVAC helper noise  
-- separate security from general UI  
+- expose only useful, human-facing entities
+- hide noisy infrastructure entities
+- keep Tesla / Powerwall / router telemetry out of Apple Home
+- prevent adaptive recovery and HVAC helper noise from cluttering the user interface
+- separate security-focused devices from general household controls
+
+This allows Apple Home to stay clean, stable, and understandable.
 
 ---
 
 ## Bridge Structure
 
+The system is split into multiple bridges to keep behavior organized and stable.
+
 ### Bridge 1 — Security + Helpers
 
-Handles:
+This bridge focuses on:
 
-- Eufy HomeBase status
-- guard mode + alarm panel
-- washer/dryer state helpers
-- Shelly H&T sensors (temperature + humidity)
+- washer / laundry helper states
+- Eufy security entities
+- guard mode selection
+- current security mode
+- Shelly H&T environmental sensors
 
----
+This makes security and critical state information available in Apple Home without mixing it into the general household UI.
 
-### Bridge 2 — Household UI
+### Bridge 2 — General House UI
 
-Handles:
+This bridge handles the normal family-facing control surface, including:
 
-- climate controls
-- locks
+- lighting
 - plugs and switches
-- lights
+- climate entities
+- door locks
 - camera snapshots
-- TVs and media devices
+- TVs and media players
+
+This is the bridge that powers most day-to-day Apple Home interaction.
 
 ---
 
 ## Example: Camera + Access Layer
 
-<img src="../screenshots/IMG_1323.png" width="200"/>
+<img src="../Screenshots/IMG_1323.png" width="200"/>
 
-Camera snapshots and access points are exposed in a way that’s immediately usable without needing backend context.
-
----
-
-## Commonly Exposed Entities
-
-- climate entities  
-- locks  
-- plugs / switches  
-- helper booleans  
-- temperature / humidity sensors  
-- water leak sensors  
-- camera snapshots  
-- appliance status  
+Camera snapshots, shared access, and household visibility are exposed in a way that is immediately usable without requiring backend knowledge.
 
 ---
 
-## What Is Intentionally Hidden
+## Commonly Exposed Entity Types
 
-- adaptive recovery logic  
-- HVAC backend automations  
-- Tesla / Powerwall data  
-- router / network telemetry  
-- helper timers and internal states  
+The most common types of entities exposed into Apple Home are:
+
+- climate entities
+- locks
+- plugs and switches
+- helper booleans
+- temperature sensors
+- humidity sensors
+- water leak sensors
+- home base / home-away status
+- camera snapshots from activity
+- appliance status indicators
+
+These are chosen because they represent things users can understand and act on immediately.
+
+---
+
+## What Is Intentionally Kept Out
+
+The bridge intentionally avoids exposing internal-only logic and noisy backend entities such as:
+
+- adaptive recovery helpers
+- HVAC automation internals
+- timers and support entities
+- router telemetry
+- Tesla / Powerwall entities
+- backend-only automation states
+- technical diagnostic noise
+
+This keeps Apple Home focused on **control and communication**, not implementation detail.
 
 ---
 
 ## Communication Role
 
-HomeKit Bridge is also the **communication layer** between HA and users.
+HomeKit Bridge is also used as a **communication path** between Home Assistant and Apple Home.
 
 It carries:
 
-- alert flags  
-- appliance state  
-- presence state  
-- system status  
+- alert flags
+- appliance status updates
+- presence-related state
+- user-facing climate controls
+- helper entities used for Siri-triggered announcements
+
+This supports a clean architectural pattern:
+
+> Home Assistant computes  
+> Apple Home communicates
 
 ---
 
 ## Siri Voice Announcement Pattern
 
-<img src="../screenshots/IMG_1321.png" width="200"/>
+<img src="../Screenshots/IMG_1321.png" width="200"/>
 
-Home Assistant sends simple signals → Apple Home turns them into human feedback.
+Virtual alert booleans and helper entities are part of the design.
 
-Examples:
+These helpers allow Home Assistant to send simple event states into Apple Home, where Apple devices can turn them into:
 
-- Dishwasher allowed during cheap power → **announcement**
-- Washer/Dryer finished → **spoken alert**
-- System state changes → **voice + notification**
+- spoken Siri announcements
+- user-facing notifications
+- household audio cues
+
+Examples include:
+
+- dishwasher availability during low-cost times
+- washer and dryer completion alerts
+- presence-based status changes
+- other human-readable system events
+
+This keeps the experience native to Apple Home while allowing automation logic to stay in the backend.
 
 ---
 
 ## Summary
 
-HomeKit Bridge is the controlled boundary between:
+HomeKit Bridge acts as the controlled boundary between:
 
-- **Home Assistant → logic, automation, energy decisions**
-- **Apple Home → UI, control, communication**
+- **Home Assistant** as the automation and orchestration engine
+- **Apple Home** as the user interface, communication, and control layer
 
-It ensures the system stays:
-
-- clean  
-- understandable  
-- secure  
-- family-friendly  
+It is intentionally selective, human-centered, and designed to support real household use rather than expose raw system complexity and its really cool. 
