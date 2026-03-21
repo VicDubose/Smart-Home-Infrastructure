@@ -30,7 +30,7 @@ This separation allows the system to remain powerful without becoming overwhelmi
 
 The main dashboard provides fast access to rooms, cameras, climate, and high-value device controls in a layout that is easy to understand at a glance.
 
-This is where users interact with the system directly — without needing to understand how anything works behind the scenes.
+This is where users interact with the system directly without needing to understand how anything works behind the scenes.
 
 ---
 
@@ -39,7 +39,7 @@ This is where users interact with the system directly — without needing to und
 
 This layer exposes useful environmental data such as room temperature and humidity without requiring users to interact with backend tools.
 
-It provides awareness without complexity — users can see what’s happening without needing to manage it.
+It provides awareness without complexity users can see what’s happening without needing to manage it.
 
 ---
 
@@ -63,7 +63,7 @@ This keeps automation understandable and predictable.
 
 The kiosk is the central interaction point of the home.
 
-It is not just a control panel — it is a household command center designed for:
+It is not just a control panel it is a household command center designed for:
 
 - shared access  
 - quick decisions  
@@ -263,7 +263,7 @@ Examples:
 - Dishwasher optimal start time → notification tone  
 - Alerts → audible feedback  
 
-This replaces traditional push-notification dependency with ambient awareness.
+This replaces traditional push notification dependency with ambient awareness.
 
 ---
 
