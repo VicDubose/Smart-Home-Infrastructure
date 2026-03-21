@@ -1,0 +1,144 @@
+# Sanitized HomeKit Bridge Configuration
+# Purpose:
+#   Expose only human-facing entities from Home Assistant into Apple Home.
+#   Keep backend logic, Tesla/Powerwall data, router telemetry, and HVAC helper noise out.
+
+homekit:
+  ##########################################################
+  # BRIDGE 1 — Security + Helpers + Environmental Sensors
+  ##########################################################
+  - name: "HA Bridge - Security"
+    mode: bridge
+    port: 21063
+
+    filter:
+      include_entities:
+        # Laundry / alert helpers
+        - input_boolean.washingmachine_status
+        - binary_sensor.laundry_is_washed
+
+        # Eufy security entities
+        - alarm_control_panel.eufybase
+        - select.eufybase_guard_mode
+        - sensor.eufybase_current_mode
+
+      include_entity_globs:
+        # Environmental sensors (Shelly H&T)
+        - "sensor.shelly_wave_h_t_sensor_*"
+
+      exclude_entity_globs:
+        # Tesla / Powerwall
+        - "sensor.tesla_*"
+        - "switch.tesla_*"
+        - "sensor.powerwall_*"
+        - "number.shadow_*"
+        - "sensor.shadow_*"
+        - "switch.shadow_*"
+        - "binary_sensor.shadow_*"
+        - "select.shadow_*"
+        - "cover.shadow_*"
+        - "lock.shadow_*"
+
+        # Router / network noise
+        - "sensor.zenwifi_*"
+        - "button.zenwifi_*"
+        - "switch.zenwifi_*"
+        - "binary_sensor.zenwifi_*"
+        - "sensor.asusrouter_*"
+        - "button.asusrouter_*"
+        - "switch.asusrouter_*"
+        - "binary_sensor.asusrouter_*"
+
+  ##########################################################
+  # BRIDGE 2 — General House UI
+  ##########################################################
+  - name: "HA Bridge - Home"
+    mode: bridge
+    port: 21064
+
+    filter:
+      include_entities:
+        # Kitchen
+        - light.lifx_z_backlight_2
+        - switch.behind_fridge_plug
+
+        # Living Room
+        - switch.behind_the_door_plug
+        - switch.power_monitor_plug
+        - climate.ac_living_room
+
+        # Bedroom
+        - climate.ac_bedroom_2
+
+        # Front Door / Security
+        - lock.alfred_lock
+        - switch.backyard_camera_toggle
+        - switch.dog_camera_toggle
+        - switch.camera_enable_switch
+
+        # Hallway
+        - switch.electric_fence
+
+        # Camera snapshots
+        - camera.backyard
+        - camera.garage
+        - camera.front_door
+        - camera.eufy_home_base
+
+        # Media / TVs
+        - media_player.onn_h508x_bb57
+        - media_player.65_crystal_uhd
+
+      exclude_entities:
+        - binary_sensor.iphone_focus
+        - input_boolean.kitchen_timer_toggle
+        - switch.sdp
+        - switch.wsp
+
+      exclude_entity_globs:
+        # Router / network noise
+        - "sensor.zenwifi_*"
+        - "button.zenwifi_*"
+        - "switch.zenwifi_*"
+        - "binary_sensor.zenwifi_*"
+        - "sensor.asusrouter_*"
+        - "button.asusrouter_*"
+        - "switch.asusrouter_*"
+        - "binary_sensor.asusrouter_*"
+
+        # Tesla / Powerwall
+        - "sensor.tesla_*"
+        - "switch.tesla_*"
+        - "sensor.powerwall_*"
+        - "number.shadow_*"
+        - "sensor.shadow_*"
+        - "switch.shadow_*"
+        - "binary_sensor.shadow_*"
+        - "select.shadow_*"
+        - "cover.shadow_*"
+        - "lock.shadow_*"
+
+        # Adaptive recovery / SmartRec helpers
+        - "sensor.*adaptive*"
+        - "binary_sensor.*adaptive*"
+        - "input_boolean.*adaptive*"
+        - "input_number.*adaptive*"
+        - "automation.smartrec_*"
+        - "sensor.smartrec_*"
+        - "input_boolean.smartrec_*"
+        - "input_number.smartrec_*"
+
+        # HVAC helper noise
+        - "automation.l0_*"
+        - "automation.den_*"
+        - "automation.bedroom_*"
+        - "automation.*hvac*"
+        - "automation.*ac*"
+        - "input_boolean.l0_*"
+        - "input_boolean.*smartrec*"
+        - "input_number.*smartrec*"
+        - "timer.l0_*"
+        - "timer.*idle_off*"
+        - "sensor.*smartrec*"
+        - "sensor.*_adaptive_recovery*"
+        - "binary_sensor.*smartrec*"
