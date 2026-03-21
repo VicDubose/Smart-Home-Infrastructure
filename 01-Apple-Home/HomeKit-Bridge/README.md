@@ -153,6 +153,116 @@ Examples include:
 This keeps the experience native to Apple Home while allowing automation logic to stay in the backend.
 
 ---
+# Apple Home Alert Pattern
+
+## Overview
+
+Because Apple Home has limitations around direct custom voice generation, the system uses **Apple-side audio and music cues** as the primary alert mechanism instead of relying on full Siri text-to-speech for every event.
+
+This creates a practical front-end communication layer while keeping automation logic in Home Assistant.
+
+---
+
+## Core Pattern
+
+The system follows this flow:
+
+**Home Assistant → helper flag → HomeKit Bridge → Apple Home automation → audio cue / Apple-side feedback**
+
+This allows backend events to be translated into household-facing signals without requiring users to open Home Assistant.
+
+---
+
+## Why Audio Cues Are Used
+
+Apple Home is excellent for:
+
+- secure device control
+- presence-based automations
+- HomePod-based interaction
+- remote access
+- front-end notifications
+
+However, for highly customized spoken alerts, Apple’s behavior can be restrictive.
+
+As a result, the system uses:
+
+- music cues
+- tone-based feedback
+- Apple-side automation responses
+- user-recognizable audio patterns
+
+This keeps notifications reliable and native to the Apple ecosystem.
+
+---
+
+## Example Alert Types
+
+### Laundry Finished
+When the washer state changes from running to stopped and remains stopped, Home Assistant raises an alert helper. Apple Home can then trigger an audio cue to let users know the cycle is complete.
+
+### Water Leak Alert
+When a leak sensor changes from dry to wet, Home Assistant sets a water leak flag. Apple Home can react to that state and surface the event through front-end notification behavior.
+
+### Dishwasher Availability / Cheap-Time Use
+When the dishwasher becomes eligible to run during low-cost time windows, Apple Home can play a cue to indicate that the preferred operating window is active.
+
+---
+
+## Example HA-Side Trigger Types
+
+These are the kinds of helpers that feed into the Apple Home layer:
+
+- `input_boolean.washingmachine_status`
+- `binary_sensor.laundry_is_washed`
+- `input_boolean.water_leak_status`
+- `input_boolean.ah_alert_washer_finished_urgent`
+
+The helper is not the final notification itself.  
+It is the **bridge signal** that Apple Home uses to trigger a user-facing response.
+
+---
+
+## Automation Design Principle
+
+Home Assistant performs the detection:
+
+- state change detection
+- timing validation
+- device-state interpretation
+- alert gating
+
+Apple Home performs the human-facing reaction:
+
+- audio cue
+- household feedback
+- simplified visibility
+- user interaction
+
+---
+
+## Why This Split Works
+
+This design keeps the architecture clean:
+
+- **Home Assistant** handles automation logic
+- **HomeKit Bridge** carries the signal
+- **Apple Home** handles household-facing communication
+
+This avoids overloading Apple Home with backend complexity while still making the home feel responsive and interactive.
+
+---
+
+## Practical Outcome
+
+Even when full spoken Siri announcements are limited, the Apple layer still provides meaningful feedback through:
+
+- music cues
+- audio notifications
+- HomePod response behavior
+- native front-end awareness
+
+The result is a system that still feels alive and communicative without depending on custom backend dashboards.
 
 ## Summary
 
