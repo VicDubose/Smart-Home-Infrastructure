@@ -208,6 +208,7 @@ flowchart LR
     EUFYBRIDGE[Eufy Bridge]
 
     APSCRAPER[Alabama Power Scraper]
+    TESLA[Tesla Powerwall]
 
     EUFYSERVER --> RDP
     RDP --> EUFYBRIDGE
@@ -216,6 +217,8 @@ flowchart LR
     RDP --> APSCRAPER
     APSCRAPER --> HA
 
+    TESLA --> HA
+
     HA --> ENERGY[Energy Logic]
     HA --> HVAC[HVAC Logic]
     HA --> PRESENCE[Presence / Occupancy Logic]
@@ -223,11 +226,10 @@ flowchart LR
 
     ALERTS --> HK
 ```
+
 ### Implementation
 - YAML-based automation architecture
 - Python automation scripts
-
-
 
 
 ## Economic Impact of Infrastructure Automation
