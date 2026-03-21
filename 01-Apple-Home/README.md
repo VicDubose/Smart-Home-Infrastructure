@@ -189,6 +189,52 @@ This setup separates responsibilities cleanly:
 - the home responds intelligently without manual input
 
 ---
+## Presence-Based Climate Influence
+
+Apple Home presence detection also plays a key role in **climate behavior**, acting as the front-end trigger for HVAC decisions.
+
+### Behavior
+
+- **When someone arrives home**
+  - Apple Home updates occupancy instantly
+  - this state is passed into the system
+  - climate recovery logic becomes eligible to run
+
+- **When the home is empty**
+  - unnecessary cooling is avoided
+  - recovery routines are delayed or skipped
+  - energy usage is reduced automatically
+
+---
+
+### Why This Matters
+
+- prevents cooling empty rooms  
+- improves comfort timing (cooling happens when it matters)  
+- works seamlessly with Apple’s highly accurate geofencing  
+- requires no additional apps or sensors on the user side  
+
+---
+
+### System Role
+
+Apple Home does not control temperature directly.
+
+Instead, it acts as the **presence authority**:
+
+- determines *who is home*
+- signals *when comfort is needed*
+- enables or suppresses deeper HVAC logic
+
+---
+
+### Result
+
+- climate feels responsive to real life, not just schedules  
+- energy usage is reduced without sacrificing comfort  
+- the system adapts naturally to daily routines  
+
+> Detailed adaptive recovery and zoning logic is handled in the Home Assistant layer.
 
 ## Status
 
