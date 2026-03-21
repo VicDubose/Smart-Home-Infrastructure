@@ -17,9 +17,7 @@ Instead, it selectively publishes only the entities that are useful for:
 
 ## Architecture in Practice 
 
-<img src="../Screenshots/IMG_1317.png" width="300"/>
-
-<img src="../Screenshots/IMG_1342.png" width="300"/>
+<img src="../Screenshots/IMG_1317.png" width="300"/>. <img src="../Screenshots/IMG_1342.png" width="300"/>
 
 This is the real Apple Home interface powered by the HomeKit Bridge.  
 Everything visible here is intentionally exposed — nothing more.
