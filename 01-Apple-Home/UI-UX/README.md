@@ -363,7 +363,53 @@ This turns the system into a communication layer, not just automation.
 - Away → normal personal use  
 
 ---
+## Physical Deployment Strategy
 
-## Status
+The smart home interface is intentionally placed in high-traffic areas to maximize usability.
 
-Complete and stable.
+### Kitchen Placement
+
+- Central location in the home
+- Used multiple times per day
+- Natural decision-making space (food, planning, schedules)
+- Accessible to all household members
+
+The kiosk is positioned to allow:
+
+- quick glanceable information
+- immediate control without friction
+- shared family interaction
+
+This ensures the system is actually used — not ignored.
+
+### Shark Cleaning Integration (Automated Maintenance Layer)
+
+<img src="../Screenshots/shark_schedule.png" width="250"/>
+<img src="../Screenshots/shark_map.png" width="250"/>
+
+The SharkClean system provides automated floor maintenance that integrates into the overall smart home workflow.
+
+Cleaning schedules are configured through the Shark app, allowing the robot to:
+
+- run on consistent daily or weekly schedules  
+- automatically clean high-traffic areas such as the kitchen and hallway  
+- return to dock without user intervention  
+
+This keeps baseline cleanliness maintained without requiring manual effort.
+
+---
+
+### Behavior & System Role
+
+While Shark operates independently, it fits into the broader system design as a background automation layer.
+
+- runs during low-impact times (morning / away periods)  
+- avoids interfering with active household use  
+- complements other automations rather than competing with them  
+
+The result is a system where:
+
+- the home stays clean automatically  
+- no user interaction is required  
+- the feature enhances daily life without adding complexity  
+
