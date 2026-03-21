@@ -205,6 +205,8 @@ Result
 
 The kiosk is placed in the kitchen because it serves as the decision center of the home.
 
+<img src="../Screenshots/IMG_8139.jpeg" width="350"/>
+
 It is designed to answer three questions instantly:
 
 1. What is happening in the home?  
@@ -384,10 +386,10 @@ This ensures the system is actually used — not ignored.
 
 ### Shark Cleaning Integration (Automated Maintenance Layer)
 
-<img src="../Screenshots/shark_schedule.png" width="250"/>
-<img src="../Screenshots/shark_map.png" width="250"/>
 
-The SharkClean system provides automated floor maintenance that integrates into the overall smart home workflow.
+<img src="../Screenshots/IMG_1339.png" width="250"/>
+
+The SharkClean system provides automated floor maintenance  in all common areas that integrates into the overall smart home workflow.
 
 Cleaning schedules are configured through the Shark app, allowing the robot to:
 
