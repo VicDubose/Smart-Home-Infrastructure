@@ -66,7 +66,7 @@ This makes the home feel responsive without requiring users to check apps manual
 
 ## Home / Away Simplicity
 
-<img src="../Screenshots/IMG_1323.png" width="800"/>
+<img src="../Screenshots/IMG_1323.png" width="400"/>
 
 Apple Home makes occupancy and access easy to understand.
 
