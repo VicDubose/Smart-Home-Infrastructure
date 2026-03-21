@@ -30,7 +30,7 @@ In this architecture:
 <img src="./Screenshots/IMG_1321.png" width="200"/>
 
 ### iPad Kiosk Interface (Shared Control Terminal)
-<img src="./Screenshots/IMG_1322.png" width="200"/>
+<img src="./Screenshots/IMG_1322.png" width="300"/>
 
 ### Home Access & Permissions (User Management)
 <img src="./Screenshots/IMG_1323.png" width="200"/>
