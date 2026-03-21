@@ -27,7 +27,7 @@ In this architecture:
 <img src="./Screenshots/IMG_1318.png" width="200"/>
 
 ### Automation System (Logic Trigger Layer)
-<img src="./Screenshots/IMG_1321.png" width="200"/>
+<img src="./Screenshots/IMG_1335.png" width="200"/>
 
 ### iPad Kiosk Interface (Shared Control Terminal)
 <img src="./Screenshots/IMG_1322.png" width="300"/>
