@@ -114,7 +114,6 @@ Storage Allocation
 * Remaining SSD storage: reserved for host system, Docker, and future expansion
 * 1TB HDD: dedicated to Jellyfin media storage
 	
-
 ---
 
 # Host Operating System
