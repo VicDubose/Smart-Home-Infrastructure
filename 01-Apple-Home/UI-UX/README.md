@@ -129,6 +129,7 @@ The system follows a minimal, intention-driven approach:
 **Actions**
 - Enable Kiosk Focus
 - Return to Home Screen
+- Background Changes as visual que
 
 **Execution**
 - Runs immediately
