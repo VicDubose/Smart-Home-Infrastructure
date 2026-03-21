@@ -10,7 +10,7 @@ All smart home interaction happens here — not in Home Assistant.
 
 ## Real Household Interface
 
-<img src="../Screenshots/IMG_1317.png" width="800"/>
+<img src="../Screenshots/IMG_1317.png" width="400"/>
 
 This is what users actually see and interact with on a daily basis.
 
