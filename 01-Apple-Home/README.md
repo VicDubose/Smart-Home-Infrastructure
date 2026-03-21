@@ -19,6 +19,8 @@ In this architecture:
 ---
 
 ## Interface Preview
+<img src="./Screenshots/IMG_8139.jpeg" width="400"/>
+
 
 ### Apple Home Dashboard (Control Layer)
 <img src="./Screenshots/IMG_1317.png" width="200"/>
