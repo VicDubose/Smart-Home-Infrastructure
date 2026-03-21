@@ -247,6 +247,41 @@ Cockpit eliminates the need for separate hypervisor dashboards or container mana
 
 ---
 
+## Media Services (Jellyfin)
+
+The system includes a self-hosted Jellyfin media server running in a Docker container.
+
+Jellyfin provides:
+• centralized media library management  
+• streaming to local and remote clients  
+• hardware-accelerated playback (when available)  
+• user profile and access control  
+• metadata aggregation (posters, descriptions, subtitles)  
+
+Example access endpoint:  
+http://server-ip:8096  
+
+Jellyfin operates on a dedicated storage volume to prevent interference with virtual machine workloads and system performance.
+
+---
+
+## Network Simulation Lab (EVE-NG)
+
+The infrastructure includes an EVE-NG virtual machine used for network engineering labs and testing.
+
+EVE-NG provides:
+• emulation of enterprise network devices (Cisco, Fortinet, etc.)  
+• topology-based lab design and testing  
+• support for hybrid environments (virtual + physical devices)  
+• persistent lab environments for CCNA/CCNP-level scenarios  
+• browser-based access to console sessions  
+
+Example access endpoint:  
+http://server-ip  
+
+EVE-NG allows the infrastructure to function as a full network simulation lab without requiring dedicated physical hardware for every scenario.
+
+---
 # Storage Architecture
 
 The infrastructure uses multiple SSD drives with clearly defined roles.
