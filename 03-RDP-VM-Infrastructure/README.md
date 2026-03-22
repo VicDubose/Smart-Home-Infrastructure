@@ -37,6 +37,31 @@ The environment is intentionally designed to **minimize operational complexity**
   <img src="Screenshots/IMG_1350.png" width="300"/>
 </p>
 
+---
+## Secure Remote Access Model
+
+All infrastructure services are **restricted to the internal network** and are not exposed to the public internet.
+
+Remote access is provided through **ASUS Instant Guard VPN**, which creates a secure tunnel into the home network.
+
+### Access Flow
+
+### Key Characteristics
+
+- No port forwarding or public exposure
+- All services (Cockpit, Jellyfin, EVE-NG, RDP) are **VPN-only**
+- Devices behave as if they are on the local LAN when connected
+- Seamless integration with mobile devices (iPad / iPhone)
+
+This model ensures:
+
+- minimal attack surface
+- secure remote administration
+- full access to infrastructure from anywhere without exposing services publicly
+
+
+---
+
 # RDP Stack Architecture
 
 The infrastructure follows a layered architecture separating:
