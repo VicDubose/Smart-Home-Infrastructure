@@ -6,7 +6,7 @@ Residential smart home lab integrating Home Assistant, network infrastructure, v
 
 <p align="center">
   <img src="diagrams/home_system_overview.png" width="250">
-  <img src="diagrams/home_system_overview.png" width="250">
+  <img src="diagrams/IMG_3643.jpeg" width="420">  
 </p>
 
 A portfolio repository documenting the architecture and automation systems used in my residential smart home lab.
@@ -192,16 +192,16 @@ ASCII DIAGRAM (real cabling)
    │  (1G uplink)
 ┌──▼───────────────────────────────────────────┐
 │ Cisco Catalyst 2960-C (L2)                   │
-│ G0/1  ← Uplink from Node LAN 1G              │
-│                                             │
+│ G0/1  ← Uplink from Node LAN 1G              │ 
+│                                              │
 │ ─── Infrastructure Segment ───────────────── │
 │  • Home Assistant Green                      │
 │  • Eufy Security Hub                         │
-│                                             │
+│                                              │
 │ ─── Lab / Server Segment ─────────────────── │
 │  • Remote Desktop host (Ubuntu / Docker)     │
 │  • Automation scripts / dev environment      │
-│                                             │
+│                                              │
 │ ─── IoT / Low-Bandwidth Segment ──────────── │
 │  • Smart home IoT devices                    │
 │  • Sensors / hubs                            │
@@ -272,6 +272,8 @@ Estimated solar generation:
 
 - **~7,553 kWh annually**
 
+  <img src="diagrams/IMG_7422.jpeg" width="420"> 
+  
 ---
 
 ### Typical Household Energy + Transportation Costs (Regional Baseline)
