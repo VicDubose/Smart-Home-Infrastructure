@@ -146,7 +146,7 @@ The host operates as a **headless infrastructure server** without a graphical de
 ## Container Runtime (Docker)
 
 <p align="center">
-  <img src="Screenshots/docker-containers.png" width="300"/>
+  <img src="Screenshots/IMG_1354.png" width="300"/>
 </p>
 
 
