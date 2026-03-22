@@ -84,6 +84,23 @@ Apple Home provides a **secure external interface** without exposing internal sy
 
 ---
 
+HomePod Role (Home Hub)
+
+HomePod devices act as the active Apple Home Hub for the system.
+
+They are responsible for:
+
+	•	executing Apple Home automations
+  
+	•	handling Siri voice interaction
+  
+	•	maintaining real-time Home state
+  
+	•	enabling secure remote access
+
+The HomePod operates as the automation and communication backbone of Apple Home, while devices like the iPad and iPhone serve only as control interfaces.
+
+---
 ## Eufy Security Integration (Home / Away Modes)
 
 Apple Home presence directly controls the behavior of the **Eufy security system**.
