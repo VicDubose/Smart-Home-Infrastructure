@@ -47,6 +47,21 @@ By treating the house as an **engineering system rather than a collection of sma
 
 This repository documents the architecture, automation design, and infrastructure used to operate this system.
 
+---
+## Engineering Methodology (SDLC-Informed Design)
+
+This system was developed using a simplified **Software Development Lifecycle (SDLC)** approach adapted to residential infrastructure.
+
+Instead of building isolated automations, the project follows a structured workflow:
+
+- **Problem Definition** → reduce cost of living through energy and infrastructure optimization  
+- **System Design** → separate responsibilities across Home Assistant (logic), Apple Home (interface), and network infrastructure (transport)  
+- **Implementation** → YAML automations, Docker services, and network configuration  
+- **Testing & Validation** → real-world verification of automation behavior, energy savings, and remote access  
+- **Documentation** → modular repository structure with architecture breakdowns  
+- **Iteration** → continuous refinement based on live system performance  
+
+This approach ensures the system behaves as a **cohesive engineered platform**, not a collection of smart devices.
 
 ---
 
@@ -310,23 +325,27 @@ These estimates assume moderate driving distances and typical regional fuel and 
 
 ---
 
-### Engineering Outcome
+## System Design Philosophy
 
-This project demonstrates how residential infrastructure engineering can combine:
+The smart home is designed using core engineering principles typically applied to distributed systems:
 
-- renewable energy systems
-- automation platforms
-- smart load orchestration
-- transportation electrification
+- **Separation of Concerns**
+  - Home Assistant → automation and logic  
+  - Apple Home → user interface and communication  
+  - Network infrastructure → connectivity and security  
 
-to materially reduce long-term cost of living while improving energy independence.
+- **Local-First Architecture**
+  - all critical systems operate داخل the local network  
+  - remote access is achieved securely via VPN (Asus Instant Guard)  
+  - no direct exposure of internal services to the public internet  
 
-The system effectively treats the home as a **coordinated energy platform** rather than a collection of independent devices.c]
-    HA --> PRESENCE[Presence / Occupancy Logic]
-    HA --> ALERTS[Virtual Alert Flags]
+- **Controlled Exposure (Allowlist Model)**
+  - only human-relevant entities are exposed to Apple Home  
+  - backend logic, telemetry, and system internals remain isolated  
 
-    ALERTS --> HK
-```
-### Implementation
-- YAML-based automation architecture
-- Python automation scripts
+- **System-as-Infrastructure Mindset**
+  - HVAC, EV charging, and appliances are treated as coordinated system components  
+  - energy usage is orchestrated, not reactive  
+  - automation decisions are based on state, timing, and cost conditions  
+
+This design allows the home to function as a **stable, scalable, and production-like infrastructure system**.
