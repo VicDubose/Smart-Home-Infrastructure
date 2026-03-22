@@ -33,13 +33,9 @@ The environment is intentionally designed to **minimize operational complexity**
 ## System Interfaces (Live Environment)
 
 <p align="center">
-  <img src="Screenshots/vm-dashboard.png" width="400"/>
+  <img src="Screenshots/IMG_1356.png" width="300"/>
+  <img src="Screenshots/IMG_1350.png" width="300"/>
 </p>
-
-<p align="center">
-  <img src="Screenshots/ip-binding.png" width="300"/>
-</p>
----
 
 # RDP Stack Architecture
 
@@ -146,6 +142,13 @@ The host operates as a **headless infrastructure server** without a graphical de
 ---
 
 # Container Infrastructure
+
+## Container Runtime (Docker)
+
+<p align="center">
+  <img src="Screenshots/docker-containers.png" width="300"/>
+</p>
+
 
 Services that require continuous operation but minimal resources run in **Docker containers**.
 
