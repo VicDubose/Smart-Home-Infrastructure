@@ -208,6 +208,10 @@ Administrator → RDP → Windows VM
 
 Once connected, the Windows VM functions as the **primary workstation environment** for managing the infrastructure stack.
 
+<p align="center">
+  <img src="Screenshots/IMG_1351.png" width="300"/>
+</p>
+
 ---
 
 ## Networking Lab VM
