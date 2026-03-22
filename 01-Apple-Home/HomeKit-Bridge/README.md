@@ -68,6 +68,24 @@ This bridge handles the normal family-facing control surface, including:
 This is the bridge that powers most day-to-day Apple Home interaction.
 
 ---
+### Home Hub Role
+
+Apple Home automations are not executed by the HomeKit Bridge.
+They are handled by an Apple-designated Home Hub.
+
+In this setup:
+	•	HomePod devices act as the active Home Hub
+  
+	•	They run Apple Home automations, handle Siri, and provide remote access
+
+The iPad is not the Home Hub. It serves only as:
+	•	a user interface
+  
+	•	a household control surface
+
+This ensures automations continue running even if the tablet is offline, keeping execution and user interaction properly separated.
+
+---
 
 ## Example: Camera + Access Layer
 
