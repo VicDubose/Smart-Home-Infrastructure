@@ -279,6 +279,10 @@ http://server-ip:8096
 
 Jellyfin operates on a dedicated storage volume to prevent interference with virtual machine workloads and system performance.
 
+<p align="center">
+  <img src="Screenshots/IMG_1352.png" width="300"/>
+</p>
+
 ---
 
 ## Network Simulation Lab (EVE-NG)
