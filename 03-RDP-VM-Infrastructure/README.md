@@ -30,6 +30,15 @@ Primary roles of the infrastructure node include:
 
 The environment is intentionally designed to **minimize operational complexity** through a limited number of management portals and centralized access.
 
+## System Interfaces (Live Environment)
+
+<p align="center">
+  <img src="Screenshots/vm-dashboard.png" width="400"/>
+</p>
+
+<p align="center">
+  <img src="Screenshots/ip-binding.png" width="300"/>
+</p>
 ---
 
 # RDP Stack Architecture
