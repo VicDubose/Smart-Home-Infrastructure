@@ -50,7 +50,7 @@ Remote access is provided through **ASUS Instant Guard VPN**, which creates a se
 
 - No port forwarding or public exposure
 - All services (Cockpit, Jellyfin, EVE-NG, RDP) are **VPN-only**
-- Devices behave as if they are on the local LAN when connected
+- Devices behave as if they are on the local LAN when connected (full Layer 3 access to internal resources)
 - Seamless integration with mobile devices (iPad / iPhone)
 
 This model ensures:
