@@ -106,6 +106,27 @@ This architecture allows the entire infrastructure environment to be accessed fr
 
 ---
 
+## 📁 Subsystem Navigation
+
+This infrastructure layer is organized into dedicated subsystems for clarity and separation of concerns:
+
+- **Docker Layer**  
+  Containerized service infrastructure (Eufy bridge, Jellyfin, Alabama Power scraper)  
+  → [`Docker/README.md`](./Docker/README.md)
+
+- **Host System**  
+  Ubuntu Server foundation, resource management, and system orchestration  
+  → [`Host-System/README.md`](./Host-System/README.md)
+
+- **Virtualization Layer**  
+  KVM-based virtual machines including Windows Admin VM and EVE-NG lab  
+  → [`Virtualization/README.md`](./Virtualization/README.md)
+
+---
+
+Each subsystem represents a core component of the infrastructure stack and is documented independently to reflect real-world system design practices.
+---
+
 # Physical Server Platform
 
 The infrastructure stack runs on a dedicated mini desktop server.
