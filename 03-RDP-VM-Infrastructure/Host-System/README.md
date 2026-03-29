@@ -1,112 +1,193 @@
 # Host System
 
-This directory documents the physical host layer of the RDP infrastructure server.
+This directory documents the host system layer of the RDP infrastructure server.
 
-The host system is the always-on foundation of the server environment. It provides the compute, storage, and operating-system layer that supports Docker containers, virtual machines, and infrastructure management services.
+The host system is the foundational layer of the entire environment. It is responsible for maintaining continuous operation of all services, allocating system resources, and ensuring that virtualization and container workloads coexist without interference.
 
-Rather than acting as a general-purpose desktop, the host is designed to operate as a stable infrastructure node for automation, media, and lab workloads.
-
----
-
-## Purpose
-
-The host system is responsible for:
-
-- running the base operating system
-- providing CPU, memory, and storage resources
-- supporting Docker container workloads
-- hosting the virtualization layer
-- maintaining persistent uptime for automation services
-- serving as the foundation of the smart home support infrastructure
-
-This makes the host system the lowest operational layer of the RDP server stack.
+Unlike a traditional desktop, the host is designed to function as a **dedicated infrastructure node** with a focus on stability, uptime, and controlled resource distribution.
 
 ---
 
-## Hardware Platform
+## Role of the Host System
 
-The current server platform is based on a compact mini desktop system used as a dedicated infrastructure node.
+The host system operates as the **control and execution layer** beneath all higher-level services.
 
-### Example Hardware Profile
+Its responsibilities include:
 
-- HP mini desktop platform
-- AMD Ryzen-class CPU
-- ~32 GB RAM
-- dual-SSD layout for host + VM storage
-- dedicated HDD / bulk storage for media
+- managing CPU and memory allocation across workloads  
+- maintaining storage separation between system, VM, and media data  
+- running the Docker runtime for persistent services  
+- supporting KVM-based virtualization  
+- providing system monitoring and management interfaces  
+- ensuring all services recover automatically after restart  
 
-This hardware profile allows the server to run multiple VMs and containers simultaneously while maintaining low power draw and small physical footprint.
+This allows the system to function as a **24/7 infrastructure platform** rather than a user-operated machine.
+
+---
+
+## Host Operating System
+
+### Ubuntu Server
+
+The host runs Ubuntu Server in a headless configuration.
+
+This provides:
+
+- low overhead operation  
+- direct access to Linux-native virtualization (KVM)  
+- native Docker support  
+- stable long-term runtime for automation services  
+
+No desktop environment is used, ensuring that all resources are dedicated to infrastructure workloads.
+
+---
+
+## Infrastructure Management (Cockpit)
+
+<p align="center">
+  <img src="../Screenshots/IMG_1350.png" width="600"/>
+</p>
+
+Cockpit is used as the primary management interface for the host system.
+
+The screenshot above shows:
+
+- active virtual machines running on the host  
+- system-level visibility into infrastructure workloads  
+- centralized control of VM lifecycle and system resources  
+
+Cockpit enables:
+
+- real-time CPU and memory monitoring  
+- storage and disk management  
+- VM control through libvirt integration  
+- service visibility across the host  
+
+This eliminates the need for separate hypervisor management tools.
+
+---
+
+## Container Runtime Visibility
+
+<p align="center">
+  <img src="../Screenshots/IMG_1354.png" width="600"/>
+</p>
+
+Docker containers run directly on the host system and provide persistent support services.
+
+The host is responsible for:
+
+- maintaining container uptime  
+- managing container resource usage  
+- ensuring restart policies are honored  
+- isolating container workloads from virtual machines  
+
+This ensures that lightweight services do not interfere with heavier VM workloads.
 
 ---
 
 ## Resource Allocation Strategy
 
-The host is designed to reserve resources across three major areas:
+The host system is intentionally balanced to support multiple workload types simultaneously.
 
-- host operating system and management services
-- Docker container workloads
-- virtual machine workloads
+### Memory Allocation
 
-### General Allocation Model
+- **Total System Memory:** ~32 GB  
+- **Windows 11 VM:** ~10 GB  
+- **EVE-NG VM:** ~14 GB  
+- **Host + Docker:** ~8 GB  
 
-- **Host + Docker:** baseline reserved resources for always-on infrastructure
-- **Windows VM:** administrative workstation workload
-- **EVE-NG VM:** network lab / simulation workload
+This allocation ensures:
 
-This allocation model keeps the system responsive while preserving headroom for future automation growth.
-
----
-
-## Operating System Role
-
-The host operating system is intended to function as a headless server platform.
-
-Its responsibilities include:
-
-- Docker runtime support
-- KVM / virtualization support
-- storage mounting and management
-- networking and interface management
-- service startup and uptime
-- infrastructure monitoring
-
-This allows higher-level services to remain independent of a user desktop environment.
+- sufficient memory for virtualization workloads  
+- stable operation of containerized services  
+- headroom for system processes and monitoring  
 
 ---
 
-## Storage Roles
+### CPU Allocation
 
-The host uses separated storage roles to reduce contention between workloads.
+- **Windows VM:** 2 vCPU  
+- **EVE-NG VM:** 4 vCPU  
+- **Host + Docker:** remaining CPU threads  
 
-### Intended Storage Layout
+This distribution prioritizes:
 
-- **System SSD**  
-  host operating system, Docker runtime, service configuration
+- lab performance for EVE-NG  
+- responsiveness of the Windows admin environment  
+- consistent performance for always-on services  
 
-- **VM Storage SSD**  
-  Windows VM disk, EVE-NG VM disk, snapshots
+---
 
-- **Media / Bulk Storage HDD**  
-  Jellyfin media library and non-critical bulk storage
+## Storage Coordination
 
-This layout improves:
+The host system manages multiple storage tiers to prevent workload contention.
 
-- VM performance consistency
-- media storage isolation
-- service reliability
-- easier backup planning
+### Storage Layout
+
+- **Primary SSD**  
+  - Ubuntu OS  
+  - Docker runtime and volumes  
+  - system configuration  
+
+- **Secondary SSD**  
+  - virtual machine disk images  
+  - snapshots and lab data  
+
+- **HDD Storage**  
+  - Jellyfin media library  
+  - bulk storage and non-critical data  
+
+This separation ensures:
+
+- VM disk I/O does not impact system services  
+- media streaming does not affect automation workloads  
+- predictable performance across all layers  
+
+---
+
+## Operational Behavior
+
+At runtime, the system behaves as follows:
+
+1. Host system boots  
+2. Docker services initialize automatically  
+3. Virtual machines become available  
+4. Cockpit provides system visibility  
+5. Infrastructure services remain continuously available  
+
+This allows the server to function without manual intervention after startup.
+
+---
+
+## Stability Design
+
+The host system is designed to prevent common failure modes:
+
+- Windows updates do not affect infrastructure  
+- container restarts do not impact VM stability  
+- lab experimentation does not affect production services  
+- storage separation prevents I/O bottlenecks  
+
+This creates a resilient environment where:
+
+- automation continues running  
+- services recover automatically  
+- system behavior remains predictable  
 
 ---
 
 ## Why the Host Layer Matters
 
-The host system is what allows the rest of the environment to function as infrastructure rather than a personal workstation.
+The host system is what transforms the environment from a collection of tools into a **cohesive infrastructure platform**.
 
-Because Home Assistant helper services, presence-support services, utility scrapers, and lab tooling all depend on continuous availability, the host layer must prioritize:
+It ensures:
 
-- uptime
-- recoverability
-- storage separation
-- low operational overhead
+- continuous uptime for smart home support services  
+- controlled interaction between containers and VMs  
+- reliable execution of automation-related workloads  
+- centralized management of all system components  
 
-This is what turns the RDP server into a true 24/7 infrastructure node.
+Without this layer, the system would behave like a workstation.
+
+With it, the system behaves like a **dedicated infrastructure server**.DP server into a true 24/7 infrastructure node.
