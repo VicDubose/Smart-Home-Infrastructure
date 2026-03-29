@@ -116,8 +116,8 @@ The system manages a live residential automation environment including:
 
 - [Architecture Overview](docs/architecture-overview.md)
 - [Home Assistant Design](docs/home-assistant-design.md)
-- [Network Design](docs/network-design.md)
-- [RDP / VM Lab](docs/rdp-vm-stack.md)
+- [Network Design]( /network-design.md)
+- [RDP / VM Lab](03-RDP-VM-Infrastructure/README.md)
 - [Energy Automation](docs/energy-automation.md)
 
 ---
