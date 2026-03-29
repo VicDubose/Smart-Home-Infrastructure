@@ -76,3 +76,19 @@ This VM is used for:
 
 ```text
 Administrator → RDP → Windows 11 VM
+```
+---
+
+## 📁 Subsystems
+
+This virtualization layer is divided into two primary virtual machine environments:
+
+- **Windows 11 Admin VM**  
+  Administrative workstation used for infrastructure management, development tools, and centralized access  
+  → [`Windows11Pro/README.md`](./Windows11Pro/README.md)
+
+- **EVE-NG Lab Environment**  
+  Network simulation platform supporting CCNA / CCNP labs and hybrid virtual + physical testing (VLAN 50)  
+  → [`EVE-NG/README.md`](./EVE-NG/README.md)
+
+---
