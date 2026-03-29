@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  eufy-security-ws:
+    image: bropat/eufy-security-ws:latest
+    container_name: eufy_ws
+    restart: unless-stopped
+
+    ports:
+      - "3000:3000"
+
+    environment:
+      USERNAME: ${EUFY_USERNAME}
+      PASSWORD: ${EUFY_PASSWORD}
+      COUNTRY: "US"
+      TRUSTED_DEVICE_NAME: "HomeAssistant"
+      WS_HEARTBEAT_INTERVAL: "60"
+      WS_RECONNECT_INTERVAL: "30"
+
+    volumes:
+      - ./data:/data
