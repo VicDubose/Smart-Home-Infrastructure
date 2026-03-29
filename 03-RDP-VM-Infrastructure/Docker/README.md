@@ -17,7 +17,8 @@ The Docker layer is used to:
 - simplify deployment, recovery, and maintenance
 - provide persistent infrastructure services for Home Assistant and related tooling
 - ensure critical integrations restart automatically after host reboot
-
+- provide external validation data for the energy automation system (utility-side verification)
+  
 This makes Docker one of the most important operational layers in the infrastructure stack.
 
 ---
@@ -102,19 +103,74 @@ This service is especially important because it helps connect camera and securit
 
 **Purpose:** collect utility consumption data and send it into Home Assistant
 
-This service is implemented as a Python-based automation workload that collects Alabama Power usage data and posts it into Home Assistant using a long-lived access token and webhook pattern.
+This service is implemented as a Python-based automation workload that logs into the Alabama Power customer portal, scrapes Average Daily Usage (kWh), and publishes the value into Home Assistant.
 
-Its role is to provide a second source of truth for energy tracking and validation.
+Its role is to provide a secondary source of truth for energy tracking and validation within the Layer 3 energy system.
 
-It supports:
+⸻
 
-- daily energy tracking
-- comparison against Tesla Powerwall / gateway real-time data
-- utility-side measurement validation
-- downstream energy automation analysis
+Role in the Energy System
 
-The scrape schedule is aligned to the utility’s update cycle and runs twice daily to ensure that Home Assistant stays synchronized with the utility reporting system.
+Unlike device telemetry (Tesla Powerwall, solar inverter, etc.), which represents real-time system-side measurements, this scraper provides utility-side consumption data.
 
+It is used to:
+- track daily grid energy usage from the utility perspective
+- compare against Tesla Powerwall / gateway real-time data
+- validate internal energy measurements
+- detect discrepancies between system-reported and utility-reported usage
+- support long-term energy optimization analysis		
+
+This enables the system to verify:
+
+whether the home’s internal energy model matches actual billed consumption
+
+⸻
+
+Integration with Tesla Powerwall
+
+Tesla Powerwall provides:
+- real-time energy flow
+- battery state of charge
+- solar production
+- instantaneous grid import/export  
+
+The Alabama Power scraper complements this by providing:
+	•	delayed but authoritative utility-reported usage
+
+Together, they form a dual-layer validation model:
+
+Powerwall (real-time system view) + Utility (reported usage) = validated energy model
+
+
+⸻
+
+Execution Model
+
+The scraper runs on a scheduled basis aligned with the utility update cycle:
+- typically executed twice per day
+- allows time for Alabama Power to update usage data
+- keeps Home Assistant synchronized with utility reporting
+
+⸻
+
+Operational Importance
+
+This service is considered:
+
+Important but non-critical
+- does not impact safety or comfort systems
+- does not affect real-time automation behavior
+- enhances accuracy and long-term optimization and automation reliability
+⸻
+
+Design Notes
+- implemented as a lightweight Python automation workload
+- containerized for isolation and persistence
+- uses Playwright for browser automation
+- avoids reliance on undocumented APIs
+- designed with fallback logic for page changes
+	
+Sensitive credentials and tokens are managed via environment variables and are not stored in source control.
 ---
 
 ## Operational Importance
