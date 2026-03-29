@@ -85,7 +85,7 @@ This virtualization layer is divided into two primary virtual machine environmen
 
 - **Windows 11 Admin VM**  
   Administrative workstation used for infrastructure management, development tools, and centralized access  
-  → [`Windows11Pro/README.md`](./Windows11Pro/README.md)
+  → [`Windows 11Pro/README.md`](./Windows%2011Pro/README.md)
 
 - **EVE-NG Lab Environment**  
   Network simulation platform supporting CCNA / CCNP labs and hybrid virtual + physical testing (VLAN 50)  
