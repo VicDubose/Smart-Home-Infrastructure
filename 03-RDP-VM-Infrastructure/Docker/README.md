@@ -172,6 +172,7 @@ Design Notes
 - designed with fallback logic for page changes
 	
 Sensitive credentials and tokens are managed via environment variables and are not stored in source control.
+
 ---
 
 ## Operational Importance
