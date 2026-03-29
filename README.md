@@ -121,7 +121,13 @@ The system manages a live residential automation environment including:
 - [Energy Automation](05-Energy-Automation/README.md)
 
 ---
+### 🔍 Featured Deep Dive
 
+- **Windows 11 Admin VM (Operational Workstation)**  
+  Real-world administrative environment used to manage infrastructure, automation systems, and development workflows  
+  → [`Windows 11 Pro VM`](03-RDP-VM-Infrastructure/Virtualization/Windows%2011Pro/README.md)
+
+---
 ## Technology Stack
 
 ### Automation & IoT
@@ -284,8 +290,8 @@ For a typical Alabama household using both electricity, natural gas, and gasolin
 |--------|----------------|
 | Electricity | ~$1,800 |
 | Natural Gas | ~$500 – $900 |
-| Gasoline vehicle fuel | ~$1,500 – $2,200 |
-| **Total energy + transportation** | **~$3,800 – $4,900 / year** |
+| Gasoline vehicle fuel ($4/gal) | ~$1,900 – $2,400 |
+| **Total energy + transportation** | **~$4,200 – $5,100 / year** |
 
 These costs vary depending on energy prices, driving distance, and heating demand.
 
@@ -321,8 +327,8 @@ the system significantly reduces overall household operating costs.
 |--------|----------------|
 | Solar electricity offset | ~$900 |
 | Eliminated natural gas usage | ~$500 – $900 |
-| Gasoline replaced by EV charging | ~$1,200 – $1,800 |
-| **Total estimated reduction** | **~$2,600 – $3,600 annually** |
+| Gasoline replaced by EV charging | ~$1,800 – $2,400 |
+| **Total estimated reduction** | **~$3,200 – $4,200 annually** |
 
 These estimates assume moderate driving distances and typical regional fuel and utility pricing.
 
