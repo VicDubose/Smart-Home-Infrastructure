@@ -114,11 +114,11 @@ The system manages a live residential automation environment including:
 
 ## Explore the System
 
-- [Architecture Overview](docs/architecture-overview.md)
-- [Home Assistant Design](docs/home-assistant-design.md)
-- [Network Design]( /network-design.md)
+- [Frontend Overview](01-Apple-Home/README.md)
+- [Home Assistant Design](02-HomeAssistant/README.md)
+- [Network Design](04-Network-Infrastructure/README.md)
 - [RDP / VM Lab](03-RDP-VM-Infrastructure/README.md)
-- [Energy Automation](docs/energy-automation.md)
+- [Energy Automation](05-Energy-Automation/README.md)
 
 ---
 
