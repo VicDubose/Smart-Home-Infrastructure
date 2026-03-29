@@ -124,7 +124,7 @@ This enables the system to verify:
 
 whether the home’s internal energy model matches actual billed consumption
 
-⸻
+---
 
 Integration with Tesla Powerwall
 
@@ -135,14 +135,14 @@ Tesla Powerwall provides:
 - instantaneous grid import/export  
 
 The Alabama Power scraper complements this by providing:
+	
 	•	delayed but authoritative utility-reported usage
 
 Together, they form a dual-layer validation model:
 
 Powerwall (real-time system view) + Utility (reported usage) = validated energy model
 
-
-⸻
+---
 
 Execution Model
 
@@ -151,7 +151,7 @@ The scraper runs on a scheduled basis aligned with the utility update cycle:
 - allows time for Alabama Power to update usage data
 - keeps Home Assistant synchronized with utility reporting
 
-⸻
+---
 
 Operational Importance
 
@@ -161,8 +161,9 @@ Important but non-critical
 - does not impact safety or comfort systems
 - does not affect real-time automation behavior
 - enhances accuracy and long-term optimization and automation reliability
-⸻
 
+  ---
+  
 Design Notes
 - implemented as a lightweight Python automation workload
 - containerized for isolation and persistence
