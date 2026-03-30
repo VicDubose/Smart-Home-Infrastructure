@@ -405,10 +405,6 @@ Now focused on:
 
 ## Final System Identity
 
-This is not a smart home.
-
-It is a:
-
 **server-backed, locally controlled, battery-governed residential automation platform**
 
 with:
