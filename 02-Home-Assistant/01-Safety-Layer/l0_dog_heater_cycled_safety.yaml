@@ -1,1 +1,189 @@
 
+#############################################
+# packages/l0_dog_heater_cycled_safety.yaml
+#
+# LAYER 0 — Dog Heater (Cycled Safety Heat)
+#
+# Device:  switch.power_monitor
+# Sensor:  sensor.shelly_wave_h_t_sensor_air_temperature
+#
+# Policy (custom for dog heater due to ~2°F offset):
+# - Need heat if temp < 52°F for 10 min
+# - Stop heat if temp > 59.5°F for 10 min
+# - While heat is needed:
+#     * ON for 2 hours
+#     * REST for 1 hour
+#     * repeats until stop condition
+#
+# UI Friendly:
+# - input_boolean toggle
+# - timers visible in dashboard
+#
+# Ignores presence/power mode. (Solar/battery later.)
+# goal is to heat dogs if tempreatures fall below expected pramaters without overheating the dogs by allowing a 1hr cool down period between cycles
+#############################################
+
+input_boolean:
+  l0_dog_heater_enabled:
+    name: "L0 Dog Heater Enabled"
+    icon: mdi:radiator
+    initial: "on"
+
+timer:
+  l0_dog_heater_on_2h:
+    name: "L0 Dog Heater ON Cycle (2h)"
+    duration: "02:00:00"
+  l0_dog_heater_rest_1h:
+    name: "L0 Dog Heater REST (1h)"
+    duration: "01:00:00"
+
+template:
+  - binary_sensor:
+      - name: "L0 Living Heat Needed"
+        unique_id: l0_living_heat_needed
+        icon: mdi:thermometer-low
+        state: >
+          {{ states('sensor.shelly_wave_h_t_sensor_air_temperature')|float(999) < 52 }}
+
+      - name: "L0 Living Warm Enough"
+        unique_id: l0_living_warm_enough
+        icon: mdi:thermometer-high
+        state: >
+          {{ states('sensor.shelly_wave_h_t_sensor_air_temperature')|float(-999) > 59.5 }}
+
+automation:
+
+  ########################################################
+  # START: If heat needed for 10 min -> begin ON cycle
+  ########################################################
+  - id: l0_dog_heater_start_when_needed
+    alias: "L0 Dog Heater - Start cycle when <52F for 10m"
+    mode: single
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.shelly_wave_h_t_sensor_air_temperature
+        below: 52
+        for: "00:10:00"
+      - platform: homeassistant
+        event: start
+    condition:
+      - condition: state
+        entity_id: input_boolean.l0_dog_heater_enabled
+        state: "on"
+      - condition: template
+        value_template: >
+          {{ states('sensor.shelly_wave_h_t_sensor_air_temperature')|float(999) < 52 }}
+    action:
+      - service: switch.turn_on
+        target:
+          entity_id: switch.power_monitor
+
+      - service: timer.start
+        target:
+          entity_id: timer.l0_dog_heater_on_2h
+
+      - service: timer.cancel
+        target:
+          entity_id: timer.l0_dog_heater_rest_1h
+
+  ########################################################
+  # STOP: If warm enough for 10 min -> shut down everything
+  ########################################################
+  - id: l0_dog_heater_stop_when_warm
+    alias: "L0 Dog Heater - Stop when >59.5F for 10m"
+    mode: single
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.shelly_wave_h_t_sensor_air_temperature
+        above: 59.5
+        for: "00:10:00"
+      - platform: homeassistant
+        event: start
+    condition:
+      - condition: state
+        entity_id: input_boolean.l0_dog_heater_enabled
+        state: "on"
+      - condition: template
+        value_template: >
+          {{ states('sensor.shelly_wave_h_t_sensor_air_temperature')|float(-999) > 59.5 }}
+    action:
+      - service: switch.turn_off
+        target:
+          entity_id: switch.power_monitor
+      - service: timer.cancel
+        target:
+          entity_id:
+            - timer.l0_dog_heater_on_2h
+            - timer.l0_dog_heater_rest_1h
+
+  ########################################################
+  # ON cycle finished -> go to REST (only if still needed)
+  ########################################################
+  - id: l0_dog_heater_on_cycle_finished
+    alias: "L0 Dog Heater - ON cycle finished -> REST (if still needed)"
+    mode: single
+    trigger:
+      - platform: event
+        event_type: timer.finished
+        event_data:
+          entity_id: timer.l0_dog_heater_on_2h
+    condition:
+      - condition: state
+        entity_id: input_boolean.l0_dog_heater_enabled
+        state: "on"
+      - condition: template
+        value_template: >
+          {{ states('sensor.shelly_wave_h_t_sensor_air_temperature')|float(999) < 59.5 }}
+    action:
+      - service: switch.turn_off
+        target:
+          entity_id: switch.power_monitor
+      - service: timer.start
+        target:
+          entity_id: timer.l0_dog_heater_rest_1h
+
+  ########################################################
+  # REST finished -> turn back ON (only if still needed)
+  ########################################################
+  - id: l0_dog_heater_rest_finished
+    alias: "L0 Dog Heater - REST finished -> ON (if still needed)"
+    mode: single
+    trigger:
+      - platform: event
+        event_type: timer.finished
+        event_data:
+          entity_id: timer.l0_dog_heater_rest_1h
+    condition:
+      - condition: state
+        entity_id: input_boolean.l0_dog_heater_enabled
+        state: "on"
+      - condition: template
+        value_template: >
+          {{ states('sensor.shelly_wave_h_t_sensor_air_temperature')|float(999) < 52 }}
+    action:
+      - service: switch.turn_on
+        target:
+          entity_id: switch.power_monitor
+      - service: timer.start
+        target:
+          entity_id: timer.l0_dog_heater_on_2h
+
+  ########################################################
+  # If you disable the toggle -> hard stop immediately
+  ########################################################
+  - id: l0_dog_heater_disabled_hard_stop
+    alias: "L0 Dog Heater - Disabled toggle hard stop"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: input_boolean.l0_dog_heater_enabled
+        to: "off"
+    action:
+      - service: switch.turn_off
+        target:
+          entity_id: switch.power_monitor
+      - service: timer.cancel
+        target:
+          entity_id:
+            - timer.l0_dog_heater_on_2h
+            - timer.l0_dog_heater_rest_1h
