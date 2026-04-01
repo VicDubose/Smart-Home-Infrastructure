@@ -1,0 +1,56 @@
+#############################################
+# packages/l0_dog_fan_hot_safety.yaml
+#
+# LAYER 0 — Dog Fan Hot Safety (Living Area)
+# Fan Plug: switch.network_cabinet
+# Temp:     sensor.shelly_wave_h_t_sensor_air_temperature
+#
+# Behavior:
+# - ON  if temp >= 85°F for 10 minutes
+# - OFF if temp <= 80°F for 10 minutes
+#
+# Ignores:
+# - Presence
+# - Power mode
+# - Solar/battery
+#Goal is to support baseline HAVC if tempratures rise out of expected bands to avoid dog discomfort. 
+#############################################
+
+automation:
+  - id: l0_dog_fan_on_hot
+    alias: "L0 Dog Fan - ON when hot (>=85F for 10m)"
+    mode: single
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.shelly_wave_h_t_sensor_air_temperature
+        above: 85
+        for: "00:10:00"
+      - platform: homeassistant
+        event: start
+    condition:
+      - condition: template
+        value_template: >
+          {{ states('sensor.shelly_wave_h_t_sensor_air_temperature')|float(0) >= 85 }}
+    action:
+      - service: switch.turn_on
+        target:
+          entity_id: switch.network_cabinet
+
+  - id: l0_dog_fan_off_cool
+    alias: "L0 Dog Fan - OFF when cooled (<=80F for 10m)"
+    mode: single
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.shelly_wave_h_t_sensor_air_temperature
+        below: 80
+        for: "00:10:00"
+      - platform: homeassistant
+        event: start
+    condition:
+      - condition: template
+        value_template: >
+          {{ states('sensor.shelly_wave_h_t_sensor_air_temperature')|float(999) <= 80 }}
+    action:
+      - service: switch.turn_off
+        target:
+          entity_id: switch.network_cabinet
