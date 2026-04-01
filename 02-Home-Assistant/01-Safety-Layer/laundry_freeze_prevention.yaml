@@ -1,0 +1,386 @@
+#############################################
+# packages/l0_laundry_freeze_prevention.yaml
+#
+# LAYER 0 — Laundry Room Freeze Prevention (Exterior Closet)
+#
+# Plug:   switch.eletric_fence
+# Sensor: sensor.shelly_wave_h_t_sensor_lr_air_temperature
+#
+# Policy:
+# - START when temp < 50.5°F for 10 minutes AND not in lockout
+# - Runs 2-hour ON cycles with 1-hour REST between cycles
+# - Up to 8-hour total window (hard cap)
+# - EARLY STOP if temp >= 60°F for 5 minutes (full stop, no lockout)
+# - If 8-hour window completes -> OFF and LOCKOUT for 10 hours
+#
+# Always active / Layer 0:
+# - Ignores Presence (Home/Away)
+# - Ignores Power mode (CHEAP/STRICT)
+# - Solar/battery awareness later (not implemented here)
+#
+# Restart safety:
+# - Tracks on_since
+# - Safety cutoff if ON > 2h 5m (prevents stuck-ON after restarts)
+#
+# the goal is to prevent the External laundry room that contains the water heater and other water lines from freezing during periods of extreme cold
+#############################################
+
+input_boolean:
+  l0_laundry_enabled:
+    name: "L0 Laundry Freeze Enabled"
+    icon: mdi:snowflake-alert
+    initial: "on"
+
+input_datetime:
+  l0_laundry_window_started:
+    name: "L0 Laundry Window Started"
+    has_date: true
+    has_time: true
+  l0_laundry_lockout_until:
+    name: "L0 Laundry Lockout Until"
+    has_date: true
+    has_time: true
+  l0_laundry_on_since:
+    name: "L0 Laundry Heater On Since"
+    has_date: true
+    has_time: true
+
+timer:
+  l0_laundry_on_2h:
+    name: "L0 Laundry ON Cycle (2h)"
+    duration: "02:00:00"
+  l0_laundry_rest_1h:
+    name: "L0 Laundry REST (1h)"
+    duration: "01:00:00"
+
+template:
+  - binary_sensor:
+      - name: "L0 Laundry Cold Needed"
+        unique_id: l0_laundry_cold_needed
+        icon: mdi:thermometer-low
+        state: >
+          {{ states('sensor.shelly_wave_h_t_sensor_lr_air_temperature')|float(999) < 50.5 }}
+
+      - name: "L0 Laundry Warm Enough"
+        unique_id: l0_laundry_warm_enough
+        icon: mdi:thermometer-high
+        state: >
+          {{ states('sensor.shelly_wave_h_t_sensor_lr_air_temperature')|float(-999) >= 60 }}
+
+      - name: "L0 Laundry Lockout Active"
+        unique_id: l0_laundry_lockout_active
+        icon: mdi:lock-clock
+        state: >
+          {% set s = states('input_datetime.l0_laundry_lockout_until') %}
+          {% if s in ['unknown','unavailable','none','', None] %}
+            false
+          {% else %}
+            {% set ts = as_timestamp(s) %}
+            {{ ts is not none and as_timestamp(now()) < ts }}
+          {% endif %}
+
+  - sensor:
+      - name: "L0 Laundry Window Hours Elapsed"
+        unique_id: l0_laundry_window_hours_elapsed
+        unit_of_measurement: "h"
+        state: >
+          {% set s = states('input_datetime.l0_laundry_window_started') %}
+          {% if s in ['unknown','unavailable','none','', None] %}
+            0
+          {% else %}
+            {% set ts = as_timestamp(s) %}
+            {% if ts is none or ts <= 1 %}
+              0
+            {% else %}
+              {{ ((as_timestamp(now()) - ts) / 3600) | round(3) }}
+            {% endif %}
+          {% endif %}
+
+automation:
+
+  ########################################################
+  # Track ON timestamp (restart-safe)
+  ########################################################
+  - id: l0_laundry_track_on_since_on
+    alias: "L0 Laundry - track on_since when heater turns ON"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: switch.eletric_fence
+        to: "on"
+    action:
+      - service: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.l0_laundry_on_since
+        data:
+          datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+
+  - id: l0_laundry_clear_on_since_off
+    alias: "L0 Laundry - clear on_since when heater turns OFF"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: switch.eletric_fence
+        to: "off"
+    action:
+      - service: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.l0_laundry_on_since
+        data:
+          datetime: "1970-01-01 00:00:00"
+
+  ########################################################
+  # SAFETY: if stuck ON too long (~2h 5m), force OFF
+  # If still within window, we drop into REST (1h) to keep pattern.
+  ########################################################
+  - id: l0_laundry_safety_max_on_time_cutoff
+    alias: "L0 Laundry SAFETY - max ON time cutoff"
+    mode: single
+    trigger:
+      - platform: time_pattern
+        minutes: "/5"
+      - platform: homeassistant
+        event: start
+    condition:
+      - condition: state
+        entity_id: switch.eletric_fence
+        state: "on"
+      - condition: template
+        value_template: >
+          {% set s = states('input_datetime.l0_laundry_on_since') %}
+          {% if s in ['unknown','unavailable','none','', None] %}
+            true
+          {% else %}
+            {% set ts = as_timestamp(s) %}
+            {{ ts is none or (as_timestamp(now()) - ts) > (2*60*60 + 5*60) }}
+          {% endif %}
+    action:
+      - service: switch.turn_off
+        target:
+          entity_id: switch.eletric_fence
+      - service: timer.cancel
+        target:
+          entity_id: timer.l0_laundry_on_2h
+      - condition: template
+        value_template: >
+          {{ states('sensor.l0_laundry_window_hours_elapsed')|float(0) > 0
+             and states('sensor.l0_laundry_window_hours_elapsed')|float(0) < 8
+             and states('sensor.shelly_wave_h_t_sensor_lr_air_temperature')|float(999) < 60 }}
+      - service: timer.start
+        target:
+          entity_id: timer.l0_laundry_rest_1h
+
+  ########################################################
+  # START WINDOW: if <50.5F for 10m (and not locked out)
+  # - Starts a new 8h window (sets window_started = now)
+  # - Turns heater ON + starts 2h timer
+  ########################################################
+  - id: l0_laundry_start_window_when_cold
+    alias: "L0 Laundry - Start window when <50.5F for 10m"
+    mode: single
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.shelly_wave_h_t_sensor_lr_air_temperature
+        below: 50.5
+        for: "00:10:00"
+      - platform: homeassistant
+        event: start
+    condition:
+      - condition: state
+        entity_id: input_boolean.l0_laundry_enabled
+        state: "on"
+      - condition: state
+        entity_id: binary_sensor.l0_laundry_lockout_active
+        state: "off"
+      - condition: template
+        value_template: >
+          {{ states('sensor.shelly_wave_h_t_sensor_lr_air_temperature')|float(999) < 50.5 }}
+    action:
+      # Start (or refresh) window start time ONLY if no active window
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: >
+                  {{ states('sensor.l0_laundry_window_hours_elapsed')|float(0) <= 0 }}
+            sequence:
+              - service: input_datetime.set_datetime
+                target:
+                  entity_id: input_datetime.l0_laundry_window_started
+                data:
+                  datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+      # Heater ON + start 2h ON cycle
+      - service: switch.turn_on
+        target:
+          entity_id: switch.eletric_fence
+      - service: timer.start
+        target:
+          entity_id: timer.l0_laundry_on_2h
+      - service: timer.cancel
+        target:
+          entity_id: timer.l0_laundry_rest_1h
+
+  ########################################################
+  # EARLY STOP: if temp >= 60F for 5m -> full stop
+  # (No lockout; just stop and clear window)
+  ########################################################
+  - id: l0_laundry_stop_when_warm
+    alias: "L0 Laundry - Stop when >=60F for 5m"
+    mode: single
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.shelly_wave_h_t_sensor_lr_air_temperature
+        above: 59.999
+        for: "00:05:00"
+      - platform: homeassistant
+        event: start
+    condition:
+      - condition: state
+        entity_id: input_boolean.l0_laundry_enabled
+        state: "on"
+      - condition: template
+        value_template: >
+          {{ states('sensor.shelly_wave_h_t_sensor_lr_air_temperature')|float(-999) >= 60 }}
+    action:
+      - service: switch.turn_off
+        target:
+          entity_id: switch.eletric_fence
+      - service: timer.cancel
+        target:
+          entity_id:
+            - timer.l0_laundry_on_2h
+            - timer.l0_laundry_rest_1h
+      # Clear window + lockout (warm stop should not lock out)
+      - service: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.l0_laundry_window_started
+        data:
+          datetime: "1970-01-01 00:00:00"
+      - service: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.l0_laundry_lockout_until
+        data:
+          datetime: "1970-01-01 00:00:00"
+
+  ########################################################
+  # ON cycle finished -> REST (only if still inside 8h window
+  # and not warm enough)
+  ########################################################
+  - id: l0_laundry_on_cycle_finished
+    alias: "L0 Laundry - ON cycle finished -> REST (if allowed)"
+    mode: single
+    trigger:
+      - platform: event
+        event_type: timer.finished
+        event_data:
+          entity_id: timer.l0_laundry_on_2h
+    condition:
+      - condition: state
+        entity_id: input_boolean.l0_laundry_enabled
+        state: "on"
+      - condition: template
+        value_template: >
+          {{ states('sensor.l0_laundry_window_hours_elapsed')|float(0) > 0
+             and states('sensor.l0_laundry_window_hours_elapsed')|float(0) < 8
+             and states('sensor.shelly_wave_h_t_sensor_lr_air_temperature')|float(999) < 60 }}
+    action:
+      - service: switch.turn_off
+        target:
+          entity_id: switch.eletric_fence
+      - service: timer.start
+        target:
+          entity_id: timer.l0_laundry_rest_1h
+
+  ########################################################
+  # REST finished -> turn back ON only if still cold
+  # AND still inside the 8h window
+  ########################################################
+  - id: l0_laundry_rest_finished
+    alias: "L0 Laundry - REST finished -> ON (if still cold)"
+    mode: single
+    trigger:
+      - platform: event
+        event_type: timer.finished
+        event_data:
+          entity_id: timer.l0_laundry_rest_1h
+    condition:
+      - condition: state
+        entity_id: input_boolean.l0_laundry_enabled
+        state: "on"
+      - condition: state
+        entity_id: binary_sensor.l0_laundry_lockout_active
+        state: "off"
+      - condition: template
+        value_template: >
+          {{ states('sensor.l0_laundry_window_hours_elapsed')|float(0) > 0
+             and states('sensor.l0_laundry_window_hours_elapsed')|float(0) < 8
+             and states('sensor.shelly_wave_h_t_sensor_lr_air_temperature')|float(999) < 50.5 }}
+    action:
+      - service: switch.turn_on
+        target:
+          entity_id: switch.eletric_fence
+      - service: timer.start
+        target:
+          entity_id: timer.l0_laundry_on_2h
+
+  ########################################################
+  # WINDOW CAP: if window reaches 8 hours -> force OFF
+  # then lockout for 10 hours, clear window.
+  ########################################################
+  - id: l0_laundry_window_cap_and_lockout
+    alias: "L0 Laundry - 8h window cap -> OFF + 10h lockout"
+    mode: single
+    trigger:
+      - platform: time_pattern
+        minutes: "/5"
+      - platform: homeassistant
+        event: start
+    condition:
+      - condition: state
+        entity_id: input_boolean.l0_laundry_enabled
+        state: "on"
+      - condition: template
+        value_template: >
+          {{ states('sensor.l0_laundry_window_hours_elapsed')|float(0) >= 8 }}
+    action:
+      - service: switch.turn_off
+        target:
+          entity_id: switch.eletric_fence
+      - service: timer.cancel
+        target:
+          entity_id:
+            - timer.l0_laundry_on_2h
+            - timer.l0_laundry_rest_1h
+
+      # Set 10-hour lockout
+      - service: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.l0_laundry_lockout_until
+        data:
+          datetime: "{{ (now() + timedelta(hours=10)).strftime('%Y-%m-%d %H:%M:%S') }}"
+
+      # Clear window start
+      - service: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.l0_laundry_window_started
+        data:
+          datetime: "1970-01-01 00:00:00"
+
+  ########################################################
+  # If you disable the toggle -> hard stop immediately
+  ########################################################
+  - id: l0_laundry_disabled_hard_stop
+    alias: "L0 Laundry - Disabled toggle hard stop"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: input_boolean.l0_laundry_enabled
+        to: "off"
+    action:
+      - service: switch.turn_off
+        target:
+          entity_id: switch.eletric_fence
+      - service: timer.cancel
+        target:
+          entity_id:
+            - timer.l0_laundry_on_2h
+            - timer.l0_laundry_rest_1h
