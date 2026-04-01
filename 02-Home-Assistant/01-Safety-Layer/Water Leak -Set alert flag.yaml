@@ -1,0 +1,16 @@
+alias: Water Leak – set alert flag
+description: ""
+triggers:
+  - entity_id: binary_sensor.kitchen_bath_leak_sensor_water_leak_detected
+    from: "off"
+    to: "on"
+    trigger: state
+actions:
+  - target:
+      entity_id: input_boolean.water_leak_status
+    action: input_boolean.turn_on
+  - data:
+      title: Water Leak Detected
+      message: Leak detected by Kitchen/Bath sensor.
+    action: persistent_notification.create
+mode: single
