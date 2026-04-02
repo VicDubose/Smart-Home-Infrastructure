@@ -1,1 +1,198 @@
 
+#############################################
+# packages/den_simple_logic.yaml
+#
+# DEN: SIMPLE AC ON/OFF
+# - Press WOL button -> TV wakes -> AC ON
+# - AC stays ON while TV is ON
+# - When TV goes OFF -> start 30m idle timer
+# - If TV turns back ON -> cancel idle timer (keep AC ON)
+#
+# + PA FIX: PA error occurs when zones conflict heating vs cooling and is the main reason Auto isnt used
+# - Den mirrors Living Room HVAC MODE (heat/cool) while Den is active
+# - If Living Room mode changes while TV is still ON, Den updates too
+#############################################
+
+input_button:
+  den_tv_wol_request:
+    name: "Den TV WOL Request"
+
+timer:
+  den_tv_idle_off:
+    name: Den TV Idle Off (30m)
+    duration: "00:30:00"
+
+template:
+  - binary_sensor:
+      - name: "Den TV Online"
+        unique_id: den_tv_online
+        state: >
+          {{ states('remote.samsung_tu7000_50_tv_un50tu7000fxza') == 'on' }}
+
+  # Mirror Living Room HVAC MODE so Den always matches (prevents PA)
+  - sensor:
+      - name: "Den Desired HVAC Mode"
+        unique_id: den_desired_hvac_mode
+        state: >
+          {# Prefer the hvac_mode attribute if present; fall back to state #}
+          {% set m = state_attr('climate.air_conditioner_2','hvac_mode') %}
+          {% if m is none %}
+            {% set m = states('climate.air_conditioner_2') %}
+          {% endif %}
+
+          {# You said you’re using Heat + Cool; keep it tight to avoid surprises #}
+          {% if m in ['heat','cool'] %}
+            {{ m }}
+          {% else %}
+            cool
+          {% endif %}
+
+script:
+  den_wol_then_ac_on:
+    alias: "Den: WOL TV, confirm online, then AC ON"
+    mode: restart
+    fields:
+      tv_mac:
+        description: "TV MAC address for WOL"
+        example: "2c:99:75:3a:f1:ee"
+    sequence:
+      - condition: state
+        entity_id: binary_sensor.house_occupied_stable
+        state: "on"
+
+      - service: wake_on_lan.send_magic_packet
+        data:
+          mac: "{{ tv_mac }}"
+
+      # wait briefly for TV online, but don't fail if flaky
+      - wait_template: >
+          {{ is_state('binary_sensor.den_tv_online','on') }}
+        timeout: "00:02:00"
+        continue_on_timeout: true
+
+      # AC ON + cancel any pending "idle off" countdown
+      # CHANGED: use mirrored mode instead of hardcoded cool
+      - service: climate.set_hvac_mode
+        target:
+          entity_id: climate.air_conditioner_4
+        data:
+          hvac_mode: "{{ states('sensor.den_desired_hvac_mode') }}"
+
+      - service: timer.cancel
+        target:
+          entity_id: timer.den_tv_idle_off
+
+automation:
+  ########################################################
+  # ON: Press helper button -> WOL + AC ON
+  ########################################################
+  - id: den_ac_on_from_stable_wol_request
+    alias: "Den AC - ON when Den TV WOL Request pressed (stable)"
+    mode: restart
+    trigger:
+      - platform: event
+        event_type: input_button.press
+        event_data:
+          entity_id: input_button.den_tv_wol_request
+    action:
+      - service: script.den_wol_then_ac_on
+        data:
+          tv_mac: "2c:99:75:3a:f1:ee"
+
+  ########################################################
+  # TV ON: cancel idle timer + ensure AC is ON (mirrored mode)
+  ########################################################
+  - id: den_ac_keep_on_while_tv_on
+    alias: "Den AC - Keep ON while TV is ON"
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.den_tv_online
+        to: "on"
+    condition:
+      - condition: state
+        entity_id: binary_sensor.house_occupied_stable
+        state: "on"
+    action:
+      - service: timer.cancel
+        target:
+          entity_id: timer.den_tv_idle_off
+
+      - service: climate.set_hvac_mode
+        target:
+          entity_id: climate.air_conditioner_4
+        data:
+          hvac_mode: "{{ states('sensor.den_desired_hvac_mode') }}"
+
+  ########################################################
+  # NEW: Living Room MODE changes while Den is active -> update Den mode
+  # (This is the missing piece that makes mirroring actually work live.)
+  ########################################################
+  - id: den_ac_mirror_living_room_mode_while_active
+    alias: "Den AC - Mirror Living Room mode while TV is ON"
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id: climate.air_conditioner_2
+    condition:
+      - condition: state
+        entity_id: binary_sensor.house_occupied_stable
+        state: "on"
+      - condition: state
+        entity_id: binary_sensor.den_tv_online
+        state: "on"
+    action:
+      - service: climate.set_hvac_mode
+        target:
+          entity_id: climate.air_conditioner_4
+        data:
+          hvac_mode: "{{ states('sensor.den_desired_hvac_mode') }}"
+
+  ########################################################
+  # TV OFF: start 30m countdown to turn AC OFF
+  ########################################################
+  - id: den_ac_start_idle_timer_when_tv_off
+    alias: "Den AC - Start 30m idle timer when TV turns OFF"
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.den_tv_online
+        to: "off"
+    action:
+      - service: timer.start
+        target:
+          entity_id: timer.den_tv_idle_off
+
+  ########################################################
+  # OFF: when idle timer finishes (meaning TV stayed OFF 30m)
+  ########################################################
+  - id: den_ac_off_after_idle_timer
+    alias: "Den AC - OFF when idle timer finishes"
+    mode: single
+    trigger:
+      - platform: event
+        event_type: timer.finished
+        event_data:
+          entity_id: timer.den_tv_idle_off
+    action:
+      - service: climate.turn_off
+        target:
+          entity_id: climate.air_conditioner_4
+
+  ########################################################
+  # OFF: immediately when house goes away
+  ########################################################
+  - id: den_ac_off_when_away
+    alias: "Den AC - OFF when house goes AWAY"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.house_occupied_stable
+        to: "off"
+    action:
+      - service: climate.turn_off
+        target:
+          entity_id: climate.air_conditioner_4
+      - service: timer.cancel
+        target:
+          entity_id: timer.den_tv_idle_off
