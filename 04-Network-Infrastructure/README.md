@@ -93,6 +93,7 @@ ASCII DIAGRAM (real cabling)
 - Provides wired connectivity
 - Uplinked to mesh node (not primary router)
 - Fast Ethernet ports used for low-bandwidth devices
+- one foot standard utilized effectively across the network with color associated importance
 
 ---
 
