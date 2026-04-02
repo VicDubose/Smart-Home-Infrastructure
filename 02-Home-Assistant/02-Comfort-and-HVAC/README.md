@@ -100,6 +100,8 @@ Each indoor head is exposed into Home Assistant through the **Tuya integration**
 <p align="center">
   <img src="../Screenshots/IMG_1557.png" width="450"/>
   <img src="../Screenshots/IMG_1511.png" width="450"/>
+  <img src="../Screenshots/IMG_8578.png" width="150"/>
+  <img src="../Screenshots/Screenshot 2026-04-02 055137.png" width="550"/>
 </p>
 
 This integration layer provides the control path between Home Assistant and the Della HVAC equipment.
