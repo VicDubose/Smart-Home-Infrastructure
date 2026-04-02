@@ -1,0 +1,161 @@
+###################################################################################
+# PACKAGE: Washer SmartThings Admin
+# Depends on:
+# - binary_sensor.laundry_savings_window_active (from laundry_time_windows.yaml)
+#
+# Your confirmed entities:
+# - select.washer options: stop / run / pause
+# - sensor.washer_machine_state states: run / stop / pause
+#
+# Behavior:
+# - Manual override switch allows off-window runs
+# - Off-window + override OFF: after 15s, pause + AH alert pulse
+# - Finished urgent: 3 min after real finish; stays ON 10 min or until restart ✅
+################################################################################
+
+input_boolean:
+  laundry_offwindow_override:
+    name: Laundry Override (Allow Outside Window)
+    icon: mdi:toggle-switch
+
+  washer_intervened:
+    name: Washer Intervened (Oops-catch)
+    icon: mdi:shield-alert
+
+  # Expose these to HomeKit Bridge for Apple Home notifications
+  ah_alert_washer_offwindow_started:
+    name: AH Alert - Washer Started Outside Window
+    icon: mdi:alert
+
+  ah_alert_washer_finished_urgent:
+    name: AH Alert - Washer Finished Urgent
+    icon: mdi:bell-alert
+
+input_datetime:
+  washer_last_start:
+    name: Washer Last Start Timestamp
+    has_date: true
+    has_time: true
+
+script:
+  pulse_ah_boolean_10s:
+    alias: Pulse AH boolean (10s)
+    mode: queued
+    fields:
+      entity_id:
+        description: "input_boolean to pulse"
+    sequence:
+      - service: input_boolean.turn_on
+        target:
+          entity_id: "{{ entity_id }}"
+      - delay: "00:00:10"
+      - service: input_boolean.turn_off
+        target:
+          entity_id: "{{ entity_id }}"
+
+automation:
+
+  # Record a real start timestamp after 5s of running (debounce)
+  - alias: Washer - Record Start Timestamp
+    id: washer_record_start_timestamp
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: sensor.washer_machine_state
+        to: "run"
+        for: "00:00:05"
+    action:
+      - service: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.washer_last_start
+        data:
+          datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.washer_intervened
+
+  # Oops-catch: outside savings window + override OFF → wait 15s → pause
+  - alias: Washer - Oops Catch Outside Window (15s)
+    id: washer_oops_catch_outside_window_15s
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: sensor.washer_machine_state
+        to: "run"
+        for: "00:00:05"
+    condition:
+      - condition: state
+        entity_id: binary_sensor.laundry_savings_window_active
+        state: "off"
+      - condition: state
+        entity_id: input_boolean.laundry_offwindow_override
+        state: "off"
+    action:
+      - delay: "00:00:15"
+      - condition: state
+        entity_id: sensor.washer_machine_state
+        state: "run"
+
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.washer_intervened
+
+      # Apple Home alert: started outside window (pulse so it can re-trigger)
+      - service: script.pulse_ah_boolean_10s
+        data:
+          entity_id: input_boolean.ah_alert_washer_offwindow_started
+
+      # Pause washer (confirmed select options are lowercase)
+      - service: select.select_option
+        target:
+          entity_id: select.washer
+        data:
+          option: "pause"
+
+  # Finished urgent flag:
+  # - only if we did NOT intervene
+  # - only if it ran >= 5 minutes
+  # - waits 3 minutes after stop
+  # - turns ON ah_alert_washer_finished_urgent
+  # - stays ON for 10 minutes OR until washer starts again ✅ UPDATED
+  - alias: AH - Washer Finished Urgent Flag (10 min or until restart)
+    id: ah_washer_finished_urgent_10min_or_restart
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id: sensor.washer_machine_state
+        from: "run"
+        to: "stop"
+    condition:
+      - condition: state
+        entity_id: input_boolean.washer_intervened
+        state: "off"
+      - condition: template
+        value_template: >-
+          {% set s = states('input_datetime.washer_last_start') %}
+          {% if s in ['unknown','unavailable','none',''] %}
+            false
+          {% else %}
+            {{ (as_timestamp(now()) - as_timestamp(s)) >= 300 }}
+          {% endif %}
+    action:
+      - delay: "00:03:00"
+      - condition: state
+        entity_id: sensor.washer_machine_state
+        state: "stop"
+
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.ah_alert_washer_finished_urgent
+
+      # Turn it back off after 10 minutes, OR immediately if washer restarts
+      - wait_for_trigger:
+          - platform: state
+            entity_id: sensor.washer_machine_state
+            to: "run"
+        timeout: "00:10:00"
+        continue_on_timeout: true
+
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.ah_alert_washer_finished_urgent
