@@ -56,7 +56,8 @@ This placement is intentional:
 ### Temperature Sensors — Physical Size Reference
 
 <p align="center">
-  <img src="../Screenshots/IMG_6423.jpeg" width="400"/>
+  <img src="../Screenshots/IMG_6423.jpeg" width="450"/>
+  <img src="../Screenshots/IMG_7729.jpeg" width="450"/>
 </p>
 
 Shelly Wave H&T sensors are used for environmental monitoring.
