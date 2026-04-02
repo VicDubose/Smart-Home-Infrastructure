@@ -1,0 +1,69 @@
+#############################################
+# LAYER 3 — STEP 2: POWERWALL POLICY
+#
+# Purpose:
+# This package defines Tesla Powerwall behavior above the
+# raw Alabama Power rate windows from Step 1.
+#
+# References Step 1:
+# - binary_sensor.ap_ev_night_discount_window
+# - binary_sensor.ap_strict_shield_active
+# - sensor.ap_current_power_mode
+#
+# Step 2 scope only:
+# 1. Storm override behavior
+# 2. Battery fill/reset days
+# 3. Whether the Powerwall should carry the home
+# 4. Battery floor protection
+#
+# NOTE:
+# This package defines policy entities only.
+# It does not directly control devices yet.
+# Device actions and automations should be added later.
+#############################################
+
+template:
+  - binary_sensor:
+
+      ########################################################
+      # Layer3 Storm Override Active
+      ########################################################
+      - name: "Layer3 Storm Override Active"
+        unique_id: layer3_storm_override_active
+        state: >
+          {{ is_state('switch.my_home_storm_watch', 'on') }}
+
+      ########################################################
+      # Layer3 Battery Fill Day
+      ########################################################
+      - name: "Layer3 Battery Fill Day"
+        unique_id: layer3_battery_fill_day
+        state: >
+          {% set m = now().month %}
+          {% set d = now().day %}
+          {% set wd = now().weekday() %}
+
+          {% set new_year = (m == 1 and d == 1) %}
+          {% set labor_day = (m == 9 and wd == 0 and d <= 7) %}
+          {% set thanksgiving = (m == 11 and wd == 3 and d >= 22 and d <= 28) %}
+          {% set christmas = (m == 12 and d == 25) %}
+
+          {{ labor_day or thanksgiving or christmas or new_year }}
+
+      ########################################################
+      # Layer3 Battery Should Carry Home
+      ########################################################
+      - name: "Layer3 Battery Should Carry Home"
+        unique_id: layer3_battery_should_carry_home
+        state: >
+          {% set reserve = states('number.my_home_backup_reserve') | float(20) %}
+          {% set battery_state = states('sensor.my_home_percentage_charged') %}
+          {% set battery = battery_state | float(0) %}
+
+          {{
+            battery_state not in ['unknown', 'unavailable', 'none']
+            and not is_state('binary_sensor.ap_ev_night_discount_window', 'on')
+            and not is_state('binary_sensor.layer3_storm_override_active', 'on')
+            and not is_state('binary_sensor.layer3_battery_fill_day', 'on')
+            and battery > (reserve + 1)
+          }}
