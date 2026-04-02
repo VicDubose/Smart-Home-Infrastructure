@@ -1,1 +1,81 @@
 
+#############################################
+# LAYER 3 — STEP 5: TESLA CHARGE PERMISSION
+#
+# Purpose:
+# Determine whether the Tesla Model 3 is allowed
+# to charge based on Layer 3 Powerwall policy.
+#
+# References:
+# - binary_sensor.ap_ev_night_discount_window
+# - binary_sensor.layer3_storm_override_active
+# - binary_sensor.layer3_battery_fill_day
+# - binary_sensor.layer3_battery_should_carry_home
+#
+# Tesla entities:
+# - switch.shadow_charge
+# - binary_sensor.shadow_located_at_home
+# - sensor.shadow_battery_level
+#
+# NOTE:
+# This is policy only.
+# It does not directly start or stop charging yet.
+#############################################
+
+template:
+  - binary_sensor:
+
+      ########################################################
+      # Layer3 Tesla Emergency Charge Needed
+      #
+      # TRUE when the vehicle battery is critically low
+      # and should be allowed to charge regardless of
+      # the normal cheap-window schedule.
+      #
+      # Policy:
+      # - turn ON below 10%
+      # - stay ON until battery reaches 30%
+      #
+      # This uses hysteresis so the logic does not flap.
+      ########################################################
+      - name: "Layer3 Tesla Emergency Charge Needed"
+        unique_id: layer3_tesla_emergency_charge_needed
+        state: >
+          {% set batt = states('sensor.shadow_battery_level') | float(0) %}
+          {% set currently_on = is_state('binary_sensor.layer3_tesla_emergency_charge_needed', 'on') %}
+
+          {% if currently_on %}
+            {{ batt < 30 }}
+          {% else %}
+            {{ batt < 10 }}
+          {% endif %}
+
+      ########################################################
+      # Layer3 Tesla Charge Allowed
+      #
+      # TRUE when the Tesla is allowed to charge.
+      #
+      # Logic:
+      # - Car must be home
+      # - OFF during storm override
+      # - ON during emergency low-battery override
+      # - Otherwise ON during cheap window
+      #
+      # Fill days remain blocked for now
+      # until full Layer 3 deployment is active.
+      ########################################################
+      - name: "Layer3 Tesla Charge Allowed"
+        unique_id: layer3_tesla_charge_allowed
+        state: >
+          {{
+            is_state('binary_sensor.shadow_located_at_home', 'on')
+            and not is_state('binary_sensor.layer3_storm_override_active', 'on')
+            and (
+              is_state('binary_sensor.layer3_tesla_emergency_charge_needed', 'on')
+              or (
+                is_state('binary_sensor.ap_ev_night_discount_window', 'on')
+                and not is_state('binary_sensor.layer3_battery_fill_day', 'on')
+                and not is_state('binary_sensor.layer3_battery_should_carry_home', 'on')
+              )
+            )
+          }}
