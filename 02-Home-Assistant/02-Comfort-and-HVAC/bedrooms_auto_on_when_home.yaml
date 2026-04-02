@@ -1,1 +1,81 @@
 
+#############################################
+# packages/bedrooms_auto_on_when_home.yaml
+#
+# A2: Auto-ON bedrooms when Home returns
+# - Trigger: binary_sensor.house_occupied_stable -> on
+# - If unit is OFF, turn it on and set target to current (ramped) target
+# - Season aware: Summer->cool, Winter->heat, otherwise choose by delta
+#############################################
+
+automation:
+  - id: bedrooms_auto_on_when_home_returns
+    alias: "Bedrooms - Auto ON when Home returns (A2)"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.house_occupied_stable
+        to: "on"
+
+    action:
+      # --- Bedroom 2 ---
+      - choose:
+          - conditions: "{{ is_state('climate.air_conditioner', 'off') }}"
+            sequence:
+              - choose:
+                  - conditions: "{{ is_state('binary_sensor.hvac_season_summer','on') }}"
+                    sequence:
+                      - service: climate.set_hvac_mode
+                        target: { entity_id: climate.air_conditioner }
+                        data: { hvac_mode: cool }
+                  - conditions: "{{ is_state('binary_sensor.hvac_season_winter','on') }}"
+                    sequence:
+                      - service: climate.set_hvac_mode
+                        target: { entity_id: climate.air_conditioner }
+                        data: { hvac_mode: heat }
+                  - conditions: "{{ states('sensor.bed2_delta_to_target_f')|float(0) > 0 }}"
+                    sequence:
+                      - service: climate.set_hvac_mode
+                        target: { entity_id: climate.air_conditioner }
+                        data: { hvac_mode: cool }
+                  - conditions: []
+                    sequence:
+                      - service: climate.set_hvac_mode
+                        target: { entity_id: climate.air_conditioner }
+                        data: { hvac_mode: heat }
+
+              - service: climate.set_temperature
+                target: { entity_id: climate.air_conditioner }
+                data:
+                  temperature: "{{ states('sensor.bed2_target_f')|float(66) }}"
+
+      # --- Bedroom 1 (MB) ---
+      - choose:
+          - conditions: "{{ is_state('climate.air_conditioner_3', 'off') }}"
+            sequence:
+              - choose:
+                  - conditions: "{{ is_state('binary_sensor.hvac_season_summer','on') }}"
+                    sequence:
+                      - service: climate.set_hvac_mode
+                        target: { entity_id: climate.air_conditioner_3 }
+                        data: { hvac_mode: cool }
+                  - conditions: "{{ is_state('binary_sensor.hvac_season_winter','on') }}"
+                    sequence:
+                      - service: climate.set_hvac_mode
+                        target: { entity_id: climate.air_conditioner_3 }
+                        data: { hvac_mode: heat }
+                  - conditions: "{{ states('sensor.bed1_delta_to_target_f')|float(0) > 0 }}"
+                    sequence:
+                      - service: climate.set_hvac_mode
+                        target: { entity_id: climate.air_conditioner_3 }
+                        data: { hvac_mode: cool }
+                  - conditions: []
+                    sequence:
+                      - service: climate.set_hvac_mode
+                        target: { entity_id: climate.air_conditioner_3 }
+                        data: { hvac_mode: heat }
+
+              - service: climate.set_temperature
+                target: { entity_id: climate.air_conditioner_3 }
+                data:
+                  temperature: "{{ states('sensor.bed1_target_f')|float(66) }}"
