@@ -1,1 +1,101 @@
 
+#############################################
+# LAYER 3 — STEP 7: SOLAR SURPLUS LOGIC
+#
+# Purpose:
+# Determine when the Tesla Model 3 may charge from
+# true solar surplus after the Powerwall is full.
+#
+# References:
+# - sensor.my_home_percentage_charged
+# - sensor.my_home_solar_generated
+# - binary_sensor.shadow_located_at_home
+# - binary_sensor.layer3_storm_override_active
+# - binary_sensor.layer3_battery_fill_day
+#
+# NOTE:
+# This is policy only.
+# It does not directly start charging.
+#############################################
+
+template:
+  - binary_sensor:
+
+      ########################################################
+      # Layer3 Powerwall Full
+      #
+      # TRUE when the Powerwall is fully charged.
+      ########################################################
+      - name: "Layer3 Powerwall Full"
+        unique_id: layer3_powerwall_full
+        state: >
+          {% set batt = states('sensor.my_home_percentage_charged') | float(0) %}
+          {{ batt >= 100 }}
+
+      ########################################################
+      # Layer3 Solar Producing
+      #
+      # TRUE when solar is actively producing enough power
+      # to matter. Threshold can be tuned later.
+      ########################################################
+      - name: "Layer3 Solar Producing"
+        unique_id: layer3_solar_producing
+        state: >
+          {% set solar = states('sensor.my_home_solar_generated') | float(0) %}
+          {{ solar > 0.5 }}
+
+automation:
+  - id: layer3_powerwall_full_for_10_minutes
+    alias: "Layer3 Powerwall Full For 10 Minutes"
+    description: >
+      Tracks when the Powerwall has remained full long enough
+      to allow solar-surplus charging decisions.
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.layer3_powerwall_full
+        to: "on"
+        for: "00:10:00"
+      - platform: state
+        entity_id: binary_sensor.layer3_powerwall_full
+        to: "off"
+    action:
+      - choose:
+          - conditions:
+              - condition: state
+                entity_id: binary_sensor.layer3_powerwall_full
+                state: "on"
+            sequence:
+              - service: input_boolean.turn_on
+                target:
+                  entity_id: input_boolean.layer3_powerwall_full_stable
+        default:
+          - service: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.layer3_powerwall_full_stable
+    mode: single
+
+template:
+  - binary_sensor:
+
+      ########################################################
+      # Layer3 Tesla Solar Surplus Charge Allowed
+      #
+      # TRUE when the Tesla may charge from solar surplus.
+      #
+      # Logic:
+      # - Car must be home
+      # - Storm override must be OFF
+      # - Battery fill day must be OFF
+      # - Powerwall must be full for 10 minutes
+      # - Solar must still be producing
+      ########################################################
+      - name: "Layer3 Tesla Solar Surplus Charge Allowed"
+        unique_id: layer3_tesla_solar_surplus_charge_allowed
+        state: >
+          {{
+            is_state('binary_sensor.shadow_located_at_home', 'on')
+            and not is_state('binary_sensor.layer3_storm_override_active', 'on')
+            and not is_state('binary_sensor.layer3_battery_fill_day', 'on')
+            and is_state('input_boolean.layer3_powerwall_full_stable', 'on')
+            and is_state('binary_sensor.layer3_solar_producing', 'on')
+          }}
