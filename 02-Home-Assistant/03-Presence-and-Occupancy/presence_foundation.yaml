@@ -1,1 +1,47 @@
 
+#############################################
+# packages/presence_foundation.yaml
+#
+# Source of truth:
+# - alarm_control_panel.eufybase
+#
+# Philosophy:
+# - armed_away -> NOT occupied
+# - armed_home / night / disarmed -> occupied
+# - unknown/unavailable -> FAIL OPEN (occupied)
+#
+# Compatibility:
+# - Also provides binary_sensor.bedrooms_house_occupied_stable
+#   (so old dashboards / cards don't break)
+#############################################
+
+template:
+  - binary_sensor:
+
+      # -----------------------------
+      # Primary: House Occupied Stable
+      # -----------------------------
+      - name: "House Occupied Stable"
+        unique_id: house_occupied_stable
+        device_class: presence
+        state: >
+          {% set mode = states('alarm_control_panel.eufybase') | lower %}
+          {% if mode == 'armed_away' %}
+            false
+          {% elif mode in ['armed_home','disarmed','night','home'] %}
+            true
+          {% elif mode in ['unknown','unavailable','none',''] %}
+            true
+          {% else %}
+            true
+          {% endif %}
+
+      # -----------------------------------------
+      # Alias: Bedrooms House Occupied Stable
+      # (keeps old entity_id alive)
+      # -----------------------------------------
+      - name: "Bedrooms House Occupied Stable"
+        unique_id: bedrooms_house_occupied_stable
+        device_class: presence
+        state: >
+          {{ is_state('binary_sensor.house_occupied_stable', 'on') }}
