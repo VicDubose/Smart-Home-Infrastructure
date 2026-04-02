@@ -1,1 +1,142 @@
 
+#############################################
+# packages/hvac_mode_compliance_watchdog.yaml
+#
+# HVAC MODE COMPLIANCE WATCHDOG
+# - Living Room is the "mode authority" (heat/cool)
+# - When LR mode changes, update other zones ONLY if they are ON (not off)
+# - If a zone turns on later, enforce LR mode
+# - Periodic sweep as safety net
+#
+# Authority:
+#   Living Room: climate.air_conditioner_2
+#
+# Mirrors (ONLY when already ON):
+#   Bedroom 1: climate.air_conditioner_3
+#   Bedroom 2: climate.air_conditioner
+#   Den:       climate.air_conditioner_4
+#############################################
+
+template:
+  - sensor:
+      - name: "HVAC Desired Mode (Living Room)"
+        unique_id: hvac_desired_mode_living_room
+        state: >
+          {% set s = states('climate.air_conditioner_2') %}
+          {% if s in ['heat','cool'] %}
+            {{ s }}
+          {% else %}
+            unknown
+          {% endif %}
+
+automation:
+
+  ########################################################
+  # 1) LR mode change -> push to zones that are ON
+  ########################################################
+  - id: hvac_mode_watchdog_sync_zones_when_lr_mode_changes
+    alias: "HVAC Mode Watchdog - Sync zones when LR mode changes"
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id: climate.air_conditioner_2
+        to:
+          - "heat"
+          - "cool"
+    condition:
+      - condition: template
+        value_template: "{{ states('sensor.hvac_desired_mode_living_room') in ['heat','cool'] }}"
+    action:
+      - variables:
+          desired: "{{ states('sensor.hvac_desired_mode_living_room') }}"
+          targets:
+            - climate.air_conditioner_3   # Bedroom 1
+            - climate.air_conditioner     # Bedroom 2
+            - climate.air_conditioner_4   # Den
+      - repeat:
+          for_each: "{{ targets }}"
+          sequence:
+            - variables:
+                ent: "{{ repeat.item }}"
+                ent_state: "{{ states(ent) }}"
+            - choose:
+                - conditions: >
+                    {{ ent_state != 'off'
+                       and ent_state in ['heat','cool']
+                       and ent_state != desired }}
+                  sequence:
+                    - service: climate.set_hvac_mode
+                      target:
+                        entity_id: "{{ ent }}"
+                      data:
+                        hvac_mode: "{{ desired }}"
+
+  ########################################################
+  # 2) Catch-up: if a zone turns ON later -> enforce LR mode
+  #    (Still does NOT turn it on — it only reacts once it's ON)
+  ########################################################
+  - id: hvac_mode_watchdog_enforce_zone_mode_on_turn_on
+    alias: "HVAC Mode Watchdog - Enforce zone mode when it turns ON"
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id:
+          - climate.air_conditioner_3   # Bedroom 1
+          - climate.air_conditioner     # Bedroom 2
+          - climate.air_conditioner_4   # Den
+        from: "off"
+    condition:
+      - condition: template
+        value_template: "{{ states('sensor.hvac_desired_mode_living_room') in ['heat','cool'] }}"
+      - condition: template
+        value_template: "{{ states(trigger.entity_id) in ['heat','cool'] }}"
+    action:
+      - variables:
+          desired: "{{ states('sensor.hvac_desired_mode_living_room') }}"
+          ent: "{{ trigger.entity_id }}"
+          cur: "{{ states(trigger.entity_id) }}"
+      - choose:
+          - conditions: "{{ cur != desired }}"
+            sequence:
+              - service: climate.set_hvac_mode
+                target:
+                  entity_id: "{{ ent }}"
+                data:
+                  hvac_mode: "{{ desired }}"
+
+  ########################################################
+  # 3) Safety net: periodic sweep (edge cases)
+  ########################################################
+  - id: hvac_mode_watchdog_periodic_sweep
+    alias: "HVAC Mode Watchdog - Compliance sweep"
+    mode: single
+    trigger:
+      - platform: time_pattern
+        minutes: "/10"
+    condition:
+      - condition: template
+        value_template: "{{ states('sensor.hvac_desired_mode_living_room') in ['heat','cool'] }}"
+    action:
+      - variables:
+          desired: "{{ states('sensor.hvac_desired_mode_living_room') }}"
+          targets:
+            - climate.air_conditioner_3
+            - climate.air_conditioner
+            - climate.air_conditioner_4
+      - repeat:
+          for_each: "{{ targets }}"
+          sequence:
+            - variables:
+                ent: "{{ repeat.item }}"
+                ent_state: "{{ states(ent) }}"
+            - choose:
+                - conditions: >
+                    {{ ent_state != 'off'
+                       and ent_state in ['heat','cool']
+                       and ent_state != desired }}
+                  sequence:
+                    - service: climate.set_hvac_mode
+                      target:
+                        entity_id: "{{ ent }}"
+                      data:
+                        hvac_mode: "{{ desired }}"
