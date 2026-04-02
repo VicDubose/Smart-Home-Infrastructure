@@ -1,1 +1,96 @@
+#############################################
+# packages/hvac_master_behavior.yaml
+#
+# Rules:
+# - Bedrooms + Den: turn OFF on Away and stay OFF until next Home event.
+# - Living Room: never forced off by Away.
+# - SmartRec should not fight OFF:
+#   When a unit goes off -> recovery_active turns off (per zone).
+#############################################
 
+automation:
+  # Bedrooms OFF when Away
+  - id: hvac_bedrooms_off_on_away
+    alias: "HVAC - Bedrooms OFF on Away"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.house_occupied_stable
+        to: "off"
+    action:
+      - service: climate.turn_off
+        target:
+          entity_id:
+            - climate.air_conditioner
+            - climate.air_conditioner_3
+      - service: input_boolean.turn_off
+        target:
+          entity_id:
+            - input_boolean.bed2_recovery_active
+            - input_boolean.bed1_recovery_active
+
+  # Bedrooms remain OFF until next Home event (OPTION A)
+  # (We do NOT auto-turn them on here—Home event is your "permission" moment.
+  #  If you WANT them to auto-on at Home, tell me and I’ll add it.)
+  - id: hvac_bedrooms_option_a_hold
+    alias: "HVAC - Bedrooms Option A Hold (no auto-on)"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.house_occupied_stable
+        to: "on"
+    action:
+      - service: persistent_notification.create
+        data:
+          title: "HVAC Bedrooms"
+          message: "House is Home. Bedrooms are allowed to run again (Option A). They will not auto-turn-on unless you turn them on."
+
+  # Den OFF when Away (belt + suspenders)
+  - id: hvac_den_off_on_away
+    alias: "HVAC - Den OFF on Away"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.house_occupied_stable
+        to: "off"
+    action:
+      - service: climate.turn_off
+        target:
+          entity_id: climate.air_conditioner_4
+      - service: timer.cancel
+        target:
+          entity_id: timer.den_tv_idle_off
+
+  # Do-not-fight-OFF: if someone turns a unit off, clear recovery_active
+  - id: hvac_clear_recovery_when_bed2_off
+    alias: "SmartRec - Clear Bed2 recovery when unit off"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: climate.air_conditioner
+        to: "off"
+    action:
+      - service: input_boolean.turn_off
+        target: { entity_id: input_boolean.bed2_recovery_active }
+
+  - id: hvac_clear_recovery_when_bed1_off
+    alias: "SmartRec - Clear Bed1 recovery when unit off"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: climate.air_conditioner_3
+        to: "off"
+    action:
+      - service: input_boolean.turn_off
+        target: { entity_id: input_boolean.bed1_recovery_active }
+
+  - id: hvac_clear_recovery_when_lr_off
+    alias: "SmartRec - Clear LR recovery when unit off"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: climate.air_conditioner_2
+        to: "off"
+    action:
+      - service: input_boolean.turn_off
+        target: { entity_id: input_boolean.lr_recovery_active }
