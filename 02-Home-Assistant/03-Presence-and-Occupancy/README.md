@@ -73,7 +73,8 @@ It uses iPhone location and household awareness to determine:
 ### Unified Presence Automation View
 
 <p align="center">
- <img src="../../01-Apple-Home/Screenshots/IMG_1335.png" width="700"/>
+ <img src="../../01-Apple-Home/Screenshots/IMG_1335.png" width="450"/>
+ <img src="../Screenshots/IMG_1564.png" width="450"/>
 </p>
 
 This single view represents the full presence automation model.
