@@ -1,1 +1,167 @@
 
+#############################################
+# packages/smartrec_live_target_enforcement_all.yaml
+#
+# Live temperature enforcement loop (ALL SmartRec zones)
+# - If zone AC is ON, keep its setpoint synced to the zone target sensor
+# - Avoid spam: only correct when off by >= 0.5°F
+# - If hvac_mode == heat_cool and device exposes low/high, set BOTH
+# - Bedrooms also require House Occupied (so we never fight Away logic)
+#############################################
+
+automation:
+  ########################################################
+  # LIVING ROOM (Common Area) — climate.air_conditioner_2
+  ########################################################
+  - id: lr_live_target_enforcement
+    alias: "SmartRec LR - Enforce target temperature (live loop)"
+    mode: single
+    trigger:
+      - platform: time_pattern
+        minutes: "/5"
+      - platform: state
+        entity_id:
+          - sensor.lr_target_f
+          - climate.air_conditioner_2
+    condition:
+      - condition: state
+        entity_id: input_boolean.lr_smartrec_enabled
+        state: "on"
+      - condition: template
+        value_template: "{{ states('climate.air_conditioner_2') != 'off' }}"
+      - condition: template
+        value_template: >
+          {{ states('sensor.lr_target_f') not in ['unknown','unavailable','none',''] }}
+    action:
+      - variables:
+          target: "{{ states('sensor.lr_target_f') | float(66) }}"
+          hvac_mode: "{{ state_attr('climate.air_conditioner_2','hvac_mode') }}"
+          cur_temp: "{{ state_attr('climate.air_conditioner_2','temperature') }}"
+          low: "{{ state_attr('climate.air_conditioner_2','target_temp_low') }}"
+          high: "{{ state_attr('climate.air_conditioner_2','target_temp_high') }}"
+      - choose:
+          - conditions: >
+              {{ hvac_mode == 'heat_cool'
+                 and low is not none and high is not none
+                 and ( (low|float(0) - target)|abs >= 0.5
+                       or (high|float(0) - target)|abs >= 0.5 ) }}
+            sequence:
+              - service: climate.set_temperature
+                target: { entity_id: climate.air_conditioner_2 }
+                data:
+                  target_temp_low: "{{ target }}"
+                  target_temp_high: "{{ target }}"
+          - conditions: >
+              {{ cur_temp is not none
+                 and ((cur_temp|float(0) - target)|abs >= 0.5) }}
+            sequence:
+              - service: climate.set_temperature
+                target: { entity_id: climate.air_conditioner_2 }
+                data:
+                  temperature: "{{ target }}"
+
+  ########################################################
+  # BEDROOM 1 (MB) — climate.air_conditioner_3
+  ########################################################
+  - id: bed1_live_target_enforcement
+    alias: "SmartRec Bed1 - Enforce target temperature (live loop)"
+    mode: single
+    trigger:
+      - platform: time_pattern
+        minutes: "/5"
+      - platform: state
+        entity_id:
+          - sensor.bed1_target_f
+          - climate.air_conditioner_3
+    condition:
+      - condition: state
+        entity_id: binary_sensor.house_occupied_stable
+        state: "on"
+      - condition: state
+        entity_id: input_boolean.bed1_smartrec_enabled
+        state: "on"
+      - condition: template
+        value_template: "{{ states('climate.air_conditioner_3') != 'off' }}"
+      - condition: template
+        value_template: >
+          {{ states('sensor.bed1_target_f') not in ['unknown','unavailable','none',''] }}
+    action:
+      - variables:
+          target: "{{ states('sensor.bed1_target_f') | float(66) }}"
+          hvac_mode: "{{ state_attr('climate.air_conditioner_3','hvac_mode') }}"
+          cur_temp: "{{ state_attr('climate.air_conditioner_3','temperature') }}"
+          low: "{{ state_attr('climate.air_conditioner_3','target_temp_low') }}"
+          high: "{{ state_attr('climate.air_conditioner_3','target_temp_high') }}"
+      - choose:
+          - conditions: >
+              {{ hvac_mode == 'heat_cool'
+                 and low is not none and high is not none
+                 and ( (low|float(0) - target)|abs >= 0.5
+                       or (high|float(0) - target)|abs >= 0.5 ) }}
+            sequence:
+              - service: climate.set_temperature
+                target: { entity_id: climate.air_conditioner_3 }
+                data:
+                  target_temp_low: "{{ target }}"
+                  target_temp_high: "{{ target }}"
+          - conditions: >
+              {{ cur_temp is not none
+                 and ((cur_temp|float(0) - target)|abs >= 0.5) }}
+            sequence:
+              - service: climate.set_temperature
+                target: { entity_id: climate.air_conditioner_3 }
+                data:
+                  temperature: "{{ target }}"
+
+  ########################################################
+  # BEDROOM 2 — climate.air_conditioner
+  ########################################################
+  - id: bed2_live_target_enforcement
+    alias: "SmartRec Bed2 - Enforce target temperature (live loop)"
+    mode: single
+    trigger:
+      - platform: time_pattern
+        minutes: "/5"
+      - platform: state
+        entity_id:
+          - sensor.bed2_target_f
+          - climate.air_conditioner
+    condition:
+      - condition: state
+        entity_id: binary_sensor.house_occupied_stable
+        state: "on"
+      - condition: state
+        entity_id: input_boolean.bed2_smartrec_enabled
+        state: "on"
+      - condition: template
+        value_template: "{{ states('climate.air_conditioner') != 'off' }}"
+      - condition: template
+        value_template: >
+          {{ states('sensor.bed2_target_f') not in ['unknown','unavailable','none',''] }}
+    action:
+      - variables:
+          target: "{{ states('sensor.bed2_target_f') | float(66) }}"
+          hvac_mode: "{{ state_attr('climate.air_conditioner','hvac_mode') }}"
+          cur_temp: "{{ state_attr('climate.air_conditioner','temperature') }}"
+          low: "{{ state_attr('climate.air_conditioner','target_temp_low') }}"
+          high: "{{ state_attr('climate.air_conditioner','target_temp_high') }}"
+      - choose:
+          - conditions: >
+              {{ hvac_mode == 'heat_cool'
+                 and low is not none and high is not none
+                 and ( (low|float(0) - target)|abs >= 0.5
+                       or (high|float(0) - target)|abs >= 0.5 ) }}
+            sequence:
+              - service: climate.set_temperature
+                target: { entity_id: climate.air_conditioner }
+                data:
+                  target_temp_low: "{{ target }}"
+                  target_temp_high: "{{ target }}"
+          - conditions: >
+              {{ cur_temp is not none
+                 and ((cur_temp|float(0) - target)|abs >= 0.5) }}
+            sequence:
+              - service: climate.set_temperature
+                target: { entity_id: climate.air_conditioner }
+                data:
+                  temperature: "{{ target }}"
