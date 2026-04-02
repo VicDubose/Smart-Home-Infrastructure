@@ -1,1 +1,426 @@
 
+#############################################
+# packages/smartrec_zone_bedrooms.yaml
+#
+# Bedroom 2: climate.air_conditioner (B2 sensor)
+# Bedroom 1: climate.air_conditioner_3 (MB sensor)
+#
+# Gated by: binary_sensor.house_occupied_stable
+# Also: SmartRec will NOT fight OFF (won't start if unit is off)
+#############################################
+
+input_boolean:
+  bed2_smartrec_enabled:
+    name: Bed2 SmartRec Enabled
+    initial: "on"
+  bed1_smartrec_enabled:
+    name: Bed1 SmartRec Enabled
+    initial: "on"
+
+  bed2_recovery_active:
+    name: Bed2 Recovery Active
+  bed1_recovery_active:
+    name: Bed1 Recovery Active
+
+input_number:
+  # Bed2 targets/rates
+  bed2_target_day_f:
+    name: Bed2 Target Day (°F)
+    min: 60
+    max: 80
+    step: 0.5
+    initial: 72
+  bed2_target_night_f:
+    name: Bed2 Target Night (°F)
+    min: 60
+    max: 80
+    step: 0.5
+    initial: 66
+  bed2_rate_cool_f_per_min:
+    name: Bed2 learned cool rate (°F/min)
+    min: 0.02
+    max: 1.0
+    step: 0.005
+    mode: box
+    initial: 0.10
+  bed2_rate_heat_f_per_min:
+    name: Bed2 learned heat rate (°F/min)
+    min: 0.02
+    max: 1.0
+    step: 0.005
+    mode: box
+    initial: 0.15
+  bed2_deltat_at_start_f:
+    name: Bed2 ΔT at start (°F)
+    min: 0
+    max: 25
+    step: 0.1
+
+  # Bed1 targets/rates
+  bed1_target_day_f:
+    name: Bed1 Target Day (°F)
+    min: 60
+    max: 80
+    step: 0.5
+    initial: 72
+  bed1_target_night_f:
+    name: Bed1 Target Night (°F)
+    min: 60
+    max: 80
+    step: 0.5
+    initial: 66
+  bed1_rate_cool_f_per_min:
+    name: Bed1 learned cool rate (°F/min)
+    min: 0.02
+    max: 1.0
+    step: 0.005
+    mode: box
+    initial: 0.10
+  bed1_rate_heat_f_per_min:
+    name: Bed1 learned heat rate (°F/min)
+    min: 0.02
+    max: 1.0
+    step: 0.005
+    mode: box
+    initial: 0.15
+  bed1_deltat_at_start_f:
+    name: Bed1 ΔT at start (°F)
+    min: 0
+    max: 25
+    step: 0.1
+
+input_datetime:
+  bed2_start_time:
+    name: Bed2 Last start time
+    has_date: true
+    has_time: true
+  bed1_start_time:
+    name: Bed1 Last start time
+    has_date: true
+    has_time: true
+
+template:
+  - sensor:
+      # Shared aim time (uses global wake times)
+      - name: smartrec_next_aim_ts_shared
+        device_class: timestamp
+        state: >
+          {% set wday = now().weekday() %}
+          {% set t_weekday = states('input_datetime.smartrec_weekday_wake_time') %}
+          {% set t_weekend = states('input_datetime.smartrec_weekend_wake_time') %}
+          {% set target_t = t_weekend if wday in [5,6] else t_weekday %}
+          {% if target_t in ['unknown','unavailable',''] %}
+            {{ now() }}
+          {% else %}
+            {% set aim_today = today_at(target_t) %}
+            {% if as_timestamp(aim_today) >= as_timestamp(now()) %}
+              {{ aim_today }}
+            {% else %}
+              {{ aim_today + timedelta(days=1) }}
+            {% endif %}
+          {% endif %}
+
+      - name: smartrec_minutes_until_aim_shared
+        unit_of_measurement: "min"
+        state: >
+          {% set aim = states('sensor.smartrec_next_aim_ts_shared') %}
+          {% if aim in ['unknown','unavailable',''] %}
+            0
+          {% else %}
+            {{ ((as_datetime(aim) - now()).total_seconds() / 60) | round(0) }}
+          {% endif %}
+
+      # ---- Bed2 target with ramps (17-21 and 05-09)
+      - name: bed2_target_f
+        unit_of_measurement: "°F"
+        state: >
+          {% set day = states('input_number.bed2_target_day_f')|float(72) %}
+          {% set night = states('input_number.bed2_target_night_f')|float(66) %}
+          {% set h = now().hour + (now().minute/60) %}
+          {% if h >= 17 and h < 21 %}
+            {% set p = (h - 17) / 4 %}
+            {{ (day + (night-day)*p) | round(1) }}
+          {% elif h >= 5 and h < 9 %}
+            {% set p = (h - 5) / 4 %}
+            {{ (night + (day-night)*p) | round(1) }}
+          {% elif (h >= 21) or (h < 5) %}
+            {{ night | round(1) }}
+          {% else %}
+            {{ day | round(1) }}
+          {% endif %}
+
+      - name: bed2_delta_to_target_f
+        unit_of_measurement: "°F"
+        state: >
+          {% set t = states('sensor.shelly_wave_h_t_sensor_air_temperature_2') %}
+          {% if t in ['unknown','unavailable','none',''] %}
+            unknown
+          {% else %}
+            {{ (t|float) - (states('sensor.bed2_target_f')|float) }}
+          {% endif %}
+
+      - name: bed2_est_minutes_needed
+        unit_of_measurement: "min"
+        state: >
+          {% set d_raw = states('sensor.bed2_delta_to_target_f') %}
+          {% set d = 0 if d_raw in ['unknown','unavailable','none',''] else (d_raw|float(0)) %}
+          {% set cool_rate = states('input_number.bed2_rate_cool_f_per_min')|float(0.10) %}
+          {% set heat_rate = states('input_number.bed2_rate_heat_f_per_min')|float(0.15) %}
+          {% if d > 0 %}
+            {{ (d / cool_rate) | round(0) }}
+          {% elif d < 0 %}
+            {{ ((-d) / heat_rate) | round(0) }}
+          {% else %}
+            0
+          {% endif %}
+
+      # ---- Bed1 target with ramps (17-21 and 05-09)
+      - name: bed1_target_f
+        unit_of_measurement: "°F"
+        state: >
+          {% set day = states('input_number.bed1_target_day_f')|float(72) %}
+          {% set night = states('input_number.bed1_target_night_f')|float(66) %}
+          {% set h = now().hour + (now().minute/60) %}
+          {% if h >= 17 and h < 21 %}
+            {% set p = (h - 17) / 4 %}
+            {{ (day + (night-day)*p) | round(1) }}
+          {% elif h >= 5 and h < 9 %}
+            {% set p = (h - 5) / 4 %}
+            {{ (night + (day-night)*p) | round(1) }}
+          {% elif (h >= 21) or (h < 5) %}
+            {{ night | round(1) }}
+          {% else %}
+            {{ day | round(1) }}
+          {% endif %}
+
+      - name: bed1_delta_to_target_f
+        unit_of_measurement: "°F"
+        state: >
+          {% set t = states('sensor.shelly_wave_h_t_sensor_mb_air_temperature') %}
+          {% if t in ['unknown','unavailable','none',''] %}
+            unknown
+          {% else %}
+            {{ (t|float) - (states('sensor.bed1_target_f')|float) }}
+          {% endif %}
+
+      - name: bed1_est_minutes_needed
+        unit_of_measurement: "min"
+        state: >
+          {% set d_raw = states('sensor.bed1_delta_to_target_f') %}
+          {% set d = 0 if d_raw in ['unknown','unavailable','none',''] else (d_raw|float(0)) %}
+          {% set cool_rate = states('input_number.bed1_rate_cool_f_per_min')|float(0.10) %}
+          {% set heat_rate = states('input_number.bed1_rate_heat_f_per_min')|float(0.15) %}
+          {% if d > 0 %}
+            {{ (d / cool_rate) | round(0) }}
+          {% elif d < 0 %}
+            {{ ((-d) / heat_rate) | round(0) }}
+          {% else %}
+            0
+          {% endif %}
+
+automation:
+  # -------------------------
+  # Bed2 Start (won't fight OFF)
+  # -------------------------
+  - id: smartrec_bed2_start
+    alias: "SmartRec Bed2 - Start"
+    mode: single
+    trigger:
+      - platform: time_pattern
+        minutes: "/1"
+    condition:
+      - condition: state
+        entity_id: binary_sensor.house_occupied_stable
+        state: "on"
+      - condition: state
+        entity_id: input_boolean.bed2_smartrec_enabled
+        state: "on"
+      - condition: template
+        value_template: "{{ states('climate.air_conditioner') != 'off' }}"
+      - condition: template
+        value_template: >
+          {{ states('sensor.bed2_est_minutes_needed')|int(0)
+               >= states('sensor.smartrec_minutes_until_aim_shared')|int(0)
+             and (states('sensor.bed2_delta_to_target_f')|float(0) | abs) > 0.2 }}
+      - condition: state
+        entity_id: input_boolean.bed2_recovery_active
+        state: "off"
+    action:
+      - service: input_boolean.turn_on
+        target: { entity_id: input_boolean.bed2_recovery_active }
+      - service: input_number.set_value
+        target: { entity_id: input_number.bed2_deltat_at_start_f }
+        data:
+          value: >
+            {% set raw = states('sensor.bed2_delta_to_target_f') %}
+            {% if raw in ['unknown','unavailable','none',''] %}
+              0
+            {% else %}
+              {{ [ (raw|float)|abs, 25 ] | min | round(2) }}
+            {% endif %}
+      - service: input_datetime.set_datetime
+        target: { entity_id: input_datetime.bed2_start_time }
+        data:
+          datetime: "{{ now().isoformat() }}"
+
+      - choose:
+          - conditions: "{{ is_state('binary_sensor.hvac_season_summer','on') }}"
+            sequence:
+              - service: climate.set_hvac_mode
+                data: { entity_id: climate.air_conditioner, hvac_mode: cool }
+          - conditions: "{{ is_state('binary_sensor.hvac_season_winter','on') }}"
+            sequence:
+              - service: climate.set_hvac_mode
+                data: { entity_id: climate.air_conditioner, hvac_mode: heat }
+          - conditions: "{{ states('sensor.bed2_delta_to_target_f')|float(0) > 0 }}"
+            sequence:
+              - service: climate.set_hvac_mode
+                data: { entity_id: climate.air_conditioner, hvac_mode: cool }
+          - conditions: []
+            sequence:
+              - service: climate.set_hvac_mode
+                data: { entity_id: climate.air_conditioner, hvac_mode: heat }
+
+      - service: climate.set_temperature
+        data:
+          entity_id: climate.air_conditioner
+          temperature: "{{ states('sensor.bed2_target_f')|float(66) }}"
+
+  - id: smartrec_bed2_learn
+    alias: "SmartRec Bed2 - Learn & Stop"
+    mode: restart
+    trigger:
+      - platform: template
+        value_template: >
+          {{ is_state('input_boolean.bed2_recovery_active','on')
+             and (states('sensor.bed2_delta_to_target_f')|float(99) | abs) <= 0.1 }}
+    action:
+      - variables:
+          start: >
+            {% set s = states('input_datetime.bed2_start_time') %}
+            {{ as_datetime(s) if s not in ['unknown','unavailable','none',''] else now() }}
+          mins_elapsed: "{{ ((now() - start).total_seconds() / 60) | max(1) }}"
+          d_start: "{{ states('input_number.bed2_deltat_at_start_f')|float(0.1) }}"
+          observed_rate: "{{ (d_start / mins_elapsed) | round(3) }}"
+          hvac_mode: "{{ state_attr('climate.air_conditioner','hvac_mode') }}"
+          old_cool: "{{ states('input_number.bed2_rate_cool_f_per_min')|float(0.10) }}"
+          old_heat: "{{ states('input_number.bed2_rate_heat_f_per_min')|float(0.15) }}"
+          alpha: 0.30
+          new_cool: "{{ ((1 - alpha) * old_cool + alpha * observed_rate) | round(3) }}"
+          new_heat: "{{ ((1 - alpha) * old_heat + alpha * observed_rate) | round(3) }}"
+      - choose:
+          - conditions: "{{ hvac_mode in ['cool','dry'] }}"
+            sequence:
+              - service: input_number.set_value
+                target: { entity_id: input_number.bed2_rate_cool_f_per_min }
+                data: { value: "{{ [ new_cool|float(0.02), 0.02 ] | max }}" }
+          - conditions: []
+            sequence:
+              - service: input_number.set_value
+                target: { entity_id: input_number.bed2_rate_heat_f_per_min }
+                data: { value: "{{ [ new_heat|float(0.02), 0.02 ] | max }}" }
+      - service: input_boolean.turn_off
+        target: { entity_id: input_boolean.bed2_recovery_active }
+
+  # -------------------------
+  # Bed1 Start (won't fight OFF)
+  # -------------------------
+  - id: smartrec_bed1_start
+    alias: "SmartRec Bed1 - Start"
+    mode: single
+    trigger:
+      - platform: time_pattern
+        minutes: "/1"
+    condition:
+      - condition: state
+        entity_id: binary_sensor.house_occupied_stable
+        state: "on"
+      - condition: state
+        entity_id: input_boolean.bed1_smartrec_enabled
+        state: "on"
+      - condition: template
+        value_template: "{{ states('climate.air_conditioner_3') != 'off' }}"
+      - condition: template
+        value_template: >
+          {{ states('sensor.bed1_est_minutes_needed')|int(0)
+               >= states('sensor.smartrec_minutes_until_aim_shared')|int(0)
+             and (states('sensor.bed1_delta_to_target_f')|float(0) | abs) > 0.2 }}
+      - condition: state
+        entity_id: input_boolean.bed1_recovery_active
+        state: "off"
+    action:
+      - service: input_boolean.turn_on
+        target: { entity_id: input_boolean.bed1_recovery_active }
+      - service: input_number.set_value
+        target: { entity_id: input_number.bed1_deltat_at_start_f }
+        data:
+          value: >
+            {% set raw = states('sensor.bed1_delta_to_target_f') %}
+            {% if raw in ['unknown','unavailable','none',''] %}
+              0
+            {% else %}
+              {{ [ (raw|float)|abs, 25 ] | min | round(2) }}
+            {% endif %}
+      - service: input_datetime.set_datetime
+        target: { entity_id: input_datetime.bed1_start_time }
+        data:
+          datetime: "{{ now().isoformat() }}"
+
+      - choose:
+          - conditions: "{{ is_state('binary_sensor.hvac_season_summer','on') }}"
+            sequence:
+              - service: climate.set_hvac_mode
+                data: { entity_id: climate.air_conditioner_3, hvac_mode: cool }
+          - conditions: "{{ is_state('binary_sensor.hvac_season_winter','on') }}"
+            sequence:
+              - service: climate.set_hvac_mode
+                data: { entity_id: climate.air_conditioner_3, hvac_mode: heat }
+          - conditions: "{{ states('sensor.bed1_delta_to_target_f')|float(0) > 0 }}"
+            sequence:
+              - service: climate.set_hvac_mode
+                data: { entity_id: climate.air_conditioner_3, hvac_mode: cool }
+          - conditions: []
+            sequence:
+              - service: climate.set_hvac_mode
+                data: { entity_id: climate.air_conditioner_3, hvac_mode: heat }
+
+      - service: climate.set_temperature
+        data:
+          entity_id: climate.air_conditioner_3
+          temperature: "{{ states('sensor.bed1_target_f')|float(66) }}"
+
+  - id: smartrec_bed1_learn
+    alias: "SmartRec Bed1 - Learn & Stop"
+    mode: restart
+    trigger:
+      - platform: template
+        value_template: >
+          {{ is_state('input_boolean.bed1_recovery_active','on')
+             and (states('sensor.bed1_delta_to_target_f')|float(99) | abs) <= 0.1 }}
+    action:
+      - variables:
+          start: >
+            {% set s = states('input_datetime.bed1_start_time') %}
+            {{ as_datetime(s) if s not in ['unknown','unavailable','none',''] else now() }}
+          mins_elapsed: "{{ ((now() - start).total_seconds() / 60) | max(1) }}"
+          d_start: "{{ states('input_number.bed1_deltat_at_start_f')|float(0.1) }}"
+          observed_rate: "{{ (d_start / mins_elapsed) | round(3) }}"
+          hvac_mode: "{{ state_attr('climate.air_conditioner_3','hvac_mode') }}"
+          old_cool: "{{ states('input_number.bed1_rate_cool_f_per_min')|float(0.10) }}"
+          old_heat: "{{ states('input_number.bed1_rate_heat_f_per_min')|float(0.15) }}"
+          alpha: 0.30
+          new_cool: "{{ ((1 - alpha) * old_cool + alpha * observed_rate) | round(3) }}"
+          new_heat: "{{ ((1 - alpha) * old_heat + alpha * observed_rate) | round(3) }}"
+      - choose:
+          - conditions: "{{ hvac_mode in ['cool','dry'] }}"
+            sequence:
+              - service: input_number.set_value
+                target: { entity_id: input_number.bed1_rate_cool_f_per_min }
+                data: { value: "{{ [ new_cool|float(0.02), 0.02 ] | max }}" }
+          - conditions: []
+            sequence:
+              - service: input_number.set_value
+                target: { entity_id: input_number.bed1_rate_heat_f_per_min }
+                data: { value: "{{ [ new_heat|float(0.02), 0.02 ] | max }}" }
+      - service: input_boolean.turn_off
+        target: { entity_id: input_boolean.bed1_recovery_active }
