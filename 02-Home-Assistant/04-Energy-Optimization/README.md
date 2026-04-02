@@ -37,6 +37,21 @@ The goal is not just reducing usage — it is **controlling time**.
 
 ---
 
+## 📊 SYSTEM VISIBILITY (REAL-TIME CONTROL)
+
+![Energy Distribution Dashboard](../Screenshots/IMG_1579.png)
+
+This dashboard represents:
+
+- Real-time solar generation  
+- Battery charge/discharge  
+- Grid interaction  
+- Device-level control (Tesla, HVAC, loads)  
+
+👉 This is the **live control layer** of the system.
+
+---
+
 ## ☀️ SYSTEM HARDWARE BASELINE
 
 - Solar: ~5.98 kW DC (east/west split)  
@@ -52,23 +67,9 @@ The goal is not just reducing usage — it is **controlling time**.
 15–17 hours per day off-grid (standard target)
 ```
 
-Includes:
-- Full peak window coverage  
-- Majority of normal hours  
-- Minimal grid dependence  
-
 ---
 
 ## ☀️ SUMMER PERFORMANCE MODEL (BIRMINGHAM, AL)
-
-### Assumptions
-
-- ~30 consecutive clear-sky days  
-- ~6 kW solar system  
-- Daily load ≈ 12 kWh  
-- Solar production ≈ 25–30 kWh/day  
-
----
 
 ### 🔋 Battery-Only Runtime
 
@@ -82,26 +83,9 @@ Includes:
 
 ### ☀️ Solar + Battery Runtime
 
-Daily flow:
-1. Solar powers home  
-2. Excess charges battery  
-3. Battery carries overnight  
-
----
-
-### 🧠 Result
-
 ```
 Indefinite off-grid operation during sustained summer sun
 ```
-
----
-
-### 🔺 Real-World Limits
-
-- Cloud cover  
-- HVAC spikes  
-- Overnight drain  
 
 ---
 
@@ -114,11 +98,6 @@ Indefinite off-grid operation during sustained summer sun
 ---
 
 ## ❄️ WINTER PERFORMANCE MODEL
-
-- Reduced solar production  
-- Peak window shifts to 5 AM – 9 AM  
-
-System becomes:
 
 ```
 Time-constrained instead of energy-constrained
@@ -144,21 +123,38 @@ Reset battery state and prevent multi-day energy deficit
 
 ---
 
-### Behavior
+### Why This Works
 
-- Home runs on grid intentionally  
-- Battery fully recharges  
+```
+These days are excluded from Alabama Power peak rate enforcement
+```
+
+Meaning:
+
+- No STRICT windows  
+- No penalty for high usage  
+- Full-day flexibility  
+
+---
+
+### Strategic Advantage
+
+- Run home fully on grid without penalty  
+- Recharge Powerwall to 100%  
+- Reset system state  
+
+---
+
+### Design Philosophy
+
+```
+Use utility-defined “free” days to reset system state
+instead of fighting seasonal solar limitations.
+```
 
 ---
 
 ## ⏱️ TIME ENGINE (RTA GOVERNANCE)
-
-- Summer Peak: 1 PM – 7 PM  
-- Winter Peak: 5 AM – 9 AM  
-
----
-
-### Internal Windows
 
 - CHEAP → ~9 PM → 4:45 AM  
 - STRICT → Peak windows  
@@ -166,24 +162,11 @@ Reset battery state and prevent multi-day energy deficit
 
 ---
 
-### Strategy
-
-- Battery covers STRICT + most NORMAL  
-- Grid used only during CHEAP  
-- Early cutoff prevents peak collision  
-
----
-
 ## 🔋 POWERWALL GOVERNANCE
 
-Core question:
-
-```
-Should the battery carry the house right now?
-```
-
 Battery carries when:
-- NOT cheap window  
+
+- NOT cheap  
 - NOT storm override  
 - NOT fill day  
 - Above reserve (~20%)  
@@ -198,19 +181,6 @@ Tesla acts as:
 Dynamic solar overflow absorber
 ```
 
-Charging allowed:
-- Cheap window  
-- Emergency battery (<10%)  
-- Solar surplus (battery full + solar active)  
-
----
-
-## ☀️ SOLAR UTILIZATION PRIORITY
-
-1. Home load  
-2. Battery charging  
-3. Tesla (overflow sink)  
-
 ---
 
 ## ⚡ LOAD SHEDDING STRATEGY
@@ -219,69 +189,68 @@ Charging allowed:
 Never stack major loads during expensive windows
 ```
 
-Major loads:
-- EV charging  
-- Dryer  
-- Dishwasher  
-- Oven  
-- Water heater  
-- HVAC spikes  
+---
+
+## 📈 VALIDATION LAYER (UTILITY VS REAL-TIME)
+
+![Alabama Power Usage Validation](../Screenshots/IMG_1581.png)
+
+This chart represents:
+
+- Alabama Power recorded daily kWh usage  
+- Utility-side billing data  
 
 ---
 
 ## 📊 DATA VALIDATION & SOURCE OF TRUTH
 
-The system uses two independent data sources:
+### 🔗 Alabama Power Scraper (Source Code)
 
-### 1. Real-Time System Data (Primary Control Layer)
-- Tesla Powerwall telemetry (minute-level)
-- Home Assistant energy calculations
-- Solar production + battery flow
+```
+03-RDP-VM-Infrastructure/Docker/alabama-power-scraper.py
+```
 
-This data drives:
-- Automations  
-- Load control decisions  
-- Battery behavior  
+This script:
+
+- Logs into Alabama Power  
+- Scrapes hourly kWh usage  
+- Pushes data into Home Assistant  
 
 ---
 
-### 2. Alabama Power Scraper (Ground Truth Layer)
+### Real-Time System (Control Layer)
 
-The Alabama Power scraper provides:
+- Tesla Powerwall telemetry (minute-level)  
+- Home Assistant calculations  
+- Solar + battery flow  
+
+---
+
+### Alabama Power Scraper (Ground Truth)
+
+Provides:
 
 ```
 Utility-recorded hourly energy usage (billing source of truth)
 ```
 
-Purpose:
-- Validate Home Assistant + Powerwall calculations  
-- Detect drift or misreporting  
-- Compare:
-  - Real-time calculated usage  
-  - Utility-billed consumption  
-
 ---
 
 ### 🧠 Why This Matters
 
-- Prevents blind trust in local telemetry  
-- Ensures automation decisions align with actual billing  
-- Enables long-term tuning of:
-  - Load behavior  
-  - Battery strategy  
-  - Cost optimization  
+- Validates automation accuracy  
+- Detects drift between systems  
+- Aligns behavior with actual billing  
 
 ---
 
-### 🔁 System Feedback Loop
+### 🔁 Closed-Loop System
 
 ```
-Powerwall (real-time) → HA logic → automation decisions  
-           ↓
-Alabama Power (hourly) → validation → tuning
+Powerwall → HA logic → automation  
+        ↓
+Alabama Power → validation → tuning
 ```
-
-👉 This creates a **closed-loop energy system**
 
 ---
 
@@ -294,29 +263,27 @@ Midday
 → Solar powers home + charges battery  
 
 Afternoon  
-→ Battery full → Tesla absorbs excess  
+→ Tesla absorbs excess  
 
 Evening  
 → Battery carries home  
 
-Night (CHEAP)  
-→ Optional grid use  
+Night  
+→ Optional grid usage  
 
 ---
 
 ## 🧠 SYSTEM IDENTITY
 
-This is not a smart home.
-
 ```
-This is a residential microgrid with time-based energy control.
+Residential microgrid with time-based energy control
 ```
 
 - Solar = generation  
-- Powerwall = time-shifting engine  
+- Powerwall = time-shifting  
 - Tesla = energy sink  
-- Home Assistant = orchestrator  
-- Grid = fallback only  
+- HA = orchestrator  
+- Grid = fallback  
 
 ---
 
@@ -324,10 +291,10 @@ This is a residential microgrid with time-based energy control.
 
 Layer 3 enables:
 
-- ~17 hours daily off-grid baseline  
-- Near full-day off-grid operation in summer  
-- Controlled winter performance with reset strategy  
-- Verified energy tracking using utility-backed data  
+- ~17 hours off-grid baseline  
+- Near full-day off-grid in summer  
+- Stable winter operation via reset strategy  
+- Verified energy tracking using utility data  
 - Intelligent load coordination  
 
 ---
