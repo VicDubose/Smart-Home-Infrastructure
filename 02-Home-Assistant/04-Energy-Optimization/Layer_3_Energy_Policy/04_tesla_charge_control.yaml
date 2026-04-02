@@ -1,1 +1,54 @@
 
+#############################################
+# LAYER 3 — STEP 6: TESLA CHARGE CONTROL
+#
+# Purpose:
+# Enforce Layer 3 Tesla charging permission by
+# starting or stopping vehicle charging.
+#
+# References:
+# - binary_sensor.layer3_tesla_charge_allowed
+# - switch.shadow_charge
+#
+# NOTE:
+# This file is intended to be staged in Git first.
+# Do not deploy live until Powerwall + Tesla Layer 3
+# policy has been validated.
+#############################################
+
+#############################################
+# LAYER 3 — STEP 6: TESLA CHARGE CONTROL
+#############################################
+
+automation:
+  - id: layer3_tesla_start_charging_when_allowed
+    alias: "Layer3 Tesla - Start Charging When Allowed"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.layer3_tesla_charge_allowed
+        to: "on"
+    condition:
+      - condition: state
+        entity_id: switch.shadow_charge
+        state: "off"
+    action:
+      - service: switch.turn_on
+        target:
+          entity_id: switch.shadow_charge
+    mode: single
+
+  - id: layer3_tesla_stop_charging_when_not_allowed
+    alias: "Layer3 Tesla - Stop Charging When Not Allowed"
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.layer3_tesla_charge_allowed
+        to: "off"
+    condition:
+      - condition: state
+        entity_id: switch.shadow_charge
+        state: "on"
+    action:
+      - service: switch.turn_off
+        target:
+          entity_id: switch.shadow_charge
+    mode: single
