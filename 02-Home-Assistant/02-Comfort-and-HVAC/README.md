@@ -388,7 +388,29 @@ The climate system therefore remains **automation-driven**, not app-driven.
 - `climate.air_conditioner_4` → Den  
 
 ---
+### Environmental Sensor Layer
 
+Each HVAC zone is paired with a dedicated **Shelly Wave H&T temperature sensor** rather than relying only on the mini-split’s onboard reading.
+
+These Shelly sensors act as the true room-level thermal reference for automation and recovery logic.
+
+### Sensor-to-Zone Mapping
+
+- **Living Room / Common Area** → Shelly Wave H&T sensor  
+- **Bedroom 1** → Shelly Wave H&T sensor  
+- **Bedroom 2** → Shelly Wave H&T sensor  
+- **Laundry / utility freeze space** → separate Shelly Wave H&T safety sensor  
+
+This matters because wall-mounted mini-split heads do not always represent the actual lived-in temperature of the room.
+
+Using independent Shelly sensors improves:
+
+- target accuracy  
+- adaptive recovery timing  
+- zone-specific decision making  
+- consistency between comfort logic and real room conditions
+
+---
 ## What This Folder Contains
 
 This folder includes the automations and helpers that define:
