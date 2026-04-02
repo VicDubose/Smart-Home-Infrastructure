@@ -1,1 +1,62 @@
+#############################################
+# packages/tou_dishwasher_cheap_enforcement.yaml
+#
+# DISHWASHER (SDP) — Alabama Power TOU Control
+#
+# Depends on:
+# - sensor.ap_current_power_mode (CHEAP / NORMAL / CAUTION / STRICT)
+#
+# Policy:
+# - Dishwasher is allowed ONLY when AP mode == CHEAP
+# - If switched ON outside CHEAP -> force OFF
+# - If running and mode leaves CHEAP -> force OFF
+#
+# UI friendly:
+# - binary_sensor you can display on dashboard
+#############################################
 
+template:
+  - binary_sensor:
+      - name: "Dishwasher Allowed By Alabama Power"
+        unique_id: dishwasher_allowed_by_alabama_power
+        icon: mdi:dishwasher
+        state: >
+          {{ states('sensor.ap_current_power_mode') | upper == 'CHEAP' }}
+        attributes:
+          ap_mode: "{{ states('sensor.ap_current_power_mode') }}"
+          rule: "CHEAP-only"
+
+automation:
+  - id: dishwasher_enforce_alabama_power_window
+    alias: "Dishwasher - Enforce Alabama Power Window (CHEAP only)"
+    mode: single
+    trigger:
+      # If user turns it on…
+      - platform: state
+        entity_id: switch.sdp
+        to: "on"
+        id: turned_on
+
+      # If it was on and CHEAP becomes not-cheap…
+      - platform: state
+        entity_id: binary_sensor.dishwasher_allowed_by_alabama_power
+        to: "off"
+        id: became_not_allowed
+
+      # After HA restart, re-enforce if needed
+      - platform: homeassistant
+        event: start
+        id: ha_start
+
+    condition:
+      - condition: state
+        entity_id: switch.sdp
+        state: "on"
+      - condition: state
+        entity_id: binary_sensor.dishwasher_allowed_by_alabama_power
+        state: "off"
+
+    action:
+      - service: switch.turn_off
+        target:
+          entity_id: switch.sdp
