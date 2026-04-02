@@ -62,6 +62,11 @@ ASCII DIAGRAM (real cabling)
 │  • Other low-bandwidth endpoints             │
 └──────────────────────────────────────────────┘
 ```
+<p align="center">
+  <img src="Screenshots/IMG_1540.png" width="500"/>
+ <img src="Screenshots/IMG_1538.png" width="500"/>
+ <img src="Screenshots/IMG_6070.jpeg" width="400"/>
+</p>
 
 ---
 
@@ -84,6 +89,7 @@ ASCII DIAGRAM (real cabling)
 - Acts as distribution point for wired devices
 
 ### Cisco Catalyst 2960-C (Layer 2)
+- all on Vlan 10 
 - Provides wired connectivity
 - Uplinked to mesh node (not primary router)
 - Fast Ethernet ports used for low-bandwidth devices
@@ -107,6 +113,11 @@ ASCII DIAGRAM (real cabling)
 - DNS-over-TLS enabled
 - No VLAN complexity (intentional design decision)
 
+  <p align="center">
+  <img src="Screenshots/IMG_8508.jpeg" width="400"/>
+   <img src="Screenshots/IMG_8509.jpeg" width="400"/>
+   <img src="Screenshots/IMG_8510.jpeg" width="400"/>
+  </p>
 ---
 
 ## 🧠 Design Philosophy
