@@ -1,0 +1,333 @@
+#############################################
+# packages/l0_wsp_heater_band_plus_manual_boost.yaml
+#
+# LAYER 0 — WSP Heater (Whole-home assist)
+#
+# Device: switch.wsp
+# Temp:   sensor.shelly_wave_h_t_sensor_air_temperature
+#
+# Policy:
+# - AUTO ON  if temp < 52°F for 10 min AND budget available
+# - AUTO OFF if temp > 62°F for 10 min
+#
+# Manual Boost:
+# - input_button.wsp_manual_boost_2h -> turn ON for 2 hours (if budget allows)
+#
+# Budget:
+# - Tracks runtime in fixed 10:05 → 10:05 window
+# - If runtime >= 7.0h -> force OFF + block new starts
+#
+# Safety:
+# - Tracks on_since
+# - If stuck ON > ~2h 5m -> force OFF
+#
+# Ignores:
+# - Presence
+# - Power mode
+# (Solar/battery awareness later)
+#############################################
+
+#############################################
+# WSP BUDGET SENSOR (history_stats) - FIXED WINDOW
+#############################################
+sensor:
+  - platform: history_stats
+    name: WSP Heater Runtime Budget Window
+    entity_id: switch.wsp
+    state: "on"
+    type: time
+    start: >
+      {% set anchor = today_at('10:05:00') %}
+      {{ anchor if now() >= anchor else anchor - timedelta(days=1) }}
+    end: >
+      {% set anchor = today_at('10:05:00') %}
+      {{ (anchor + timedelta(days=1)) if now() >= anchor else anchor }}
+
+#############################################
+# HELPERS (UI friendly)
+#############################################
+input_boolean:
+  l0_wsp_enabled:
+    name: "L0 WSP Enabled"
+    icon: mdi:radiator
+    initial: "on"
+
+input_button:
+  wsp_manual_boost_2h:
+    name: "WSP Manual Boost (2h)"
+    icon: mdi:timer-plus
+
+input_datetime:
+  wsp_on_since:
+    name: "WSP On Since"
+    has_date: true
+    has_time: true
+
+timer:
+  wsp_run_2h:
+    name: "WSP Run Timer (2h)"
+    duration: "02:00:00"
+
+#############################################
+# TEMPLATE BINARY SENSORS
+#############################################
+template:
+  - binary_sensor:
+
+      # Budget available (< 7.0 hours in window)
+      - name: "WSP Heater Budget Available"
+        unique_id: wsp_heater_budget_available
+        state: >
+          {% set v = states('sensor.wsp_heater_runtime_budget_window') %}
+          {% if v in ['unknown','unavailable','none',''] %}
+            true
+          {% else %}
+            {{ (v | float(0)) < 7 }}
+          {% endif %}
+
+      # Need heat if < 52 (used by auto-start / keep-running checks)
+      - name: "L0 WSP Heat Needed"
+        unique_id: l0_wsp_heat_needed
+        state: >
+          {{ states('sensor.shelly_wave_h_t_sensor_air_temperature')|float(999) < 52 }}
+
+      # Warm enough if > 62 (used by auto-stop)
+      - name: "L0 WSP Warm Enough"
+        unique_id: l0_wsp_warm_enough
+        state: >
+          {{ states('sensor.shelly_wave_h_t_sensor_air_temperature')|float(-999) > 62 }}
+
+#############################################
+# AUTOMATIONS
+#############################################
+automation:
+
+  ########################################################
+  # Track ON timestamp (restart-safe safety cutoff)
+  ########################################################
+  - id: wsp_track_on_since_on
+    alias: "WSP - track on_since when turned ON"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: switch.wsp
+        to: "on"
+    action:
+      - service: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.wsp_on_since
+        data:
+          datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+
+  - id: wsp_clear_on_since_off
+    alias: "WSP - clear on_since when turned OFF"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: switch.wsp
+        to: "off"
+    action:
+      - service: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.wsp_on_since
+        data:
+          datetime: "1970-01-01 00:00:00"
+
+  ########################################################
+  # SAFETY: if stuck ON too long (2h 5m), force OFF
+  ########################################################
+  - id: wsp_safety_max_on_time_cutoff
+    alias: "WSP SAFETY - max ON time cutoff"
+    mode: single
+    trigger:
+      - platform: time_pattern
+        minutes: "/5"
+      - platform: homeassistant
+        event: start
+    condition:
+      - condition: state
+        entity_id: switch.wsp
+        state: "on"
+      - condition: template
+        value_template: >
+          {% set s = states('input_datetime.wsp_on_since') %}
+          {% if s in ['unknown','unavailable','none','', None] %}
+            true
+          {% else %}
+            {% set ts = as_timestamp(s) %}
+            {{ ts is none or (as_timestamp(now()) - ts) > (2*60*60 + 5*60) }}
+          {% endif %}
+    action:
+      - service: switch.turn_off
+        target:
+          entity_id: switch.wsp
+      - service: timer.cancel
+        target:
+          entity_id: timer.wsp_run_2h
+
+  ########################################################
+  # HARD ENFORCEMENT: if budget runs out -> OFF immediately
+  ########################################################
+  - id: wsp_hard_off_when_budget_exhausted
+    alias: "WSP - hard OFF when budget exhausted"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.wsp_heater_budget_available
+        to: "off"
+      - platform: homeassistant
+        event: start
+    condition:
+      - condition: state
+        entity_id: switch.wsp
+        state: "on"
+      - condition: state
+        entity_id: binary_sensor.wsp_heater_budget_available
+        state: "off"
+    action:
+      - service: switch.turn_off
+        target:
+          entity_id: switch.wsp
+      - service: timer.cancel
+        target:
+          entity_id: timer.wsp_run_2h
+
+  ########################################################
+  # AUTO START: <52 for 10m -> ON for up to 2h (budget-gated)
+  ########################################################
+  - id: l0_wsp_auto_start_when_cold
+    alias: "L0 WSP - AUTO start when <52F for 10m"
+    mode: single
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.shelly_wave_h_t_sensor_air_temperature
+        below: 52
+        for: "00:10:00"
+      - platform: homeassistant
+        event: start
+    condition:
+      - condition: state
+        entity_id: input_boolean.l0_wsp_enabled
+        state: "on"
+      - condition: state
+        entity_id: binary_sensor.wsp_heater_budget_available
+        state: "on"
+      - condition: template
+        value_template: >
+          {{ states('sensor.shelly_wave_h_t_sensor_air_temperature')|float(999) < 52 }}
+    action:
+      - service: switch.turn_on
+        target:
+          entity_id: switch.wsp
+      - service: timer.start
+        target:
+          entity_id: timer.wsp_run_2h
+
+  ########################################################
+  # AUTO STOP: >62 for 10m -> full stop
+  ########################################################
+  - id: l0_wsp_auto_stop_when_warm
+    alias: "L0 WSP - AUTO stop when >62F for 10m"
+    mode: single
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.shelly_wave_h_t_sensor_air_temperature
+        above: 62
+        for: "00:10:00"
+      - platform: homeassistant
+        event: start
+    condition:
+      - condition: state
+        entity_id: input_boolean.l0_wsp_enabled
+        state: "on"
+      - condition: template
+        value_template: >
+          {{ states('sensor.shelly_wave_h_t_sensor_air_temperature')|float(-999) > 62 }}
+    action:
+      - service: switch.turn_off
+        target:
+          entity_id: switch.wsp
+      - service: timer.cancel
+        target:
+          entity_id: timer.wsp_run_2h
+
+  ########################################################
+  # TIMER DONE: after 2 hours -> OFF
+  # (If still cold, the <52-for-10m trigger will re-start later.)
+  ########################################################
+  - id: wsp_off_when_2h_timer_finishes
+    alias: "WSP - OFF when 2h run timer finishes"
+    mode: single
+    trigger:
+      - platform: event
+        event_type: timer.finished
+        event_data:
+          entity_id: timer.wsp_run_2h
+    action:
+      - service: switch.turn_off
+        target:
+          entity_id: switch.wsp
+
+  ########################################################
+  # MANUAL BOOST: press button -> ON for 2 hours (if budget allows)
+  ########################################################
+  - id: wsp_manual_boost_press
+    alias: "WSP - Manual Boost (2h)"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: input_button.wsp_manual_boost_2h
+    condition:
+      - condition: state
+        entity_id: input_boolean.l0_wsp_enabled
+        state: "on"
+      - condition: state
+        entity_id: binary_sensor.wsp_heater_budget_available
+        state: "on"
+    action:
+      - service: switch.turn_on
+        target:
+          entity_id: switch.wsp
+      - service: timer.start
+        target:
+          entity_id: timer.wsp_run_2h
+
+  ########################################################
+  # GUARDRAIL: If user manually flips switch ON while budget is exhausted -> turn it OFF
+  ########################################################
+  - id: wsp_block_manual_on_when_budget_exhausted
+    alias: "WSP - Block manual ON when budget exhausted"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: switch.wsp
+        to: "on"
+    condition:
+      - condition: state
+        entity_id: binary_sensor.wsp_heater_budget_available
+        state: "off"
+    action:
+      - service: switch.turn_off
+        target:
+          entity_id: switch.wsp
+      - service: timer.cancel
+        target:
+          entity_id: timer.wsp_run_2h
+
+  ########################################################
+  # Disable toggle -> hard stop immediately
+  ########################################################
+  - id: l0_wsp_disabled_hard_stop
+    alias: "L0 WSP - Disabled toggle hard stop"
+    mode: single
+    trigger:
+      - platform: state
+        entity_id: input_boolean.l0_wsp_enabled
+        to: "off"
+    action:
+      - service: switch.turn_off
+        target:
+          entity_id: switch.wsp
+      - service: timer.cancel
+        target:
+          entity_id: timer.wsp_run_2h
