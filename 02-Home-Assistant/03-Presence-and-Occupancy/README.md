@@ -1,6 +1,6 @@
 # Presence and Occupancy System
 
-This folder documents the system that determines whether the home is occupied and whether automation layers are allowed to act.
+This folder defines the system that determines whether the home is considered occupied and whether automation layers are allowed to act.
 
 Presence is not treated as a convenience feature.
 
@@ -12,7 +12,7 @@ It is treated as a **permission engine** for the rest of the house.
 
 Provide a stable, resilient occupancy signal that other automation layers can trust.
 
-This signal is used to decide whether the system is allowed to:
+This signal is used to determine whether the system is allowed to:
 
 - condition bedrooms  
 - keep the den active  
@@ -24,107 +24,84 @@ This signal is used to decide whether the system is allowed to:
 
 ## Design Role
 
-This layer does not directly define HVAC behavior, appliance logic, or energy strategy.
+This layer does not directly control HVAC, appliances, or energy behavior.
 
 Instead, it answers the first and most important system question:
 
 > **Is the house considered occupied right now?**
 
-Once that answer exists, other layers decide what they are allowed to do.
+Once that answer exists, other systems decide what they are allowed to do.
 
-That is why this folder is separate from HVAC.
+This is why this folder is separate from HVAC:
 
-- **Presence** determines permission  
-- **HVAC** determines climate behavior  
+- **Presence → determines permission**  
+- **HVAC → determines climate behavior**
 
 ---
 
 ## Architecture Overview
 
-This is not a single-app or single-device presence model.
+Presence is not derived from a single device or app.
 
-It is a layered chain:
+It is constructed as a layered system:
 
-**iPhone location → Apple Home geofence automation → Eufy security mode → Docker Eufy bridge → Home Assistant occupancy logic**
+**iPhone location → Apple Home → Eufy security mode → Docker bridge → Home Assistant**
 
-That split is intentional.
+Each layer has a specific role:
 
-- **Apple Home** uses phone location and native arrival/departure automation  
-- **Eufy** holds the resulting home/away security state  
-- **Docker** keeps the Eufy bridge running as a persistent backend service  
-- **Home Assistant** converts that security state into a stable automation-grade occupancy signal  
+- **Apple Home** detects arrival and departure using iPhone location  
+- **Eufy** stores the resulting home/away state as a security mode  
+- **Docker (Eufy Bridge)** exposes that state reliably into Home Assistant  
+- **Home Assistant** converts it into a stable automation-grade occupancy signal  
 
-This makes presence both:
+This separation makes the system:
 
 - user-friendly at the front end  
-- reliable for backend automation  
+- reliable at the automation layer  
 
 ---
 
 ## Apple Home as the Geofence Backbone
 
-Apple Home is the first step in the presence chain.
+Apple Home is the entry point for presence detection.
 
-It uses phone location to determine real arrival and departure events.
+It uses iPhone location and household awareness to determine:
 
-### Arrival Automation
+- when the first person arrives home  
+- when the last person leaves home  
+
+### Unified Presence Automation View
 
 <p align="center">
-  <img src="../Screenshots/945F33FA-836F-435E-B7F7-F18319222781.png" width="450"/>
+  <img src="../01-Apple-Home/Screenshots/IMG_1335.png" width="700"/>
 </p>
 
-This automation shows the Apple Home pattern for:
+This single view represents the full presence automation model.
 
-- **When the first person arrives home**
-
-Apple Home uses that event to trigger a home-state action.
+Apple Home manages arrival and departure as a **unified household state**, not as separate independent automations.
 
 ---
 
-### Departure Automation
+## Role of Apple Home in the System
 
-<p align="center">
-  <img src="../Screenshots/5AA6FDD4-0739-4479-861E-28E20FB4B145.png" width="450"/>
-</p>
+Apple Home is responsible for:
 
-This automation shows the Apple Home pattern for:
-
-- **When the last person leaves home**
-
-This is the backbone of the away-state transition.
-
-### Why Apple Home Is Used Here
-
-Apple Home is well-suited for the geofence portion of the problem because it already has:
-
-- iPhone location awareness  
+- geofence detection (iPhone location)  
 - first-person / last-person household logic  
-- native HomePod / Apple ecosystem execution  
-- reliable front-end automation behavior  
+- triggering home ↔ away transitions  
+- initiating system-wide state changes  
 
-That makes it a strong trigger engine for household arrival and departure state changes.
+It acts as the **front-end decision layer** for presence.
 
 ---
 
-## Eufy as the Stable Security-State Anchor
+## Eufy as the Security-State Anchor
 
-Apple Home is what detects location change, but Eufy is what provides the stable backend security state inside Home Assistant.
+Apple Home detects presence changes, but Eufy provides the **stable backend state**.
 
-The presence model therefore does not rely on raw phone location directly in HA.
+The system does not rely on raw GPS inside Home Assistant.
 
-Instead, it relies on the resulting security mode.
-
-### Integration View
-
-<p align="center">
-  <img src="../Screenshots/0766717C-E29D-47DB-AA8D-BBB8DF3CE6B7.jpeg" width="700"/>
-</p>
-
-This integration exposes the Eufy security environment into Home Assistant.
-
-The important point is not just that cameras exist.
-
-The important point is that the **security mode state becomes available as a reusable automation signal**.
+It relies on the resulting security mode.
 
 ### Source Entity
 
@@ -134,62 +111,56 @@ The important point is that the **security mode state becomes available as a reu
 
 - `armed_away` → house is **not occupied**  
 - `armed_home` / `disarmed` / `night` / `home` → house is **occupied**  
-- `unknown` / `unavailable` → **fail open** (treat as occupied)  
+- `unknown` / `unavailable` → **fail open** (treated as occupied)  
 
-This logic is exposed as:
+This is exposed as:
 
 - `binary_sensor.house_occupied_stable`
 
-An alias sensor is also preserved for backward compatibility:
+Compatibility alias:
 
 - `binary_sensor.bedrooms_house_occupied_stable`
 
 ---
 
-## Why This Pattern Was Chosen
+## Role of Docker in the Presence Chain
 
-This design is stronger than relying on a single phone or GPS signal directly in Home Assistant.
+The Eufy bridge container provides the connection between Eufy and Home Assistant.
 
-Instead of asking:
+This makes Docker part of the presence system, not just infrastructure.
 
-> “Where is one device right now?”
+Without it:
 
-the system asks:
-
-> “What does the household presence system believe the house mode is?”
-
-That gives the backend a much cleaner signal.
-
-### Apple Home contributes:
-- geofence detection  
-- first-person / last-person logic  
-- native household arrival/departure automation  
-
-### Eufy contributes:
-- persistent security mode  
-- a clean home/away anchor  
-- integration into Home Assistant through the Eufy bridge  
-
-### Home Assistant contributes:
-- stable interpretation  
-- fail-open logic  
-- reusable permission entities for other systems  
+- Eufy state would not reliably reach Home Assistant  
+- occupancy logic would degrade  
+- automation permission would become unstable  
 
 ---
 
-## Role of Docker in the Presence Chain
+## Why This Pattern Was Chosen
 
-The Eufy integration depends on the Eufy bridge container running on the infrastructure server.
+Instead of asking:
 
-That Docker service is part of the presence architecture because it provides the persistent backend path that makes Eufy state available to Home Assistant.
+> “Where is a device right now?”
 
-Without that bridge:
+the system asks:
 
-- Eufy security state would not cleanly reach HA  
-- stable occupancy interpretation would degrade  
-- security-aware backend automations would lose their anchor  
+> “What is the current household state?”
 
-So while Docker is documented elsewhere as infrastructure, it is also a direct dependency of this subsystem.
+This produces a much cleaner and more reliable signal.
+
+### Apple Home provides:
+- location-based event detection  
+- household-level presence logic  
+
+### Eufy provides:
+- persistent home/away state  
+- security-aligned system mode  
+
+### Home Assistant provides:
+- stable interpretation  
+- fail-safe handling  
+- reusable automation signals  
 
 ---
 
@@ -199,77 +170,73 @@ If the system becomes uncertain, it does **not** assume the house is empty.
 
 It assumes occupied.
 
-### Why
+### Reasoning
 
-A false-away result is more dangerous than a false-home result.
+A false-away state is more dangerous than a false-home state.
 
 False-away could cause:
 
-- unnecessary HVAC shutdown  
+- HVAC shutdown during occupancy  
 - loss of conditioning  
-- invalid automation behavior  
 - unsafe temperature drift  
+- incorrect automation behavior  
 
-False-home usually produces only a minor efficiency penalty.
+False-home results in minor efficiency loss.
 
-So the system uses this rule:
+So the system follows:
 
-> **If uncertain, assume occupied.**
-
-This aligns with the broader design philosophy of the house:
-
-- safety over efficiency  
-- continuity over fragility  
+> **If uncertain, assume occupied**
 
 ---
 
-## Relationship to Apple Home Beyond Geofencing
+## Relationship to Apple Home (UI Layer)
 
-Apple Home is not only the geofence trigger source.
+Apple Home serves two roles:
 
-It is also the user-facing visibility layer for presence-related behavior.
+1. **Presence trigger system (geofence + household logic)**  
+2. **User-facing control and visibility layer**
 
-That means Apple Home participates in two ways:
+This keeps:
 
-1. **as the front-end geofence trigger engine**
-2. **as the household-facing communication and control layer**
-
-This allows the user experience to stay native to the Apple ecosystem while Home Assistant handles backend automation decisions.
+- automation logic in Home Assistant  
+- interaction and feedback in Apple Home  
 
 ---
 
 ## Relationship to HVAC
 
-This folder does not define how HVAC behaves.
+This folder does not define HVAC behavior.
 
-It defines whether HVAC is allowed to behave.
+It defines whether HVAC is allowed to operate.
 
 Examples:
 
-- bedrooms require `house_occupied_stable = on` before recovery logic is allowed  
-- den activity logic is canceled when the house becomes away  
-- away state is consumed by HVAC master logic to shut down non-baseline zones  
+- bedrooms require `house_occupied_stable = on` before running recovery logic  
+- den logic is disabled when the house is away  
+- HVAC master logic uses away state to shut down non-essential zones  
 
-So while HVAC depends on this folder, presence itself remains an upstream subsystem.
+Presence is therefore:
+
+> **an upstream dependency of HVAC, not part of HVAC**
 
 ---
 
 ## Stability Goal
 
-The purpose of this layer is not to react to every tiny signal change.
+This system is not designed for maximum sensitivity.
 
-The purpose is to produce a **stable, trustworthy occupancy state** that other automation layers can depend on.
+It is designed for **maximum reliability**.
 
-That means this layer prioritizes:
+It prioritizes:
 
-- reliability  
+- clean binary state  
 - low ambiguity  
-- clean interpretation  
-- graceful behavior under uncertainty  
+- resilience to failure  
+- predictable behavior  
 
-The goal is not maximum sensitivity.
+The goal is:
 
-The goal is **usable certainty**.
+> **usable certainty, not noisy precision**
 
 ---
 
@@ -283,68 +250,40 @@ The goal is **usable certainty**.
 
 - `binary_sensor.bedrooms_house_occupied_stable`
 
-These entities exist so that:
+These ensure:
 
-- automations have a stable source of truth  
-- older dashboards and cards do not break during cleanup  
-- the architecture can evolve without a full system refactor  
-
----
-
-## Why This Folder Exists Separately
-
-This folder is intentionally separate from HVAC because the two solve different problems.
-
-### Presence / Occupancy solves:
-
-- who is home  
-- whether the house is occupied  
-- whether permission should be granted  
-- what to do when state becomes uncertain  
-
-### HVAC solves:
-
-- which unit should run  
-- what target temperature should be used  
-- when recovery should begin  
-- how active zones stay in compliance  
-
-Presence is upstream of HVAC.
-
-It is a decision input, not the climate system itself.
+- stable automation inputs  
+- backward compatibility  
+- flexibility for future redesign  
 
 ---
 
 ## What This Folder Contains
 
-This folder includes the templates and helpers that define:
+- Eufy-based occupancy interpretation  
+- stable presence templates  
+- fail-open handling logic  
+- compatibility entity aliases  
 
-- stable occupancy state  
-- Eufy-based security mode interpretation  
-- fail-open handling under uncertainty  
-- compatibility aliases for older entity names  
-
-As the system grows, additional corroborating signals can be layered into this subsystem without forcing redesign of downstream automation layers.
+This layer is intentionally minimal and focused.
 
 ---
 
 ## Design Summary
 
-This is not a simple “who is home” feature.
+This is not a basic presence feature.
 
-It is the **permission layer** that determines whether the rest of the residential automation platform is allowed to behave as occupied or away.
+It is a **multi-layer occupancy system** that separates:
 
-The current implementation uses:
+- detection (Apple Home)  
+- state (Eufy)  
+- transport (Docker bridge)  
+- interpretation (Home Assistant)  
 
-- **Apple Home** as the phone-location and geofence automation backbone  
-- **Eufy** as the stable security-state anchor  
-- **Docker** as the persistent bridge layer that feeds Home Assistant  
-- **Home Assistant** as the backend interpreter of occupancy truth  
-
-That makes the system:
+The result is a system that is:
 
 - stable  
-- layered  
+- resilient  
 - safe under uncertainty  
-- easy for other automation systems to consume  
-- and much more reliable than raw single-device presence logic
+- easy for other systems to consume  
+- significantly more reliable than raw GPS or single-device presence tracking  
