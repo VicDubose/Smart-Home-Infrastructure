@@ -89,7 +89,8 @@ ASCII DIAGRAM (real cabling)
 - Acts as distribution point for wired devices
 
 ### Cisco Catalyst 2960-C (Layer 2)
-- all on Vlan 10 
+- all on Vlan 10
+- VLan 50 is exclusively a Lab Test environment for the EVE-NG environment segmenting it from my home netowork for safety with only the RDP located in both VLAns through trunking techniques.
 - Provides wired connectivity
 - Uplinked to mesh node (not primary router)
 - Fast Ethernet ports used for low-bandwidth devices
