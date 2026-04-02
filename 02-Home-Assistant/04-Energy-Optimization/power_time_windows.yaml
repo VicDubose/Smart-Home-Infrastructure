@@ -1,0 +1,92 @@
+#############################################
+# ALABAMA POWER: TIME WINDOWS (RTA + EV)
+# Source: RTA - Residential Time Advantage Rate
+# - Summer Peak: Jun–Sep, weekdays 13:00–19:00
+# - Winter Peak: Nov–Mar, weekdays 05:00–09:00
+# - Shoulder: Apr, May, Oct (NO peak)
+# - EV Night Credit: 21:00–05:00 (separate rider)
+#############################################
+
+template:
+  - binary_sensor:
+
+      ########################################################
+      # EV Night Charging Discount Window (credit) 21:00–05:00
+      ########################################################
+      - name: "AP EV Night Discount Window"
+        unique_id: ap_ev_night_discount_window
+        state: >
+          {% set h = now().hour %}
+          {{ (h >= 21) or (h < 5) }}
+
+      ########################################################
+      # RTA Winter Peak: Nov–Mar, weekdays 05:00–09:00
+      ########################################################
+      - name: "AP RTA Winter Peak Active"
+        unique_id: ap_rta_winter_peak_active
+        state: >
+          {% set m = now().month %}
+          {% set is_winter = (m == 11) or (m == 12) or (m <= 3) %}
+          {% set is_weekday = now().weekday() < 5 %}
+          {% set h = now().hour %}
+          {{ is_winter and is_weekday and (h >= 5) and (h < 9) }}
+
+      ########################################################
+      # RTA Summer Peak: Jun–Sep, weekdays 13:00–19:00
+      ########################################################
+      - name: "AP RTA Summer Peak Active"
+        unique_id: ap_rta_summer_peak_active
+        state: >
+          {% set m = now().month %}
+          {% set is_summer = (m >= 6) and (m <= 9) %}
+          {% set is_weekday = now().weekday() < 5 %}
+          {% set h = now().hour %}
+          {{ is_summer and is_weekday and (h >= 13) and (h < 19) }}
+
+      ########################################################
+      # RTA Shoulder Season: Apr, May, Oct (NO peak at all)
+      ########################################################
+      - name: "AP RTA Shoulder Season"
+        unique_id: ap_rta_shoulder_season
+        state: >
+          {% set m = now().month %}
+          {{ (m == 4) or (m == 5) or (m == 10) }}
+
+      ########################################################
+      # Peak Shield Active
+      # - TRUE during any RTA peak window
+      ########################################################
+      - name: "AP Peak Shield Active"
+        unique_id: ap_peak_shield_active
+        state: >
+          {{ is_state('binary_sensor.ap_rta_winter_peak_active','on')
+             or is_state('binary_sensor.ap_rta_summer_peak_active','on') }}
+
+      ########################################################
+      # Strict Shield Active
+      # - Use this for "absolutely no stacked loads"
+      # - Winter peak OR full summer peak
+      ########################################################
+      - name: "AP Strict Shield Active"
+        unique_id: ap_strict_shield_active
+        state: >
+          {{ is_state('binary_sensor.ap_rta_winter_peak_active','on')
+             or is_state('binary_sensor.ap_rta_summer_peak_active','on') }}
+
+  ########################################################
+  # SENSOR: Current Power Mode (CHEAP / CAUTION / STRICT)
+  ########################################################
+  - sensor:
+      - name: "AP Current Power Mode"
+        unique_id: ap_current_power_mode
+        icon: mdi:transmission-tower
+        state: >
+          {% if is_state('binary_sensor.ap_strict_shield_active', 'on') %}
+            STRICT
+          {% elif is_state('binary_sensor.ap_peak_shield_active', 'on') %}
+            CAUTION
+          {% elif is_state('binary_sensor.ap_ev_night_discount_window', 'on') %}
+            CHEAP
+          {% else %}
+            NORMAL
+          {% endif %}
