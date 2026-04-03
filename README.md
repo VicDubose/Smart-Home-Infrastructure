@@ -1,6 +1,6 @@
 
 # Smart-Home-Infrastructure
-Residential smart home lab integrating Home Assistant, network infrastructure, virtualization, and energy automation.
+Residential smart home lab integrating Home Assistant, network infrastructure, virtualization, and energy automation. this home was built originally in 1963 and completely remodeled over the past 2 years this is my capstone and the culmination of my technical knowladge. 
 
 # Smart Home Infrastructure & Automation Lab
 
