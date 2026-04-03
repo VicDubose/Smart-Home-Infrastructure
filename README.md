@@ -344,7 +344,7 @@ The smart home is designed using core engineering principles typically applied t
   - Network infrastructure → connectivity and security  
 
 - **Local-First Architecture**
-  - all critical systems operate داخل the local network  
+  - all critical systems operate on the local network  
   - remote access is achieved securely via VPN (Asus Instant Guard)  
   - no direct exposure of internal services to the public internet  
 
