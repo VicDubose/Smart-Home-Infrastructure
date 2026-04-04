@@ -130,7 +130,7 @@ This network prioritizes:
 - performance through correct device placement  
 - reliability through minimal failure points  
 
-It is intentionally designed as a **single, efficient Layer 2 domain** with a strong Layer 3 edge.
+It is intentionally designed as a **single, efficient Layer 2 domain** with a strong Layer 3 edge. with my switch operating as a augmented router on a stick setup.
 
 ---
 
@@ -140,6 +140,7 @@ It is intentionally designed as a **single, efficient Layer 2 domain** with a st
 - No external exposure required
 - All automations rely on stable internal routing
 - Apple Home acts as the user-facing layer
+- RDP allows local remote ssh access through the instant guard vpn
 
 ---
 
