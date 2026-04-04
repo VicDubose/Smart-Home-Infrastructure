@@ -246,14 +246,33 @@ Instead, it acts as the **presence authority**:
 - enables or suppresses deeper HVAC logic
 
 ---
+Why Apple Home
 
+Apple Home was chosen as the front-end layer because it provides the best balance of security, reliability, and user experience for a household-facing system.
+- Secure by design
+- all remote access is handled through Apple infrastructure
+- end-to-end encryption with no need to expose internal services
+- Best-in-class presence detection
+- native iPhone geofencing is fast, accurate, and requires no additional apps
+- shared seamlessly across all household members with apple devices
+- Clean, consistent interface
+- simple for non-technical users
+- identical experience across iPhone, iPad, and HomePod
+
+
+Compared to Google Home
+
+	•	more cloud-dependent for automation logic
+	•	less control over keeping systems fully local
+	•	less consistent UI across devices
+
+---
 ### Result
 
 - climate feels responsive to real life, not just schedules  
 - energy usage is reduced without sacrificing comfort  
-- the system adapts naturally to daily routines  
-
-> Detailed adaptive recovery and zoning logic is handled in the Home Assistant layer.
+- the system adapts naturally to daily routines
+- Apple Home provides a secure, polished, and family-friendly interface, while Home Assistant maintains full local control and automation power behind the scenes.
 
 ## Status
 
