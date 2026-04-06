@@ -10,6 +10,9 @@ Rather than running Windows directly on the hardware, it is virtualized to separ
 
 <p align="center">
   <img src="../../Screenshots/IMG_1491.png" width="600"/>
+  
+  <img src="../../Screenshots/issolated_VLan50Confirmation.png
+" width="600"/>
 </p>
 
 The Windows VM serves as the daily control interface for the infrastructure.
