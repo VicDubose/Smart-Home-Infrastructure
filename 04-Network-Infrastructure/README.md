@@ -67,6 +67,8 @@ ASCII DIAGRAM (real cabling)
  <img src="Screenshots/IMG_1538.png" width="500"/>
  <img src="Screenshots/IMG_6070.jpeg" width="400"/>
  <img src="Screenshots/Screenshot 2026-04-05 042714.png" width="500"/>
+ <img src="Screenshots/IMG_1645.png" width="400"/>
+ <p align="center">
 </p>
 
 ---
