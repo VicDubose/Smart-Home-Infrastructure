@@ -446,3 +446,112 @@ The system is designed to be:
 - operationally stable  
 
 The result is a comfort system that actively manages when and how conditioning is allowed, rather than simply reacting after discomfort already exists.
+
+---
+
+## 🌤️ Shoulder Season Control Logic (Alabama Climate Model)
+
+The HVAC system includes a dedicated control strategy for **shoulder months** (spring and fall), where outdoor conditions fluctuate between heating and cooling requirements within the same day.
+
+This is particularly important in **Alabama**, where:
+
+* mornings can require **heating**
+* afternoons can require **cooling**
+* daily temperature swings of **20–30°F** are common
+* humidity adds additional comfort complexity
+
+Traditional thermostats handle this poorly by either:
+
+* locking into a single mode (heat or cool), or
+* requiring manual switching
+
+This system avoids that limitation through **dynamic mode selection**.
+
+---
+
+### 🌡️ Mode Decision Model
+
+During shoulder months, the system does not rely on fixed seasonal states.
+
+Instead, it determines HVAC mode using a combination of:
+
+* indoor temperature (current comfort state)
+* target temperature (desired state)
+* an **outside temperature proxy**
+* a deadband to prevent rapid switching
+
+As implemented in the control logic , the system evaluates:
+
+```text
+If outside proxy < ~65°F → favor heating  
+If outside proxy > ~72°F → favor cooling  
+Otherwise → decide based on indoor delta to target
+```
+
+---
+
+### 🌡️ Outside Temperature Proxy
+
+Rather than relying on an external weather API, the system uses a **local sensor proxy** to approximate outdoor conditions.
+
+This provides:
+
+* faster response to real conditions
+* independence from cloud services
+* behavior aligned with the actual thermal environment of the home
+
+The proxy acts as a **season override layer** during shoulder months.
+
+---
+
+### 🔁 Deadband Protection
+
+To prevent rapid oscillation between heating and cooling, a **deadband threshold (~±0.8°F)** is applied.
+
+Behavior:
+
+* small temperature deviations → no mode change
+* meaningful drift → system commits to heat or cool
+
+This ensures:
+
+* stable system behavior
+* reduced equipment wear
+* no “mode flapping” during borderline conditions
+
+---
+
+### 🧠 Mid-Cycle Authority Correction
+
+If environmental conditions shift during operation:
+
+* the system can **correct HVAC mode mid-cycle**
+* zones already running will be updated to match the new mode authority
+
+This is enforced through the **mode compliance watchdog layer** , ensuring:
+
+* all active zones remain synchronized
+* no mixed heating/cooling states occur
+
+---
+
+### 🎯 Why This Matters
+
+Shoulder months are where most residential HVAC systems lose efficiency.
+
+This design:
+
+* eliminates manual mode switching
+* adapts to real-time environmental changes
+* maintains comfort without over-conditioning
+* reduces unnecessary runtime
+
+---
+
+### ⚡ Summary
+
+```text
+During shoulder seasons, HVAC mode is dynamically selected using indoor conditions and a local outdoor proxy, allowing the system to transition between heating and cooling within the same day without manual intervention.
+```
+
+
