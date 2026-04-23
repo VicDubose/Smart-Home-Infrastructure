@@ -4,6 +4,16 @@
 # Living Room (Common Area) Smart/Adaptive Recovery
 # Climate: climate.air_conditioner_2
 # Temp:    sensor.shelly_wave_h_t_sensor_air_temperature  (CA sensor)
+#
+# Logic:
+# - CA remains authority
+# - Summer => cool
+# - Winter => heat
+# - Shoulder months use Laundry Room as outside proxy
+# - LR >= 84F forces cool
+# - Neutral shoulder band uses CA delta with deadband
+# - Mid-cycle authority correction
+# - Scheduled hard sync checks at 06:00 / 12:00 / 16:00 / 18:00
 #############################################
 
 input_boolean:
@@ -84,9 +94,6 @@ template:
             {{ ((as_datetime(aim) - now()).total_seconds() / 60) | round(0) }}
           {% endif %}
 
-      # Day/Night target with 4-hour ramps:
-      # 17->21 ramps Day -> Night
-      # 05->09 ramps Night -> Day
       - name: lr_target_f
         unit_of_measurement: "°F"
         state: >
@@ -131,8 +138,53 @@ template:
             0
           {% endif %}
 
+      - name: lr_outside_proxy_temp_f
+        unit_of_measurement: "°F"
+        state: >
+          {% set t = states('sensor.shelly_wave_h_t_sensor_lr_air_temperature') %}
+          {% if t in ['unknown','unavailable','none',''] %}
+            unknown
+          {% else %}
+            {{ t|float }}
+          {% endif %}
+
+      - name: hvac_mode_authority_living_room
+        unique_id: hvac_mode_authority_living_room
+        state: >
+          {% set ca = states('sensor.shelly_wave_h_t_sensor_air_temperature') %}
+          {% set proxy = states('sensor.lr_outside_proxy_temp_f') %}
+          {% set delta = states('sensor.lr_delta_to_target_f') %}
+          {% set current = states('climate.air_conditioner_2') %}
+
+          {% set ca_ok = ca not in ['unknown','unavailable','none',''] %}
+          {% set proxy_ok = proxy not in ['unknown','unavailable','none',''] %}
+          {% set delta_ok = delta not in ['unknown','unavailable','none',''] %}
+
+          {% set ca_f = ca|float(0) %}
+          {% set proxy_f = proxy|float(0) %}
+          {% set delta_f = delta|float(0) %}
+
+          {% if ca_ok and ca_f >= 84 %}
+            cool
+          {% elif is_state('binary_sensor.hvac_season_summer','on') %}
+            cool
+          {% elif is_state('binary_sensor.hvac_season_winter','on') %}
+            heat
+          {% elif proxy_ok and proxy_f < 65 %}
+            heat
+          {% elif proxy_ok and proxy_f > 72 %}
+            cool
+          {% elif delta_ok and delta_f >= 0.8 %}
+            cool
+          {% elif delta_ok and delta_f <= -0.8 %}
+            heat
+          {% elif current in ['heat','cool'] %}
+            {{ current }}
+          {% else %}
+            cool
+          {% endif %}
+
 automation:
-  # Start recovery when needed (ONLY if SmartRec enabled AND unit not OFF)
   - id: smartrec_lr_start
     alias: "SmartRec LR - Start"
     mode: single
@@ -143,27 +195,25 @@ automation:
       - condition: state
         entity_id: input_boolean.lr_smartrec_enabled
         state: "on"
-
-      # IMPORTANT: do not fight OFF
       - condition: template
         value_template: >
           {{ states('climate.air_conditioner_2') != 'off' }}
-
       - condition: template
         value_template: >
           {{ states('sensor.lr_est_minutes_needed')|int(0)
                >= states('sensor.lr_minutes_until_aim')|int(0)
              and (states('sensor.lr_delta_to_target_f')|float(0) | abs) > 0.2 }}
-
       - condition: state
         entity_id: input_boolean.lr_recovery_active
         state: "off"
     action:
       - service: input_boolean.turn_on
-        target: { entity_id: input_boolean.lr_recovery_active }
+        target:
+          entity_id: input_boolean.lr_recovery_active
 
       - service: input_number.set_value
-        target: { entity_id: input_number.lr_deltat_at_start_f }
+        target:
+          entity_id: input_number.lr_deltat_at_start_f
         data:
           value: >
             {% set raw = states('sensor.lr_delta_to_target_f') %}
@@ -174,38 +224,22 @@ automation:
             {% endif %}
 
       - service: input_datetime.set_datetime
-        target: { entity_id: input_datetime.lr_start_time }
+        target:
+          entity_id: input_datetime.lr_start_time
         data:
           datetime: "{{ now().isoformat() }}"
 
-      # Season preference:
-      # - Summer months => prefer COOL
-      # - Winter months => prefer HEAT
-      # - Otherwise => choose by delta sign
-      - choose:
-          - conditions: "{{ is_state('binary_sensor.hvac_season_summer','on') }}"
-            sequence:
-              - service: climate.set_hvac_mode
-                data: { entity_id: climate.air_conditioner_2, hvac_mode: cool }
-          - conditions: "{{ is_state('binary_sensor.hvac_season_winter','on') }}"
-            sequence:
-              - service: climate.set_hvac_mode
-                data: { entity_id: climate.air_conditioner_2, hvac_mode: heat }
-          - conditions: "{{ states('sensor.lr_delta_to_target_f')|float(0) > 0 }}"
-            sequence:
-              - service: climate.set_hvac_mode
-                data: { entity_id: climate.air_conditioner_2, hvac_mode: cool }
-          - conditions: []
-            sequence:
-              - service: climate.set_hvac_mode
-                data: { entity_id: climate.air_conditioner_2, hvac_mode: heat }
+      - service: climate.set_hvac_mode
+        target:
+          entity_id: climate.air_conditioner_2
+        data:
+          hvac_mode: "{{ states('sensor.hvac_mode_authority_living_room') }}"
 
       - service: climate.set_temperature
         data:
           entity_id: climate.air_conditioner_2
           temperature: "{{ states('sensor.lr_target_f')|float(66) }}"
 
-  # Learn & stop
   - id: smartrec_lr_learn
     alias: "SmartRec LR - Learn & Stop"
     mode: restart
@@ -232,12 +266,67 @@ automation:
           - conditions: "{{ hvac_mode in ['cool','dry'] }}"
             sequence:
               - service: input_number.set_value
-                target: { entity_id: input_number.lr_rate_cool_f_per_min }
-                data: { value: "{{ [ new_cool|float(0.02), 0.02 ] | max }}" }
+                target:
+                  entity_id: input_number.lr_rate_cool_f_per_min
+                data:
+                  value: "{{ [ new_cool|float(0.02), 0.02 ] | max }}"
           - conditions: []
             sequence:
               - service: input_number.set_value
-                target: { entity_id: input_number.lr_rate_heat_f_per_min }
-                data: { value: "{{ [ new_heat|float(0.02), 0.02 ] | max }}" }
+                target:
+                  entity_id: input_number.lr_rate_heat_f_per_min
+                data:
+                  value: "{{ [ new_heat|float(0.02), 0.02 ] | max }}"
       - service: input_boolean.turn_off
-        target: { entity_id: input_boolean.lr_recovery_active }
+        target:
+          entity_id: input_boolean.lr_recovery_active
+
+  - id: hvac_lr_follow_authority_midcycle
+    alias: "HVAC LR - Follow authority mid-cycle"
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id: sensor.hvac_mode_authority_living_room
+        to:
+          - "heat"
+          - "cool"
+    condition:
+      - condition: template
+        value_template: "{{ states('climate.air_conditioner_2') != 'off' }}"
+      - condition: template
+        value_template: "{{ states('climate.air_conditioner_2') in ['heat','cool'] }}"
+      - condition: template
+        value_template: "{{ states('climate.air_conditioner_2') != states('sensor.hvac_mode_authority_living_room') }}"
+    action:
+      - service: climate.set_hvac_mode
+        target:
+          entity_id: climate.air_conditioner_2
+        data:
+          hvac_mode: "{{ states('sensor.hvac_mode_authority_living_room') }}"
+
+  - id: hvac_lr_scheduled_mode_enforcement
+    alias: "HVAC LR - Scheduled authority enforcement"
+    mode: single
+    trigger:
+      - platform: time
+        at: "06:00:00"
+      - platform: time
+        at: "12:00:00"
+      - platform: time
+        at: "16:00:00"
+      - platform: time
+        at: "18:00:00"
+    condition:
+      - condition: template
+        value_template: "{{ states('climate.air_conditioner_2') != 'off' }}"
+      - condition: template
+        value_template: "{{ states('sensor.hvac_mode_authority_living_room') in ['heat','cool'] }}"
+      - condition: template
+        value_template: >
+          {{ states('climate.air_conditioner_2') != states('sensor.hvac_mode_authority_living_room') }}
+    action:
+      - service: climate.set_hvac_mode
+        target:
+          entity_id: climate.air_conditioner_2
+        data:
+          hvac_mode: "{{ states('sensor.hvac_mode_authority_living_room') }}"
