@@ -1,15 +1,15 @@
-
 #############################################
 # packages/hvac_mode_compliance_watchdog.yaml
 #
 # HVAC MODE COMPLIANCE WATCHDOG
-# - Living Room is the "mode authority" (heat/cool)
-# - When LR mode changes, update other zones ONLY if they are ON (not off)
-# - If a zone turns on later, enforce LR mode
+# - Living Room actual mode is the source of truth for mirror zones
+# - When LR actual mode changes, update other zones ONLY if they are ON (not off)
+# - If a zone turns on later, enforce LR actual mode
 # - Periodic sweep as safety net
 #
-# Authority:
-#   Living Room: climate.air_conditioner_2
+# Source of truth:
+#   Living Room actual mode:
+#   climate.air_conditioner_2
 #
 # Mirrors (ONLY when already ON):
 #   Bedroom 1: climate.air_conditioner_3
@@ -32,7 +32,7 @@ template:
 automation:
 
   ########################################################
-  # 1) LR mode change -> push to zones that are ON
+  # 1) LR actual mode change -> push to zones that are ON
   ########################################################
   - id: hvac_mode_watchdog_sync_zones_when_lr_mode_changes
     alias: "HVAC Mode Watchdog - Sync zones when LR mode changes"
