@@ -350,7 +350,203 @@ The smart home is designed using core engineering principles typically applied t
 
 - **Controlled Exposure (Allowlist Model)**
   - only human-relevant entities are exposed to Apple Home  
-  - backend logic, telemetry, and system internals remain isolated  
+  - backend logic, telemetry, and system internals remain isolated
+ 
+    ## 🔢 Battery Runtime Model & Extended Operation
+
+The Powerwall is operated as a **time-shifting energy system**, primarily covering:
+
+* nighttime consumption
+* high-cost (peak) utility windows
+
+rather than attempting full 24-hour load coverage.
+
+---
+
+### Assumptions
+
+* **Battery Capacity:** 13.5 kWh usable (Tesla Powerwall 3)
+* **Daily Consumption:** 14–18 kWh
+* **Load Profile:** Evenly distributed across 24 hours
+* **Reserve Policy:** ~20% retained for outage protection and battery longevity
+
+---
+
+### Continuous Load Model
+
+Daily usage is converted into a constant demand:
+
+* 14 kWh/day → ~0.58 kW
+* 18 kWh/day → ~0.75 kW
+
+This provides a stable baseline for runtime modeling.
+
+---
+
+### Battery Coverage Window
+
+Because solar supplies daytime load, the battery is responsible for:
+
+* evening
+* overnight
+* early morning
+* peak-rate utility periods
+
+Typical required coverage:
+
+```
+~10–16 hours per day
+```
+
+---
+
+### Practical Runtime Capacity
+
+With a 20% reserve:
+
+* usable energy ≈ **10.8 kWh**
+
+Runtime capability:
+
+* 10.8 ÷ 0.58 ≈ **18.6 hours**
+* 10.8 ÷ 0.75 ≈ **14.4 hours**
+
+**Result:**
+
+```
+~14–19 hours available battery runtime
+```
+
+---
+
+### System Fit
+
+* Required coverage → **~10–16 hours**
+* Available runtime → **~14–19 hours**
+
+This creates a buffer for:
+
+* HVAC demand spikes
+* cloudy day carryover
+* automation inefficiencies
+* reserve protection
+
+---
+
+### Operational Outcome
+
+Because the battery is not responsible for daytime load:
+
+* solar supplies active demand
+* solar recharges the battery
+
+This allows:
+
+* **15–17 hours off-grid daily baseline**
+* **22–24 hours off-grid during strong summer conditions**
+
+---
+
+## 🔄 Extended Operation (24/7 Off-Grid Capability)
+
+While optimized for time-shifted usage, the system can be evaluated for **continuous off-grid operation over multiple days**.
+
+---
+
+### ☀️ Summer Operation (High Solar Availability)
+
+* Estimated solar generation: **~20–30 kWh/day**
+* Daily load: **14–18 kWh/day**
+
+```
+Solar ≥ Load → Battery replenished daily
+```
+
+**Outcome:**
+
+* Solar covers daytime load and recharges battery
+* Battery covers nighttime demand
+
+**1-Week Capability:**
+
+```
+Sustained multi-day / near-continuous off-grid operation possible
+```
+
+Battery acts as:
+
+* overnight buffer
+* stability layer
+
+Solar acts as:
+
+* primary energy source
+
+---
+
+### ❄️ Winter Operation (Reduced Solar Availability)
+
+* Estimated solar generation: **~8–15 kWh/day**
+* Daily load: **14–18 kWh/day**
+
+```
+Solar < Load → Daily energy deficit
+```
+
+Deficit range:
+
+* **~3–10 kWh per day**
+
+Battery usable capacity (with reserve):
+
+* **~10.8 kWh**
+
+**Outcome:**
+
+* Battery can absorb ~1 day of deficit
+* Multi-day 24/7 off-grid operation is not sustainable
+* System requires periodic grid support
+
+---
+
+### 🔋 Periodic Battery Fill Days
+
+To maintain long-term stability, the system uses scheduled **battery reset events**:
+
+* New Year’s Day
+* Labor Day
+* Thanksgiving
+* Christmas
+
+These days are used to:
+
+* recharge the battery to 100% from grid
+* eliminate accumulated energy deficits
+* stabilize winter performance
+
+**Function:**
+
+```
+Fill Days = System Reset Points
+```
+
+---
+
+### 🎯 Engineering Interpretation
+
+* **Summer:**
+  Solar-driven system capable of extended off-grid operation
+
+* **Winter:**
+  Time-constrained system with controlled grid dependency
+
+* **Battery Role:**
+  Time-shifting energy, not full-time supply
+
+* **Fill Days:**
+  Strategic resets to maintain system equilibrium
+
+ 
 
 - **System-as-Infrastructure Mindset**
   - HVAC, EV charging, and appliances are treated as coordinated system components  
