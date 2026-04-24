@@ -352,7 +352,9 @@ The smart home is designed using core engineering principles typically applied t
   - only human-relevant entities are exposed to Apple Home  
   - backend logic, telemetry, and system internals remain isolated
  
-    ## 🔢 Battery Runtime Model & Extended Operation
+---
+
+## 🔢 Battery Runtime Model & Extended Operation
 
 The Powerwall is operated as a **time-shifting energy system**, primarily covering:
 
