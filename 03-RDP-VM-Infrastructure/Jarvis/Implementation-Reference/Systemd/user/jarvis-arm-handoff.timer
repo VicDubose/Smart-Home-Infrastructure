@@ -1,0 +1,12 @@
+[Unit]
+Description=Check ARM completed media for Jarvis handoff
+
+[Timer]
+OnBootSec=5min
+OnUnitInactiveSec=5min
+AccuracySec=30s
+Persistent=true
+Unit=jarvis-arm-handoff.service
+
+[Install]
+WantedBy=timers.target

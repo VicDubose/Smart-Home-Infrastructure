@@ -1,0 +1,48 @@
+version: "1.6.0"
+
+category_points:
+  anime: 20
+  technology: 20
+  music: 18
+  food: 18
+  film: 17
+  arts: 16
+  outdoors: 16
+  nightlife: 15
+  sports: 14
+  family: 13
+  community: 12
+  education: 8
+  health: 7
+
+tier_modifiers:
+  T1: 15
+  T2: 5
+  T3: -15
+
+keyword_points:
+  anime: 3
+  manga: 3
+  cosplay: 3
+  convention: 3
+  artificial intelligence: 3
+  networking: 3
+  cybersecurity: 3
+  computers: 3
+  concert: 2
+  festival: 2
+  imax: 2
+  premiere: 2
+  tasting: 2
+  brunch: 2
+  ramen: 2
+  vintage: 2
+  bazaar: 2
+  night market: 2
+  holiday: 2
+  halloween: 2
+  christmas: 2
+  summer: 2
+  fall: 2
+  spring: 2
+  winter: 2

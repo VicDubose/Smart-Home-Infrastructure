@@ -1,0 +1,11 @@
+[Unit]
+Description=Scan completed ARM movie jobs for Jarvis validation
+
+[Timer]
+OnBootSec=12min
+OnUnitInactiveSec=5min
+Persistent=true
+Unit=jarvis-movie-arm-router.service
+
+[Install]
+WantedBy=timers.target

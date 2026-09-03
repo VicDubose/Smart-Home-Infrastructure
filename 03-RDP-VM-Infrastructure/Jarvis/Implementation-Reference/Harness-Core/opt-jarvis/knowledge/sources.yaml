@@ -1,0 +1,92 @@
+version: 1
+sources:
+  smart_home_infrastructure:
+    type: github
+    enabled: true
+    repo: Smart-Home-Infrastructure
+    branch: main
+    transport: ssh
+    roles:
+      intent: high
+      implementation: medium
+    include:
+    - '**/*.md'
+    - '**/*.yaml'
+    - '**/*.yml'
+    - '**/*.json'
+    - '**/*.txt'
+    exclude:
+    - .git/**
+    - '**/Screenshots/**'
+    - '**/*.png'
+    - '**/*.jpg'
+    - '**/*.jpeg'
+    - '**/*.gif'
+    - '**/*.zip'
+    - '**/*.tar'
+    - '**/*.gz'
+    local_path: /var/lib/jarvis/knowledge-sources/Smart-Home-Infrastructure
+    remote: git@github.com:VicDubose/Smart-Home-Infrastructure.git
+  ha_home_server:
+    type: github
+    enabled: true
+    repo: HA-Home-Server
+    branch: main
+    transport: ssh
+    roles:
+      implementation: high
+      intent: medium
+    include:
+    - '**/*.md'
+    - '**/*.yaml'
+    - '**/*.yml'
+    - '**/*.json'
+    - '**/*.txt'
+    - '**/*.py'
+    - '**/*.sh'
+    exclude:
+    - .git/**
+    - '**/*.log'
+    - '**/backup/**'
+    - '**/backups/**'
+    local_path: /var/lib/jarvis/knowledge-sources/HA-Home-Server
+    remote: git@github.com:VicDubose/HA-Home-Server.git
+  jarvis_repository:
+    type: github
+    enabled: false
+    repo: Jarvis
+    branch: main
+    transport: ssh
+    roles:
+      architecture: high
+      implementation: high
+      operations: high
+    include:
+    - '**/*.md'
+    - '**/*.yaml'
+    - '**/*.yml'
+    - '**/*.json'
+    - '**/*.txt'
+    - '**/*.py'
+    - '**/*.sh'
+    exclude:
+    - .git/**
+    - '**/*.log'
+    - '**/__pycache__/**'
+    - '**/*.pyc'
+    note: Repository name/path not yet confirmed.
+  apple_notes:
+    type: apple_notes
+    enabled: false
+    roles:
+      recent_intent: high
+      working_memory: high
+    note: Reserved for SKYNET-AI / Mac Studio integration.
+  home_assistant_runtime:
+    type: runtime
+    enabled: false
+    adapter: home_assistant
+    roles:
+      current_state: high
+      operational_evidence: high
+    note: Runtime evidence source. Not bulk-embedded by default.

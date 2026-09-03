@@ -1,0 +1,14 @@
+[Unit]
+Description=Retarget ARM to current MATSHITA Blu-ray device names
+Requires=docker.service
+After=docker.service
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/jarvis-arm-autoretarget
+TimeoutStartSec=120
+
+[Install]
+WantedBy=multi-user.target

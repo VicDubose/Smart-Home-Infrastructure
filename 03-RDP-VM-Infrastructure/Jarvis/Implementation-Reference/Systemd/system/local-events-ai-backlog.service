@@ -1,0 +1,55 @@
+[Unit]
+Description=Local Events Gemma Backlog Processor
+After=ollama.service libvirtd.service
+Wants=ollama.service
+
+[Service]
+Type=simple
+User=onsiteadmin
+Group=onsiteadmin
+WorkingDirectory=/mnt/appdata/ha-services/local-events
+
+Environment=HOME=/home/onsiteadmin
+Environment=PYTHONUNBUFFERED=1
+
+# Supervisor itself stays on Jarvis physical cores 2-3.
+AllowedCPUs=4-7
+
+#
+# TEMPORARY STRICT CORE SPLIT
+#
+# Windows:
+#   physical core 0 -> CPUs 0-1
+#   physical core 1 -> CPUs 2-3
+#
+# Jarvis AI:
+#   physical cores 2-3 -> CPUs 4-7
+#
+
+ExecStartPre=+/usr/bin/virsh -c qemu:///system vcpupin T800-Win11 0 0-1 --live
+ExecStartPre=+/usr/bin/virsh -c qemu:///system vcpupin T800-Win11 1 2-3 --live
+ExecStartPre=+/usr/bin/virsh -c qemu:///system emulatorpin T800-Win11 0-3 --live
+
+# Spread Gemma across CPUs 4-7, but only consume 2.5 CPUs worth
+# of sustained compute.
+ExecStartPre=+/usr/bin/systemctl set-property --runtime ollama.service AllowedCPUs=4-7
+ExecStartPre=+/usr/bin/systemctl set-property --runtime ollama.service CPUQuota=250%
+
+ExecStart=/mnt/appdata/ha-services/local-events/bin/run_gemma_backlog_isolated.sh
+
+#
+# Restore normal Jarvis policy when campaign exits.
+#
+ExecStopPost=-+/usr/bin/systemctl set-property --runtime ollama.service CPUQuota=400%
+ExecStopPost=-+/usr/bin/systemctl set-property --runtime ollama.service AllowedCPUs=
+
+ExecStopPost=-+/usr/bin/virsh -c qemu:///system vcpupin T800-Win11 0 0-7 --live
+ExecStopPost=-+/usr/bin/virsh -c qemu:///system vcpupin T800-Win11 1 0-7 --live
+ExecStopPost=-+/usr/bin/virsh -c qemu:///system emulatorpin T800-Win11 0-7 --live
+
+KillMode=control-group
+TimeoutStopSec=30
+Restart=no
+
+StandardOutput=journal
+StandardError=journal

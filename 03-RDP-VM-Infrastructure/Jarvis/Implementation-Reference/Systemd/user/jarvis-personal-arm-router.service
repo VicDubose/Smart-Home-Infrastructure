@@ -1,0 +1,19 @@
+[Unit]
+Description=Jarvis personal ARM post-process validation router
+After=network-online.target docker.service
+Wants=network-online.target
+ConditionPathIsMountPoint=/mnt/media
+ConditionPathExists=/mnt/appdata/arm/media
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h
+ExecStart=/usr/bin/flock -n -E 0 /run/user/%U/jarvis-media-ingest.lock /usr/bin/python3 -u %h/rdp-scripts/Jarvis/media/jarvis_personal_arm_router.py --scan --commit --ai llama3:8b
+Environment=PYTHONUNBUFFERED=1
+Environment=TERM=dumb
+Environment=NO_COLOR=1
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=6
+TimeoutStartSec=infinity
+KillSignal=SIGINT

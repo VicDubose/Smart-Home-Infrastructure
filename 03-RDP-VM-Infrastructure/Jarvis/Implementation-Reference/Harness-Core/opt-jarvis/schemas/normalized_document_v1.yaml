@@ -1,0 +1,65 @@
+schema: normalized_document_v1
+version: 1
+
+required:
+  - document_id
+  - source
+  - source_type
+  - source_ref
+  - content
+  - content_hash
+  - document_type
+  - provenance
+
+fields:
+
+  document_id:
+    type: string
+    description: Stable Jarvis document identifier.
+
+  source:
+    type: string
+    description: Logical source name from sources.yaml.
+
+  source_type:
+    type: string
+    description: Source adapter type such as github, apple_notes, or runtime.
+
+  source_ref:
+    type: string
+    description: Human-readable source-relative identifier.
+
+  domain:
+    type:
+      - string
+      - "null"
+    description: Optional Jarvis knowledge domain.
+
+  document_type:
+    type: string
+    description: markdown, yaml, json, python, shell, text, etc.
+
+  content:
+    type: string
+    description: Normalized textual content.
+
+  content_hash:
+    type: string
+    description: SHA-256 of normalized content.
+
+  title:
+    type:
+      - string
+      - "null"
+
+  provenance:
+    type: object
+    description: Information needed to trace the document back to its source.
+
+  authority:
+    type: object
+    description: Source authority roles inherited from sources.yaml.
+
+  metadata:
+    type: object
+    description: Adapter-specific non-authoritative metadata.

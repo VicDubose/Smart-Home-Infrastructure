@@ -1,0 +1,16 @@
+[Unit]
+Description=Jarvis safe seven-day staging cleanup
+
+[Service]
+Type=oneshot
+User=onsiteadmin
+Group=onsiteadmin
+Environment=HOME=/home/onsiteadmin
+
+ExecStart=/usr/bin/python3 /home/onsiteadmin/rdp-scripts/Jarvis/media/jarvis_retention_cleanup.py
+
+Nice=10
+IOSchedulingClass=idle
+
+NoNewPrivileges=true
+PrivateTmp=true

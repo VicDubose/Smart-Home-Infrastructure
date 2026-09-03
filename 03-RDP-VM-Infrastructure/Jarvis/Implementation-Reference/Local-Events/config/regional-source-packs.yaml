@@ -1,0 +1,239 @@
+version: "1.0"
+
+regions:
+
+  huntsville:
+    display_name: "Huntsville, Alabama"
+    city: "Huntsville"
+    state: "AL"
+
+    sources:
+
+      - id: huntsville_cvb
+        name: "Huntsville CVB Events"
+        url: "https://www.huntsville.org/events/"
+        role: general
+        collector: auto
+        browser_fallback: true
+
+      - id: we_are_huntsville
+        name: "We Are Huntsville"
+        url: "https://wearehuntsville.com/event-calendar/"
+        role: local-community
+        collector: auto
+        browser_fallback: true
+
+      - id: von_braun_center
+        name: "Von Braun Center"
+        url: "https://www.vonbrauncenter.com/events/"
+        role: major-venue
+        collector: auto
+        browser_fallback: true
+
+      - id: lowe_mill
+        name: "Lowe Mill ARTS & Entertainment"
+        url: "https://lowemill.art/event-directory/"
+        role: arts-local
+        collector: auto
+        browser_fallback: true
+
+      - id: rocket_city_mom
+        name: "Rocket City Mom"
+        url: "https://rocketcitymom.com/calendar/"
+        role: family-community
+        collector: auto
+        browser_fallback: true
+
+      - id: midcity_huntsville
+        name: "MidCity District"
+        url: "https://www.midcitydistrict.com/events"
+        role: district-music-food
+        collector: auto
+        browser_fallback: true
+
+    seasonal_subfeeds:
+
+      - id: huntsville_festivals
+        name: "Huntsville Festivals & Annual Events"
+        url: "https://www.huntsville.org/events/festivals/"
+        parent: huntsville_cvb
+
+      - id: orion_huntsville
+        name: "The Orion Amphitheater"
+        url: "https://theorionhuntsville.com/events/"
+        parent: midcity_huntsville
+
+
+  mobile:
+    display_name: "Mobile, Alabama"
+    city: "Mobile"
+    state: "AL"
+
+    sources:
+
+      - id: visit_mobile
+        name: "Visit Mobile"
+        url: "https://www.mobile.org/events/"
+        role: general
+        collector: browser
+        browser_fallback: true
+
+      - id: city_mobile_events
+        name: "City of Mobile Events"
+        url: "https://www.cityofmobile.org/events/"
+        role: city-community
+        collector: auto
+        browser_fallback: true
+
+      - id: downtown_mobile
+        name: "Downtown Mobile Alliance"
+        url: "https://www.downtownmobile.org/"
+        role: downtown-local
+        collector: auto
+        browser_fallback: true
+
+      - id: mobile_carnival
+        name: "Mobile Carnival Museum"
+        url: "https://mobilecarnivalmuseum.com/parade-schedule/"
+        role: mardi-gras
+        collector: auto
+        browser_fallback: true
+
+      - id: mobile_saenger
+        name: "Saenger Theatre Mobile"
+        url: "https://www.regionsarena.com/events/venue/saenger-theatre"
+        role: major-venue
+        collector: auto
+        browser_fallback: true
+
+    seasonal_subfeeds:
+
+      - id: mobile_annual_events
+        name: "Visit Mobile Annual Events"
+        url: "https://www.mobile.org/events/annual-events/"
+        parent: visit_mobile
+
+      - id: mobile_mardi_gras
+        name: "Visit Mobile Mardi Gras"
+        url: "https://www.mobile.org/events/mardi-gras/"
+        parent: visit_mobile
+
+      - id: mobile_festivals
+        name: "Visit Mobile Festivals"
+        url: "https://www.mobile.org/events/festivals/"
+        parent: visit_mobile
+
+
+  daytona_beach:
+    display_name: "Daytona Beach, Florida"
+    city: "Daytona Beach"
+    state: "FL"
+
+    sources:
+
+      - id: daytona_cvb
+        name: "Daytona Beach Area CVB"
+        url: "https://www.daytonabeach.com/events/"
+        role: general
+        collector: auto
+        browser_fallback: true
+
+      - id: daytona_speedway
+        name: "Daytona International Speedway"
+        url: "https://www.daytonainternationalspeedway.com/event-calendar/"
+        role: motorsports
+        collector: auto
+        browser_fallback: true
+
+      - id: ocean_center_daytona
+        name: "Ocean Center"
+        url: "https://www.oceancenter.com/events/calendar.stml"
+        role: conventions-expos
+        collector: auto
+        browser_fallback: true
+
+      - id: peabody_bandshell
+        name: "Peabody Auditorium / Oceanfront Bandshell"
+        url: "https://www.peabodyauditorium.org/"
+        role: music-performing-arts
+        collector: auto
+        browser_fallback: true
+
+      - id: daytona_bike_week
+        name: "Official Daytona Bike Week"
+        url: "https://officialbikeweek.com/"
+        role: motorcycle-specialty
+        collector: auto
+        browser_fallback: true
+
+    seasonal_subfeeds:
+
+      - id: daytona_bandshell
+        name: "Daytona Bandshell Concerts"
+        url: "https://www.daytonabeach.com/events/festivals-and-music/bandshell-concerts/"
+        parent: peabody_bandshell
+
+      - id: daytona_biker_events
+        name: "City of Daytona Biker Events"
+        url: "https://www.daytonabeach.gov/954/Biker-Events"
+        parent: daytona_bike_week
+
+      - id: daytona_special_events
+        name: "City of Daytona Special Events"
+        url: "https://www.daytonabeach.gov/369/Special-Events"
+        parent: daytona_cvb
+
+
+  pensacola:
+    display_name: "Pensacola, Florida"
+    city: "Pensacola"
+    state: "FL"
+
+    sources:
+
+      - id: visit_pensacola
+        name: "Visit Pensacola Events"
+        url: "https://www.visitpensacola.com/events/"
+        role: general
+        collector: auto
+        browser_fallback: true
+
+      - id: pensacola_seafood_festival
+        name: "Pensacola Seafood Festival"
+        url: "https://www.pensacolaseafoodfestival.com/"
+        role: food-festival
+        collector: auto
+        browser_fallback: true
+
+      - id: pensacola_mardi_gras
+        name: "Pensacola Mardi Gras"
+        url: "https://pensacolamardigras.com/"
+        role: mardi-gras
+        collector: auto
+        browser_fallback: true
+
+      - id: pensacola_beach_calendar
+        name: "Pensacola Beach What's Happening"
+        url: "https://visitpensacolabeach.com/whats-happening-calendar/"
+        role: beach-seasonal
+        collector: auto
+        browser_fallback: true
+
+      - id: pensacola_bands_beach
+        name: "Bands on the Beach"
+        url: "https://visitpensacolabeach.com/whats-happening-bands-on-beach/"
+        role: beach-music
+        collector: auto
+        browser_fallback: true
+
+    seasonal_subfeeds:
+
+      - id: pensacola_signature_events
+        name: "Visit Pensacola Signature Events"
+        url: "https://www.visitpensacola.com/events/signature-events/"
+        parent: visit_pensacola
+
+      - id: pensacola_air_show
+        name: "Pensacola Beach Air Show"
+        url: "https://visitpensacolabeach.com/whats-happening-blue-angels/"
+        parent: pensacola_beach_calendar

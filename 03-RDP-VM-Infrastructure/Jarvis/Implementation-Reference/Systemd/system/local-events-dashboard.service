@@ -1,0 +1,29 @@
+[Unit]
+Description=Local Events Intelligence Board
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+
+User=onsiteadmin
+Group=onsiteadmin
+
+WorkingDirectory=/mnt/appdata/ha-services/local-events
+
+Environment=PYTHONUNBUFFERED=1
+
+ExecStart=/mnt/appdata/ha-services/local-events/.venv/bin/gunicorn \
+    --workers 2 \
+    --threads 2 \
+    --bind 0.0.0.0:8787 \
+    --timeout 30 \
+    --access-logfile - \
+    --error-logfile - \
+    app.web.dashboard:app
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

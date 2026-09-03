@@ -1,0 +1,12 @@
+[Unit]
+Description=Check ARM failed-rip staging
+
+[Timer]
+OnBootSec=10min
+OnUnitInactiveSec=15min
+AccuracySec=1min
+Persistent=true
+Unit=jarvis-arm-failed-supervisor.service
+
+[Install]
+WantedBy=timers.target

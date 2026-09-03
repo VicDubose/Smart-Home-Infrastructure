@@ -1,0 +1,11 @@
+[Unit]
+Description=Remove expired Local Events and obsolete AI jobs
+ConditionPathExists=/mnt/appdata/ha-services/local-events/data/local_events.db
+
+[Service]
+Type=oneshot
+WorkingDirectory=/mnt/appdata/ha-services/local-events
+ExecStart=/usr/bin/python3 /mnt/appdata/ha-services/local-events/app/tools/expired_event_cleanup.py --execute
+
+Nice=15
+IOSchedulingClass=idle

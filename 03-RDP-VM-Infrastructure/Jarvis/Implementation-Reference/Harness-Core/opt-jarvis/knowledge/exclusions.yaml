@@ -1,0 +1,27 @@
+version: 1
+
+global_exclusions:
+  - ".git/**"
+  - "**/__pycache__/**"
+  - "**/*.pyc"
+  - "**/*.log"
+  - "**/*.tmp"
+  - "**/*.bak"
+  - "**/*.iso"
+  - "**/*.mkv"
+  - "**/*.mp4"
+  - "**/*.vob"
+  - "**/*.img"
+  - "**/*.zip"
+  - "**/*.tar"
+  - "**/*.gz"
+
+binary_policy:
+  ingest: false
+
+generated_artifact_policy:
+  ingest: false
+
+runtime_log_policy:
+  ingest: false
+  use_via_collectors: true

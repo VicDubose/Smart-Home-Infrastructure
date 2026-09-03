@@ -1,0 +1,12 @@
+[Unit]
+Description=Run the Jarvis central one-job media-priority cycle
+
+[Timer]
+OnBootSec=5min
+OnUnitInactiveSec=5min
+AccuracySec=30sec
+Persistent=true
+Unit=jarvis-media-priority.service
+
+[Install]
+WantedBy=timers.target

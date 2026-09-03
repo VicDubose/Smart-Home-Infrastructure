@@ -1,0 +1,27 @@
+[Unit]
+Description=Jarvis central one-job media-priority cycle
+After=network-online.target
+Wants=network-online.target
+ConditionPathIsMountPoint=/mnt/appdata
+ConditionPathIsMountPoint=/mnt/media
+ConditionPathExists=%h/Jarvis/config/media-priority-layout.env
+ConditionPathExists=%h/rdp-scripts/Jarvis/media/jarvis_caleb_registrar.py
+ConditionPathExists=%h/rdp-scripts/Jarvis/media/jarvis_media_priority_dispatcher.py
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h
+ExecStart=%h/rdp-scripts/Jarvis/media/jarvis_media_priority_cycle.sh
+
+Environment=PYTHONUNBUFFERED=1
+Environment=TERM=dumb
+Environment=NO_COLOR=1
+Environment=JARVIS_AUTO_CONFIRM=YES
+
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=6
+UMask=0002
+
+TimeoutStartSec=infinity
+KillSignal=SIGINT

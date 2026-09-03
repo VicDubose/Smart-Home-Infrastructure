@@ -1,0 +1,45 @@
+project:
+  name: Local Events Intelligence Board
+  owner: Tyrone
+  timezone: America/Chicago
+  rolling_days: 30
+
+location:
+  label: Dolomite / Birmingham AL
+
+distance:
+  tier_1_max_miles: 50
+  tier_2_max_miles: 100
+
+ai:
+  provider: ollama
+  base_url: http://127.0.0.1:11434
+  model: gemma3:1b
+  context_size: 4096
+  temperature: 0.1
+
+schedule:
+  monday_refresh: "06:00"
+  friday_refresh: "06:00"
+
+categories:
+  - music
+  - anime
+  - technology
+  - family
+  - food
+  - community
+
+scoring:
+  personal_interest: 35
+  category_match: 20
+  keyword_match: 15
+  popularity: 10
+  weekend_bonus: 10
+  value_bonus: 5
+  novelty_bonus: 5
+
+tier_modifiers:
+  T1: 15
+  T2: 5
+  T3: -15

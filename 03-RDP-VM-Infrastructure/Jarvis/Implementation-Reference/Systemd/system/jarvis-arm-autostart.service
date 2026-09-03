@@ -1,0 +1,16 @@
+[Unit]
+Description=Detect inserted Jarvis disc and start ARM
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+ConditionPathExists=/dev/sr1
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/jarvis-arm-autostart.sh
+TimeoutStartSec=infinity
+KillSignal=SIGINT
+
+Nice=-5
+IOSchedulingClass=best-effort
+IOSchedulingPriority=2

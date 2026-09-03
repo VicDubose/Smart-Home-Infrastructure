@@ -1,0 +1,16 @@
+[Unit]
+Description=Wait for idle state and pull Caleb Jellyfin additions into Jarvis
+After=network-online.target
+Wants=network-online.target
+Conflicts=jarvis-caleb-auto-ingest.service
+
+[Service]
+Type=oneshot
+ExecStart=/home/onsiteadmin/rdp-scripts/Jarvis/media/run_reverse_sync_when_idle.sh
+TimeoutStartSec=9h
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=6
+
+[Install]
+WantedBy=default.target

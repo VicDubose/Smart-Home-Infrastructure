@@ -1,0 +1,13 @@
+[Unit]
+Description=Jarvis ARM failed-rip hold and cleanup
+After=docker.service
+RequiresMountsFor=/mnt/appdata
+ConditionPathExists=/mnt/appdata/arm/media/raw
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/flock -n -E 0 /run/jarvis-arm-failed-supervisor.lock /usr/bin/python3 -u /home/onsiteadmin/rdp-scripts/Jarvis/media/jarvis_arm_failed_supervisor.py --commit --hold-hours 24
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
+TimeoutStartSec=15min

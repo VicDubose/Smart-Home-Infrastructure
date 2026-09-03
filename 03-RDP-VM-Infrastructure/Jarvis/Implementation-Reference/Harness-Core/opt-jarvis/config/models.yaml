@@ -1,0 +1,57 @@
+version: 1
+
+providers:
+  core_ollama:
+    type: ollama
+    endpoint: http://127.0.0.1:11434
+    node: skynet-core
+
+capabilities:
+
+  embeddings:
+    provider: core_ollama
+    model: embeddinggemma
+    available: true
+    purpose: knowledge-retrieval
+
+  operations-small:
+    provider: core_ollama
+    model: phi3:mini
+    available: true
+    purpose: operational-classification
+
+  general-small:
+    provider: core_ollama
+    model: llama3.2:3b
+    available: true
+    purpose: lightweight-language
+
+  fast-general:
+    provider: core_ollama
+    model: llama3:8b
+    available: true
+    purpose: general-reasoning
+
+  chief:
+    provider: core_ollama
+    model: llama3:8b
+    available: true
+    purpose: synthesis-and-escalation
+
+  coding-local:
+    provider: core_ollama
+    model: deepseek-coder:6.7b
+    available: true
+    purpose: local-code-assistance
+
+  coding-senior:
+    provider: null
+    model: null
+    available: false
+    purpose: senior-engineering
+
+  vision:
+    provider: null
+    model: null
+    available: false
+    purpose: visual-analysis

@@ -1,0 +1,12 @@
+[Unit]
+Description=Weekly Caleb-to-Jarvis Jellyfin reverse sync
+
+[Timer]
+OnCalendar=Fri *-*-* 01:15:00
+AccuracySec=1min
+RandomizedDelaySec=0
+Persistent=false
+Unit=jarvis-reverse-library-sync.service
+
+[Install]
+WantedBy=timers.target

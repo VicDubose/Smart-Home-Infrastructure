@@ -1,0 +1,45 @@
+version: 1
+domains:
+  hvac:
+    sources:
+    - smart_home_infrastructure
+    - ha_home_server
+    - apple_notes
+    - home_assistant_runtime
+  energy:
+    sources:
+    - smart_home_infrastructure
+    - ha_home_server
+    - apple_notes
+    - home_assistant_runtime
+  smart_home:
+    sources:
+    - smart_home_infrastructure
+    - ha_home_server
+    - apple_notes
+    - home_assistant_runtime
+  network:
+    sources:
+    - smart_home_infrastructure
+    - jarvis_repository
+    - apple_notes
+  media:
+    sources:
+    - jarvis_repository
+    - apple_notes
+  jarvis:
+    sources:
+    - jarvis_repository
+    - apple_notes
+routing:
+  smart_home_infrastructure:
+    default: smart_home
+    rules:
+    - prefix: 02-Home-Assistant/02-Comfort-and-HVAC/
+      domain: hvac
+    - prefix: 02-Home-Assistant/04-Energy-Optimization/
+      domain: energy
+    - prefix: 02-Home-Assistant/05-Appliance-and-Load-Control/
+      domain: energy
+    - prefix: 04-Network-Infrastructure/
+      domain: network

@@ -1,0 +1,19 @@
+[Unit]
+Description=Jarvis Media Status Exporter
+Wants=network-online.target
+After=network-online.target docker.service
+
+[Service]
+Type=simple
+User=onsiteadmin
+Group=onsiteadmin
+WorkingDirectory=/home/onsiteadmin/Jarvis
+Environment=PYTHONUNBUFFERED=1
+Environment=JARVIS_STATUS_HOST=192.168.50.51
+Environment=JARVIS_STATUS_PORT=8765
+ExecStart=/usr/bin/python3 /opt/jarvis-status/jarvis_status_exporter.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=Watch Jarvis optical drive for newly inserted media
+
+[Timer]
+OnBootSec=30sec
+OnUnitInactiveSec=15sec
+AccuracySec=2sec
+Unit=jarvis-arm-autostart.service
+
+[Install]
+WantedBy=timers.target

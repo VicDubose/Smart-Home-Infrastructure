@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh Local Events every Monday Wednesday Friday at 8 AM
+
+[Timer]
+OnCalendar=Mon,Wed,Fri *-*-* 08:00:00 America/Chicago
+Persistent=true
+AccuracySec=1min
+Unit=local-events-refresh.service
+
+[Install]
+WantedBy=timers.target

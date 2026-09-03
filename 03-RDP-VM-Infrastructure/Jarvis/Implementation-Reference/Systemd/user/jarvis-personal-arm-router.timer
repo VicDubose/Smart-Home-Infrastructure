@@ -1,0 +1,11 @@
+[Unit]
+Description=Scan personal ARM jobs for Jarvis validation
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=5min
+Persistent=true
+Unit=jarvis-personal-arm-router.service
+
+[Install]
+WantedBy=timers.target

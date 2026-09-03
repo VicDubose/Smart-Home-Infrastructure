@@ -1,0 +1,23 @@
+[Unit]
+Description=Jarvis guarded ARM media handoff
+After=network-online.target
+Wants=network-online.target
+ConditionPathIsMountPoint=/mnt/media
+ConditionPathExists=/mnt/appdata/arm/media/completed
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/onsiteadmin
+
+ExecStart=/usr/bin/flock -n /run/user/%U/jarvis-media-ingest.lock /usr/bin/python3 -u /home/onsiteadmin/rdp-scripts/Jarvis/media/jarvis_arm_handoff_worker.py
+
+Environment=PYTHONUNBUFFERED=1
+Environment=TERM=dumb
+Environment=NO_COLOR=1
+
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=6
+
+TimeoutStartSec=infinity
+KillSignal=SIGINT

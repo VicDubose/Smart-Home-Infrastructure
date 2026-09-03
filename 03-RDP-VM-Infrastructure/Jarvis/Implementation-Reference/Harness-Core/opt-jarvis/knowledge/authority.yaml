@@ -1,0 +1,41 @@
+version: 1
+
+truth_classes:
+
+  intent:
+    description: "What the system is supposed to do."
+    preferred_sources:
+      - smart_home_infrastructure
+      - jarvis_repository
+      - apple_notes
+
+  implementation:
+    description: "What the system is configured to do."
+    preferred_sources:
+      - ha_home_server
+      - jarvis_repository
+      - smart_home_infrastructure
+
+  runtime:
+    description: "What the system is actually doing now."
+    preferred_sources:
+      - home_assistant_runtime
+
+  recent_intent:
+    description: "Newest working decision or planned change."
+    preferred_sources:
+      - apple_notes
+
+conflict_policy:
+
+  implementation_vs_intent:
+    action: preserve_both
+
+  runtime_vs_implementation:
+    action: flag_drift
+
+  recent_intent_vs_implementation:
+    action: preserve_both
+
+  vector_store:
+    authoritative: false

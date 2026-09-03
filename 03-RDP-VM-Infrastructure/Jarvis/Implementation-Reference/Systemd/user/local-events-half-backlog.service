@@ -1,0 +1,27 @@
+[Unit]
+Description=Jarvis Local Events half-backlog guarded duty-cycle campaign
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=/mnt/appdata/ha-services/local-events/data/local_events.db
+ConditionPathExists=/mnt/appdata/ha-services/local-events/.venv/bin/python
+
+[Service]
+Type=simple
+WorkingDirectory=/mnt/appdata/ha-services/local-events
+
+ExecStart=/mnt/appdata/ha-services/local-events/app/tools/local_events_half_backlog_duty_cycle.sh
+
+Environment=PYTHONUNBUFFERED=1
+Environment=LIBVIRT_DEFAULT_URI=qemu:///system
+Environment=TERM=dumb
+Environment=NO_COLOR=1
+
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=6
+
+TimeoutStartSec=infinity
+KillSignal=SIGTERM
+
+StandardOutput=append:/mnt/appdata/ha-services/local-events/logs/half-backlog-duty-cycle.log
+StandardError=append:/mnt/appdata/ha-services/local-events/logs/half-backlog-duty-cycle.log
