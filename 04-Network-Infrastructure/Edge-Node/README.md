@@ -39,6 +39,16 @@ Reverse sync when Caleb has room
 
 **Raw media flows Caleb → Jarvis. Finished approved media may flow Jarvis → Caleb.** A full Caleb cache must not prevent a valid ingest from being preserved on Jarvis.
 
+## Power resilience and disaster role
+
+Caleb's Edge node is also part of the Texas home's **power-outage and disaster-resilience architecture**. Because the server runs on a laptop, the laptop's internal battery acts as an integrated UPS for the compute layer. A utility outage does not immediately shut down Home Assistant, Jellyfin, Local Events, monitoring, or the other local services running on the node.
+
+A separate **APC UPS protects the small network rack**, keeping the router, switching, and other essential network equipment online during an outage. The laptop battery and APC therefore protect different parts of the same system: the laptop keeps the Edge services alive, while the APC keeps the home's communication path alive.
+
+For longer outages, a generator becomes the endurance tier by powering or recharging the laptop and APC-backed network equipment. The intended progression is **grid power -> battery-backed operation -> generator-supported operation**. This gives the household a continuing avenue for local networking, Home Assistant monitoring, weather and emergency information, cameras, media, and infrastructure status even when normal utility service is unavailable.
+
+The goal is not unlimited runtime. It is to preserve a usable source of **power, communications, and information** for substantially longer than an ordinary unprotected home network. Generator operation remains separate from the network design and should follow normal electrical and carbon-monoxide safety requirements.
+
 ## Documentation map
 
 | Folder | Purpose |
