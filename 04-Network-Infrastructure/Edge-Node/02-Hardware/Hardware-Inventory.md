@@ -3,7 +3,7 @@
 | Component | Production observation |
 |---|---|
 | Platform | HP EliteBook 840-series laptop |
-| CPU | Intel Core i5-1145G7, 4 cores / 8 threads, up to 4.4 GHz |
+| CPU | Intel Core i6-1145G7, 4 cores / 8 threads, up to 4.4 GHz |
 | Memory | ~15 GiB usable in the live snapshot |
 | Internal system disk | 476.9 GiB NVMe (`MTFDKBA512TFH-1BC1AABHA`) |
 | Edge media disk | Crucial `CT500P3SSD8`, 465.8 GiB USB-attached NVMe/SSD |
