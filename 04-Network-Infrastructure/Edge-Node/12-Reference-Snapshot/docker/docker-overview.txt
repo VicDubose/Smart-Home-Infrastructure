@@ -1,0 +1,21 @@
+===== CONTAINERS =====
+CONTAINER ID   IMAGE                                          COMMAND                CREATED        STATUS                    PORTS                                         NAMES
+5314f038afb4   ghcr.io/home-assistant/home-assistant:stable   "/init"                2 months ago   Up 6 hours                                                              homeassistant
+0ffcbe5f9497   jellyfin/jellyfin                              "/jellyfin/jellyfin"   2 months ago   Up 5 hours (healthy)      0.0.0.0:8096->8096/tcp, [::]:8096->8096/tcp   jellyfin
+9da8c9e51c51   ghcr.io/home-assistant/home-assistant:stable   "/init"                2 months ago   Exited (0) 2 months ago                                                 homeassistant-old-bridge
+
+===== IMAGES =====
+REPOSITORY                              TAG       DIGEST                                                                    IMAGE ID       CREATED        SIZE
+ghcr.io/arabcoders/watchstate           latest    sha256:040e22c566e0d7190d26fbe7a08b2b9e19a2f26188c562d59196abaa642238aa   040e22c566e0   2 days ago     1.33GB
+jellyfin/jellyfin                       latest    sha256:aefb67e6a7ff1debdd154a78a7bbb780fd0c873d8639210a7f6a2016ad2b35db   aefb67e6a7ff   3 months ago   2.27GB
+ghcr.io/home-assistant/home-assistant   stable    sha256:59aa8824955c9db491b75d2eebe42bd68494f80c2ec69ec0d66d9dae37d37514   59aa8824955c   3 months ago   3.39GB
+
+===== NETWORKS =====
+NETWORK ID     NAME         DRIVER    SCOPE
+7e9fb1e6ce87   bridge       bridge    local
+e317f7fa9179   host         host      local
+6ed13b43e679   media-sync   bridge    local
+8a3cbc289c96   none         null      local
+
+===== VOLUMES =====
+DRIVER    VOLUME NAME

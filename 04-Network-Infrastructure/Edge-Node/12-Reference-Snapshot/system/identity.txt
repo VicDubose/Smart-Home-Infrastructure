@@ -1,0 +1,18 @@
+Generated: 2026-09-07T05:01:46-05:00
+Hostname: caleb-HP-EliteBook-840-G7-Notebook-PC
+Kernel: 7.0.0-31-generic
+
+NAME="Linux Mint"
+VERSION="22.3 (Zena)"
+ID=linuxmint
+ID_LIKE="ubuntu debian"
+PRETTY_NAME="Linux Mint 22.3"
+VERSION_ID="22.3"
+HOME_URL="https://www.linuxmint.com/"
+SUPPORT_URL="https://forums.linuxmint.com/"
+BUG_REPORT_URL="http://linuxmint-troubleshooting-guide.readthedocs.io/en/latest/"
+PRIVACY_POLICY_URL="https://www.linuxmint.com/"
+VERSION_CODENAME=zena
+UBUNTU_CODENAME=noble
+
+ 05:01:46 up  5:54,  4 users,  load average: 0.25, 0.48, 0.70

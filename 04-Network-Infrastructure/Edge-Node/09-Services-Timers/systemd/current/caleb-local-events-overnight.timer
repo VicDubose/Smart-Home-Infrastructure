@@ -1,0 +1,12 @@
+[Unit]
+Description=Caleb Sunday Wednesday Overnight Maintenance
+
+[Timer]
+OnCalendar=Sun,Wed *-*-* 01:00:00
+AccuracySec=1min
+WakeSystem=true
+Persistent=false
+Unit=caleb-local-events-overnight.service
+
+[Install]
+WantedBy=timers.target

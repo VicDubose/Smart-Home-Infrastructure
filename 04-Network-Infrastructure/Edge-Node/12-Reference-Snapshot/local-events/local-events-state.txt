@@ -1,0 +1,41 @@
+===== LOCAL EVENTS UNITS =====
+caleb-local-events-ai-via-jarvis.service                                      disabled        enabled
+caleb-local-events-expiry-cleanup.service                                     static          -
+caleb-local-events-morning-release.service                                    static          -
+caleb-local-events-overnight.service                                          static          -
+local-events-dashboard.service                                                enabled         enabled
+caleb-local-events-expiry-cleanup.timer                                       enabled         enabled
+caleb-local-events-morning-release.timer                                      enabled         enabled
+caleb-local-events-overnight.timer                                            enabled         enabled
+
+===== TIMER SCHEDULES =====
+Mon 2026-09-07 22:00:00 CDT           16h Sun 2026-09-06 22:00:01 CDT            - caleb-local-events-expiry-cleanup.timer  caleb-local-events-expiry-cleanup.service
+Wed 2026-09-09 01:00:00 CDT     1 day 19h -                                      - caleb-local-events-overnight.timer       caleb-local-events-overnight.service
+Wed 2026-09-09 06:00:00 CDT        2 days Sun 2026-09-06 07:03:32 CDT            - caleb-local-events-morning-release.timer caleb-local-events-morning-release.service
+
+===== SERVICE DETAILS =====
+
+----- caleb-local-events-ai-via-jarvis.service -----
+ExecStart={ path=/opt/local-events/bin/caleb_ai_jarvis_campaign.sh ; argv[]=/opt/local-events/bin/caleb_ai_jarvis_campaign.sh ; ignore_errors=no ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }
+WorkingDirectory=/opt/local-events
+Id=caleb-local-events-ai-via-jarvis.service
+ActiveState=inactive
+UnitFileState=disabled
+
+----- caleb-local-events-overnight.timer -----
+NextElapseUSecRealtime=Wed 2026-09-09 01:00:00 CDT
+Id=caleb-local-events-overnight.timer
+ActiveState=active
+UnitFileState=enabled
+
+----- caleb-local-events-morning-release.timer -----
+NextElapseUSecRealtime=Wed 2026-09-09 06:00:00 CDT
+Id=caleb-local-events-morning-release.timer
+ActiveState=active
+UnitFileState=enabled
+
+----- caleb-local-events-expiry-cleanup.timer -----
+NextElapseUSecRealtime=Mon 2026-09-07 22:00:00 CDT
+Id=caleb-local-events-expiry-cleanup.timer
+ActiveState=active
+UnitFileState=enabled

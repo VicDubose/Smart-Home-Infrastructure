@@ -1,0 +1,34 @@
+[Unit]
+Description=Caleb Local Events AI via Jarvis Gemma
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+
+User=caleb
+Group=caleb
+
+WorkingDirectory=/opt/local-events
+
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONPATH=/opt/local-events
+
+# Only this service sees the temporary Ollama execution config.
+# Caleb production remains remote_harness.
+BindReadOnlyPaths=/opt/local-events/runtime/ai-bridge/local-events-ai-runtime.yaml:/opt/local-events/config/local-events.yaml
+
+# Only this service sees the Caleb/Lindale AI prompt copy.
+
+ExecStart=/opt/local-events/bin/caleb_ai_jarvis_campaign.sh
+
+Restart=no
+KillMode=control-group
+TimeoutStopSec=40
+
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=6
+
+[Install]
+WantedBy=multi-user.target

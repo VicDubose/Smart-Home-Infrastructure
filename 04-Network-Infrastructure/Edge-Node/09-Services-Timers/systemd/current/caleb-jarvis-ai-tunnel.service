@@ -1,0 +1,15 @@
+[Unit]
+Description=Caleb Temporary Jarvis AI Tunnel
+After=network-online.target
+
+[Service]
+Type=simple
+User=caleb
+Group=caleb
+
+ExecStartPre=/usr/bin/rm -f /tmp/caleb-local-events-jarvis-ai.sock
+
+ExecStart=/usr/bin/ssh  -i /home/caleb/.ssh/<JARVIS_AI_PRIVATE_KEY>  -M  -S /tmp/caleb-local-events-jarvis-ai.sock  -NT  -o BatchMode=yes  -o ExitOnForwardFailure=yes  -o ServerAliveInterval=30  -o ServerAliveCountMax=3  -L 127.0.0.1:11435:127.0.0.1:11434  <JARVIS_SSH_USER>@192.168.50.51
+
+Restart=on-failure
+RestartSec=10

@@ -1,0 +1,24 @@
+# Replacement / Recovery Acceptance Checklist
+
+- [ ] System boots without failed critical units.
+- [ ] Docker active.
+- [ ] SSH active.
+- [ ] XRDP active if required.
+- [ ] Staging filesystem mounted at `/srv/staging`.
+- [ ] Edge SSD resolves by expected UUID and mounts ext4 `rw` at `/srv/media/External`.
+- [ ] No new USB/UAS/I/O/EXT4 errors in kernel journal.
+- [ ] Jellyfin container healthy.
+- [ ] Jellyfin HTTP endpoint returns 200.
+- [ ] Multiple real media files can be read from host and container.
+- [ ] Actual playback succeeds.
+- [ ] OpenVPN `tun0` active when required.
+- [ ] Route to `192.168.50.51` uses the VPN path.
+- [ ] Jarvis reachable.
+- [ ] Home Assistant available on 8123.
+- [ ] Caleb Node API available on 8787 and HA telemetry updates.
+- [ ] Local Events dashboard available on 8788.
+- [ ] Production timers show the documented next runs.
+- [ ] Legacy Friday VPN timers remain disabled.
+- [ ] Raw-disc handoff test succeeds.
+- [ ] Reverse-sync test succeeds without violating reserve.
+- [ ] `node-status` produces a coherent final summary.

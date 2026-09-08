@@ -1,0 +1,6 @@
+[Unit]
+Description=Caleb 6AM Maintenance Resource Release
+
+[Service]
+Type=oneshot
+ExecStart=/opt/local-events/.venv/bin/python /opt/local-events/bin/caleb_morning_release.py

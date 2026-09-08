@@ -1,0 +1,11 @@
+[Unit]
+Description=Check Caleb Edge storage safety every 5 minutes
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=5min
+AccuracySec=30s
+Persistent=true
+
+[Install]
+WantedBy=timers.target

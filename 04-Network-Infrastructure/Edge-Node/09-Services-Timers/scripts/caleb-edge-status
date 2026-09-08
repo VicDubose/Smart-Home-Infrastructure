@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+
+set +e
+set +u
+
+/usr/local/libexec/caleb-edge-status-base "$@"
+
+echo
+echo "=== RELIABLE CORE PULL ==="
+
+WORKER="$(systemctl is-active caleb-edge-pull.service 2>/dev/null || true)"
+BOOT="$(systemctl is-enabled caleb-edge-pull.service 2>/dev/null || true)"
+PID="$(systemctl show caleb-edge-pull.service -p MainPID --value 2>/dev/null)"
+
+echo "Worker: ${WORKER:-unknown}"
+echo "Boot:   ${BOOT:-unknown}"
+
+if [ "${PID:-0}" != "0" ]; then
+    echo "PID:    $PID"
+fi
+
+PART="$(
+    find \
+        /srv/media/Movies \
+        /srv/media/External/Shows \
+        -type f -name '*.part' \
+        -print -quit 2>/dev/null
+)"
+
+if [ -n "$PART" ]; then
+    echo "Current:"
+    du -h "$PART"
+else
+    echo "Current: no partial download"
+fi
+
+echo
+echo "Server Sync discovery states:"
+
+python3 - <<'PY'
+import sqlite3
+
+db = "/srv/docker/jellyfin/config/data/serversync/sync.db"
+
+try:
+    con = sqlite3.connect(f"file:{db}?mode=ro", uri=True)
+
+    rows = con.execute("""
+        SELECT Status, COUNT(*)
+        FROM SyncItems
+        GROUP BY Status
+        ORDER BY Status
+    """).fetchall()
+
+    for status, count in rows:
+        print(f"Status {status}: {count}")
+
+    con.close()
+
+except Exception as exc:
+    print("Unavailable:", exc)
+PY
+
+echo "============================================================"

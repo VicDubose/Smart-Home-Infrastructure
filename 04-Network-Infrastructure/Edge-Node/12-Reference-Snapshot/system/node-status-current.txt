@@ -1,0 +1,245 @@
+[H[2J[3JCALEB REMOTE MEDIA NODE — SYSTEM STATUS
+Generated: Mon Sep  7 05:01:53 AM CDT 2026
+Hostname:  caleb-HP-EliteBook-840-G7-Notebook-PC
+User:      caleb
+Uptime:    up 5 hours, 54 minutes
+Kernel:    7.0.0-31-generic
+
+========================================================================
+ SYSTEM HEALTH
+========================================================================
+Load averages:
+ 05:01:53 up  5:54,  4 users,  load average: 0.39, 0.51, 0.71
+
+CPU:
+CPU(s):                                  8
+On-line CPU(s) list:                     0-7
+Model name:                              11th Gen Intel(R) Core(TM) i5-1145G7 @ 2.60GHz
+Thread(s) per core:                      2
+Core(s) per socket:                      4
+Socket(s):                               1
+CPU(s) scaling MHz:                      26%
+NUMA node0 CPU(s):                       0-7
+
+Memory:
+               total        used        free      shared  buff/cache   available
+Mem:            15Gi       2.9Gi       3.9Gi       448Mi       9.3Gi        12Gi
+Swap:          2.0Gi          0B       2.0Gi
+
+Top memory users:
+    PID COMMAND         %CPU %MEM
+  34997 jellyfin        33.8  2.5
+   2145 python3          0.1  1.9
+  53174 brave            0.2  1.7
+  53267 brave            2.6  1.4
+   1512 cinnamon         0.7  1.2
+  53209 brave            0.1  1.1
+  53212 brave            0.0  0.7
+
+Temperatures:
+temp1:            N/A  
+Package id 0:  +50.0°C  (high = +100.0°C, crit = +100.0°C)
+Core 0:        +50.0°C  (high = +100.0°C, crit = +100.0°C)
+Core 1:        +49.0°C  (high = +100.0°C, crit = +100.0°C)
+Core 2:        +48.0°C  (high = +100.0°C, crit = +100.0°C)
+Core 3:        +49.0°C  (high = +100.0°C, crit = +100.0°C)
+Composite:    +33.9°C  (low  =  -0.1°C, high = +79.8°C)
+temp1:        +49.0°C  
+temp2:        +25.0°C  
+temp3:        +44.0°C  
+temp4:        +41.0°C  
+temp5:        +30.0°C  
+temp6:        +41.0°C  
+temp7:         +0.0°C  
+
+========================================================================
+ FILESYSTEM STORAGE
+========================================================================
+Filesystem     Type      Size  Used Avail Use% Mounted on
+efivarfs       efivarfs  246K  154K   88K  64% /sys/firmware/efi/efivars
+/dev/nvme0n1p2 ext4      468G  147G  298G  34% /
+/dev/loop0     ext4       49G   60K   47G   1% /srv/staging
+/dev/nvme0n1p1 vfat      511M  6.2M  505M   2% /boot/efi
+/dev/sda1      ext4      458G  153G  282G  36% /srv/media/External
+
+Media and staging usage:
+153G	/srv/media
+56K	/srv/staging
+3.5G	/srv/docker
+
+========================================================================
+ EXTERNAL / USB / OPTICAL DRIVES
+========================================================================
+Block devices:
+NAME        TRAN   TYPE   SIZE FSTYPE LABEL            MOUNTPOINTS         MODEL
+loop0              loop    50G ext4   CALEB_ARM_STAGIN /srv/staging        
+sda         usb    disk 465.8G                                             CT500P3SSD8
+└─sda1             part 465.7G ext4   CALEB_EDGE_MEDIA /srv/media/External 
+sr0         usb    rom   1024M                                             DVDRAM GT31L
+nvme0n1     nvme   disk 476.9G                                             MTFDKBA512TFH-1BC1AABHA
+├─nvme0n1p1 nvme   part   512M vfat                    /boot/efi           
+└─nvme0n1p2 nvme   part 476.4G ext4                    /                   
+
+USB devices:
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 002 Device 002: ID 2109:0822 VIA Labs, Inc. USB3.1 Hub             
+Bus 002 Device 003: ID 05e3:0626 Genesys Logic, Inc. Hub
+Bus 002 Device 004: ID 0bda:9210 Realtek Semiconductor Corp. RTL9210 M.2 NVME Adapter
+Bus 002 Device 005: ID 0bda:8153 Realtek Semiconductor Corp. RTL8153 Gigabit Ethernet Adapter
+Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 003 Device 002: ID 0408:5347 Quanta Computer, Inc. HP HD Camera
+Bus 003 Device 003: ID 2109:2822 VIA Labs, Inc. USB2.0 Hub             
+Bus 003 Device 004: ID 06cb:00f0 Synaptics, Inc. 
+Bus 003 Device 005: ID 8087:0026 Intel Corp. AX201 Bluetooth
+Bus 003 Device 006: ID 05e3:0610 Genesys Logic, Inc. Hub
+Bus 003 Device 008: ID 214b:7250 Huasheng Electronics USB2.0 HUB
+Bus 003 Device 009: ID 13fd:0840 Initio Corporation INIC-1618L SATA
+Bus 003 Device 010: ID 214b:7250 Huasheng Electronics USB2.0 HUB
+Bus 004 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+
+Optical devices:
+brw-rw----+ 1 root cdrom 11, 0 Sep  6 23:07 /dev/sr0
+
+Drive: /dev/sr0
+ID_CDROM=1
+ID_MODEL=DVDRAM_GT31L
+ID_VENDOR=hp
+
+Mounted removable storage:
+/dev/nvme0n1p2 / ext4 rw,relatime,errors=remount-ro
+/dev/nvme0n1p1 /boot/efi vfat rw,relatime,fmask=0077,dmask=0077,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro
+/dev/sda1 /srv/media/External ext4 rw,relatime,stripe=8191
+
+========================================================================
+ NETWORK AND VPN
+========================================================================
+IP addresses:
+192.168.1.20 172.18.0.1 172.17.0.1 10.8.0.6 
+
+Active connections:
+NAME                UUID                                  TYPE      DEVICE          
+<VPN_PROFILE>        <UUID_REDACTED>                         vpn       enx6c1ff7c014dc 
+Wired connection 1  <UUID_REDACTED>                         ethernet  enx6c1ff7c014dc 
+<DOCKER_BRIDGE>      <UUID_REDACTED>                         bridge    br-6ed13b43e679 
+docker0              <UUID_REDACTED>                         bridge    docker0         
+lo                   <UUID_REDACTED>                         loopback  lo              
+tun0                 <UUID_REDACTED>                         tun       tun0            
+
+VPN interface:
+6: tun0: <POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UNKNOWN group default qlen 500
+    inet 10.8.0.6 peer 10.8.0.5/32 scope global noprefixroute tun0
+       valid_lft forever preferred_lft forever
+
+Route to Jarvis:
+192.168.50.51 via 10.8.0.5 dev tun0 src 10.8.0.6 uid 1000 
+    cache 
+
+Jarvis connectivity:
+Jarvis 192.168.50.51: REACHABLE
+
+========================================================================
+ REMOTE ACCESS SERVICES
+========================================================================
+ssh                    enabled=enabled    active=active
+xrdp                   enabled=enabled    active=active
+xrdp-sesman            enabled=enabled    active=active
+docker                 enabled=enabled    active=active
+
+Listening remote-access ports:
+State  Recv-Q Send-Q Local Address:Port Peer Address:PortProcess
+LISTEN 0      4096         0.0.0.0:22        0.0.0.0:*          
+LISTEN 0      2                  *:3389            *:*          
+LISTEN 0      4096            [::]:22           [::]:*          
+
+========================================================================
+ DOCKER CONTAINERS
+========================================================================
+jellyfin           status=running      health=healthy
+homeassistant      status=running      health=not-configured
+
+NAMES           STATUS                 PORTS
+homeassistant   Up 6 hours             
+jellyfin        Up 5 hours (healthy)   0.0.0.0:8096->8096/tcp, [::]:8096->8096/tcp
+
+========================================================================
+ APPLICATION PORTS
+========================================================================
+Port 8096: LISTENING
+Port 8123: LISTENING
+
+Local URLs:
+Jellyfin:       http://localhost:8096
+Home Assistant: http://localhost:8123
+VPN Jellyfin:       http://10.8.0.6:8096
+VPN Home Assistant: http://10.8.0.6:8123
+
+========================================================================
+ RECENT SYSTEM FAILURES
+========================================================================
+No failed systemd units.
+
+Recent high-priority system messages:
+Sep 07 05:01:25 caleb-HP-EliteBook-840-G7-Notebook-PC xrdp[146693]: [ERROR] xrdp_process_main_loop: libxrdp_process_incoming failed
+Sep 07 05:01:25 caleb-HP-EliteBook-840-G7-Notebook-PC xrdp[146693]: [ERROR] xrdp_iso_send: trans_write_copy_s failed
+Sep 07 05:01:25 caleb-HP-EliteBook-840-G7-Notebook-PC xrdp[146693]: [ERROR] Sending [ITU T.125] DisconnectProviderUltimatum failed
+Sep 07 05:01:48 caleb-HP-EliteBook-840-G7-Notebook-PC xrdp[147169]: [ERROR] libxrdp_force_read: header read error
+Sep 07 05:01:48 caleb-HP-EliteBook-840-G7-Notebook-PC xrdp[147169]: [ERROR] [ITU-T X.224] Connection Sequence: CR-TPDU (Connection Request) failed
+Sep 07 05:01:48 caleb-HP-EliteBook-840-G7-Notebook-PC xrdp[147169]: [ERROR] xrdp_sec_incoming: xrdp_iso_incoming failed
+Sep 07 05:01:49 caleb-HP-EliteBook-840-G7-Notebook-PC xrdp[147169]: [ERROR] xrdp_rdp_incoming: xrdp_sec_incoming failed
+Sep 07 05:01:49 caleb-HP-EliteBook-840-G7-Notebook-PC xrdp[147169]: [ERROR] xrdp_process_main_loop: libxrdp_process_incoming failed
+Sep 07 05:01:49 caleb-HP-EliteBook-840-G7-Notebook-PC xrdp[147169]: [ERROR] xrdp_iso_send: trans_write_copy_s failed
+Sep 07 05:01:49 caleb-HP-EliteBook-840-G7-Notebook-PC xrdp[147169]: [ERROR] Sending [ITU T.125] DisconnectProviderUltimatum failed
+
+========================================================================
+ STAGING / ARM / MAKEMKV
+========================================================================
+
+Staging filesystem:
+TARGET       SOURCE     FSTYPE OPTIONS
+/srv/staging /dev/loop0 ext4   rw,relatime
+
+Capacity:
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/loop0       49G   60K   47G   1% /srv/staging
+
+Directory usage:
+/srv/staging/Raw_Rips                  size=24K      files=3
+/srv/staging/Raw_Rips/DVD              size=16K      files=3
+/srv/staging/Raw_Rips/Bluray           size=4.0K     files=0
+/srv/staging/Transfer_Queue            size=4.0K     files=0
+/srv/staging/Confirmed                 size=4.0K     files=0
+/srv/staging/Failed                    size=4.0K     files=0
+
+72-hour confirmed cleanup:
+enabled=enabled
+active=active
+next=Mon 2026-09-07 05:02:06 CDT 11s Mon 2026-09-07 04:02:22 CDT 59min ago caleb-staging-flush.timer caleb-staging-flush.service
+
+Recent cleanup activity:
+Mon Sep  7 01:03:40 AM CDT 2026 — confirmed-media cleanup finished
+==================================================
+Mon Sep  7 02:04:15 AM CDT 2026 — confirmed-media cleanup started
+Mon Sep  7 02:04:15 AM CDT 2026 — confirmed-media cleanup finished
+==================================================
+Mon Sep  7 03:01:00 AM CDT 2026 — confirmed-media cleanup started
+Mon Sep  7 03:01:00 AM CDT 2026 — confirmed-media cleanup finished
+==================================================
+Mon Sep  7 04:02:22 AM CDT 2026 — confirmed-media cleanup started
+Mon Sep  7 04:02:22 AM CDT 2026 — confirmed-media cleanup finished
+
+Safety state:
+STAGING_MOUNT=OK
+STAGING_FREE≈46GiB
+
+========================================================================
+ FINAL SUMMARY
+========================================================================
+SSH:            active
+RDP:            active
+Docker:         active
+Jellyfin:       running
+Home Assistant: running
+DVD drive:      detected
+VPN:            active
+========================================================================

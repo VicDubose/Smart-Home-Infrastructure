@@ -1,0 +1,22 @@
+# GitHub-safe reconstruction template.
+# Put the real key in secrets.yaml as caleb_node_api_key.
+# The production snapshot redacted the exact HTTP header name; restore the exact header from the private Node API configuration.
+rest:
+  - resource: http://127.0.0.1:8787/api/status
+    scan_interval: 30
+    timeout: 15
+    headers:
+      <AUTH_HEADER_NAME>: !secret caleb_node_api_key
+    sensor:
+      - name: Caleb Node Status
+        unique_id: caleb_node_status
+        value_template: "{{ value_json.updated_at | default('unknown') }}"
+        json_attributes:
+          - node
+          - storage
+          - network
+          - docker
+          - jellyfin
+          - ingest
+          - recent_errors
+          - updated_at

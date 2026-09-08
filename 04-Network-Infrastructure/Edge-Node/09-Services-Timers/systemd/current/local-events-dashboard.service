@@ -1,0 +1,30 @@
+# /etc/systemd/system/local-events-dashboard.service
+[Unit]
+Description=Local Events Intelligence Board
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+
+User=caleb
+Group=caleb
+
+WorkingDirectory=/opt/local-events
+
+Environment=PYTHONUNBUFFERED=1
+
+ExecStart=/opt/local-events/.venv/bin/gunicorn \
+    --workers 2 \
+    --threads 2 \
+    --bind 0.0.0.0:8788 \
+    --timeout 30 \
+    --access-logfile - \
+    --error-logfile - \
+    app.web.dashboard:app
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

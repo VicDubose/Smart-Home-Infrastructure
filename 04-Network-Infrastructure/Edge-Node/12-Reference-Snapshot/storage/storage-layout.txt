@@ -1,0 +1,78 @@
+===== LSBLK =====
+NAME        TRAN   TYPE   SIZE FSTYPE LABEL            UUID                                 MOUNTPOINTS         MODEL
+loop0              loop    50G ext4   CALEB_ARM_STAGIN 61187d53-8e60-4d75-936d-cff1fa5e3b8a /srv/staging        
+sda         usb    disk 465.8G                                                                                  CT500P3SSD8
+└─sda1             part 465.7G ext4   CALEB_EDGE_MEDIA afeecb37-f7ee-4ebe-9c79-f495fb1e55ea /srv/media/External 
+sr0         usb    rom   1024M                                                                                  DVDRAM GT31L
+nvme0n1     nvme   disk 476.9G                                                                                  MTFDKBA512TFH-1BC1AABHA
+├─nvme0n1p1 nvme   part   512M vfat                    B6FE-BA9C                            /boot/efi           
+└─nvme0n1p2 nvme   part 476.4G ext4                    860240be-ee1b-494f-b871-f706f00fbac7 /                   
+
+===== BLKID =====
+/dev/nvme0n1p1: UUID="B6FE-BA9C" BLOCK_SIZE="512" TYPE="vfat" PARTLABEL="EFI System Partition" PARTUUID="417bb7f0-1879-4947-b293-77cfdbabaafa"
+/dev/nvme0n1p2: UUID="860240be-ee1b-494f-b871-f706f00fbac7" BLOCK_SIZE="4096" TYPE="ext4" PARTUUID="8f315a1e-7d7c-4f83-b49c-43b85909c3a0"
+/dev/sda1: LABEL="CALEB_EDGE_MEDIA" UUID="afeecb37-f7ee-4ebe-9c79-f495fb1e55ea" BLOCK_SIZE="4096" TYPE="ext4" PARTLABEL="primary" PARTUUID="65de3d38-66ab-4e47-a2f9-17adc04ae9be"
+/dev/loop0: LABEL="CALEB_ARM_STAGIN" UUID="61187d53-8e60-4d75-936d-cff1fa5e3b8a" BLOCK_SIZE="4096" TYPE="ext4"
+
+===== FINDMNT =====
+TARGET                                                                                              SOURCE                 FSTYPE            OPTIONS
+/                                                                                                   /dev/nvme0n1p2         ext4              rw,relatime,errors=remount-ro
+├─/sys                                                                                              sysfs                  sysfs             rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/firmware/efi/efivars                                                                       efivarfs               efivarfs          rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/kernel/security                                                                            securityfs             securityfs        rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/fs/cgroup                                                                                  cgroup2                cgroup2           rw,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot
+│ ├─/sys/fs/pstore                                                                                  none                   pstore            rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/fs/bpf                                                                                     bpf                    bpf               rw,nosuid,nodev,noexec,relatime,mode=700
+│ ├─/sys/kernel/debug                                                                               debugfs                debugfs           rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/kernel/tracing                                                                             tracefs                tracefs           rw,nosuid,nodev,noexec,relatime
+│ ├─/sys/fs/fuse/connections                                                                        fusectl                fusectl           rw,nosuid,nodev,noexec,relatime
+│ └─/sys/kernel/config                                                                              configfs               configfs          rw,nosuid,nodev,noexec,relatime
+├─/proc                                                                                             proc                   proc              rw,nosuid,nodev,noexec,relatime
+│ └─/proc/sys/fs/binfmt_misc                                                                        systemd-1              autofs            rw,relatime,fd=32,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=8614
+│   └─/proc/sys/fs/binfmt_misc                                                                      binfmt_misc            binfmt_misc       rw,nosuid,nodev,noexec,relatime
+├─/dev                                                                                              udev                   devtmpfs          rw,nosuid,relatime,size=7030260k,nr_inodes=1757565,mode=755,inode64
+│ ├─/dev/pts                                                                                        devpts                 devpts            rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000
+│ ├─/dev/shm                                                                                        tmpfs                  tmpfs             rw,nosuid,nodev,inode64
+│ ├─/dev/mqueue                                                                                     mqueue                 mqueue            rw,nosuid,nodev,noexec,relatime
+│ └─/dev/hugepages                                                                                  hugetlbfs              hugetlbfs         rw,nosuid,nodev,relatime,pagesize=2M
+├─/run                                                                                              tmpfs                  tmpfs             rw,nosuid,nodev,noexec,relatime,size=1609728k,mode=755,inode64
+│ ├─/run/lock                                                                                       tmpfs                  tmpfs             rw,nosuid,nodev,noexec,relatime,size=5120k,inode64
+│ ├─/run/qemu                                                                                       tmpfs                  tmpfs             rw,nosuid,nodev,relatime,mode=755,inode64
+│ ├─/run/user/1000                                                                                  tmpfs                  tmpfs             rw,nosuid,nodev,relatime,size=1609724k,nr_inodes=402431,mode=700,uid=1000,gid=1000,inode64
+│ │ ├─/run/user/1000/gvfs                                                                           gvfsd-fuse             fuse.gvfsd-fuse   rw,nosuid,nodev,relatime,user_id=1000,group_id=1000
+│ │ └─/run/user/1000/doc                                                                            portal                 fuse.portal       rw,nosuid,nodev,relatime,user_id=1000,group_id=1000
+│ ├─/run/docker/netns/c719a81f75fd                                                                  nsfs[net:[4026532789]] nsfs              rw
+│ └─/run/docker/netns/default                                                                       nsfs[net:[4026531833]] nsfs              rw
+├─/srv/media/External                                                                               systemd-1              autofs            rw,relatime,fd=126,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=77306
+│ └─/srv/media/External                                                                             /dev/sda1              ext4              rw,relatime,stripe=8191
+├─/srv/staging                                                                                      /dev/loop0             ext4              rw,relatime
+├─/boot/efi                                                                                         /dev/nvme0n1p1         vfat              rw,relatime,fmask=0077,dmask=0077,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro
+├─/var/lib/docker/rootfs/overlayfs/0ffcbe5f9497afe132800b2bde7c5f0810037b2800848730f023f88382225b0d overlay                overlay           rw,relatime,lowerdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/37/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/10/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/9/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/8/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/7/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/6/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/5/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/4/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/3/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/2/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/1/fs,upperdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/38/fs,workdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/38/work,nouserxattr
+├─/var/lib/docker/rootfs/overlayfs/5314f038afb44480aef70eab07564759a4d09701f55777f57893ee5d21f7cd9d overlay                overlay           rw,relatime,lowerdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/39/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/34/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/33/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/32/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/31/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/30/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/29/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/28/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/27/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/26/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/25/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/24/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/23/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/22/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/21/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/20/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/19/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/18/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/17/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/16/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/15/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/14/fs:/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/13/fs,upperdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/40/fs,workdir=/var/lib/containerd/io.containerd.snapshotter.v1.overlayfs/snapshots/40/work,nouserxattr
+└─/home/caleb/thinclient_drives                                                                     xrdp-chansrv           fuse.xrdp-chansrv rw,nosuid,nodev,relatime,user_id=1000,group_id=1000
+
+===== DF =====
+Filesystem     Type      Size  Used Avail Use% Mounted on
+tmpfs          tmpfs     1.6G  2.4M  1.6G   1% /run
+efivarfs       efivarfs  246K  154K   88K  64% /sys/firmware/efi/efivars
+/dev/nvme0n1p2 ext4      468G  147G  298G  34% /
+tmpfs          tmpfs     7.7G   11M  7.7G   1% /dev/shm
+tmpfs          tmpfs     5.0M  8.0K  5.0M   1% /run/lock
+tmpfs          tmpfs     7.7G     0  7.7G   0% /run/qemu
+/dev/loop0     ext4       49G   60K   47G   1% /srv/staging
+/dev/nvme0n1p1 vfat      511M  6.2M  505M   2% /boot/efi
+tmpfs          tmpfs     1.6G  228K  1.6G   1% /run/user/1000
+/dev/sda1      ext4      458G  153G  282G  36% /srv/media/External
+
+===== MEDIA =====
+TARGET              SOURCE    FSTYPE OPTIONS
+/srv/media/External systemd-1 autofs rw,relatime,fd=126,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=77306
+/srv/media/External /dev/sda1 ext4   rw,relatime,stripe=8191
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1       458G  153G  282G  36% /srv/media/External
+
+===== STAGING =====
+TARGET       SOURCE     FSTYPE OPTIONS
+/srv/staging /dev/loop0 ext4   rw,relatime
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/loop0       49G   60K   47G   1% /srv/staging

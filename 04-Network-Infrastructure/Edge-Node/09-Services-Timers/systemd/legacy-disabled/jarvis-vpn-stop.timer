@@ -1,0 +1,10 @@
+[Unit]
+Description=Stop Caleb VPN every Friday at 10 AM
+
+[Timer]
+OnCalendar=Fri *-*-* 10:00:00
+Persistent=true
+Unit=jarvis-vpn-stop.service
+
+[Install]
+WantedBy=timers.target

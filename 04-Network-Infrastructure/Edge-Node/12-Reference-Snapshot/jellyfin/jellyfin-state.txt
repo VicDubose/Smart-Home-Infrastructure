@@ -1,0 +1,405 @@
+===== CONTAINER =====
+Status=running
+Health=healthy
+Image=jellyfin/jellyfin
+ImageID=sha256:aefb67e6a7ff1debdd154a78a7bbb780fd0c873d8639210a7f6a2016ad2b35db
+Restart=unless-stopped
+
+===== HTTP =====
+HTTP 200
+
+===== MOUNTS =====
+/srv/docker/jellyfin/cache -> /cache RW=true
+/srv/docker/jellyfin/config -> /config RW=true
+/srv/media -> /media RW=true
+
+
+===== CONFIG TREE =====
+/srv/docker/jellyfin/config
+/srv/docker/jellyfin/config/backups
+/srv/docker/jellyfin/config/backups/shows-path-fix-20260906-074222
+/srv/docker/jellyfin/config/backups/shows-path-fix-20260906-074222/Shows
+/srv/docker/jellyfin/config/config
+/srv/docker/jellyfin/config/config/ScheduledTasks
+/srv/docker/jellyfin/config/data
+/srv/docker/jellyfin/config/data/attachments
+/srv/docker/jellyfin/config/data/attachments/85
+/srv/docker/jellyfin/config/data/collections
+/srv/docker/jellyfin/config/data/collections/Rush Hour Collection [boxset]
+/srv/docker/jellyfin/config/data/collections/Scooby-Doo Collection [boxset]
+/srv/docker/jellyfin/config/data/collections/Twilight Collection [boxset]
+/srv/docker/jellyfin/config/data/collections/xXx Collection [boxset]
+/srv/docker/jellyfin/config/data/playlists
+/srv/docker/jellyfin/config/data/ScheduledTasks
+/srv/docker/jellyfin/config/data/serversync
+/srv/docker/jellyfin/config/data/SQLiteBackups
+/srv/docker/jellyfin/config/data/trickplay
+/srv/docker/jellyfin/config/data/trickplay/07
+/srv/docker/jellyfin/config/data/trickplay/08
+/srv/docker/jellyfin/config/data/trickplay/0b
+/srv/docker/jellyfin/config/data/trickplay/0d
+/srv/docker/jellyfin/config/data/trickplay/26
+/srv/docker/jellyfin/config/data/trickplay/3e
+/srv/docker/jellyfin/config/data/trickplay/48
+/srv/docker/jellyfin/config/data/trickplay/4f
+/srv/docker/jellyfin/config/data/trickplay/54
+/srv/docker/jellyfin/config/data/trickplay/5b
+/srv/docker/jellyfin/config/data/trickplay/61
+/srv/docker/jellyfin/config/data/trickplay/67
+/srv/docker/jellyfin/config/data/trickplay/85
+/srv/docker/jellyfin/config/data/trickplay/8b
+/srv/docker/jellyfin/config/data/trickplay/8f
+/srv/docker/jellyfin/config/data/trickplay/95
+/srv/docker/jellyfin/config/data/trickplay/9d
+/srv/docker/jellyfin/config/data/trickplay/9f
+/srv/docker/jellyfin/config/data/trickplay/ae
+/srv/docker/jellyfin/config/data/trickplay/b8
+/srv/docker/jellyfin/config/data/trickplay/d1
+/srv/docker/jellyfin/config/data/trickplay/d4
+/srv/docker/jellyfin/config/data/trickplay/e7
+/srv/docker/jellyfin/config/data/trickplay/ea
+/srv/docker/jellyfin/config/data/trickplay/ec
+/srv/docker/jellyfin/config/data/trickplay/ef
+/srv/docker/jellyfin/config/data/trickplay/fc
+/srv/docker/jellyfin/config/log
+/srv/docker/jellyfin/config/metadata
+/srv/docker/jellyfin/config/metadata/Genre
+/srv/docker/jellyfin/config/metadata/Genre/Action
+/srv/docker/jellyfin/config/metadata/Genre/Adventure
+/srv/docker/jellyfin/config/metadata/Genre/Animation
+/srv/docker/jellyfin/config/metadata/Genre/Anime
+/srv/docker/jellyfin/config/metadata/Genre/Comedy
+/srv/docker/jellyfin/config/metadata/Genre/contemporary fantasy
+/srv/docker/jellyfin/config/metadata/Genre/countryside
+/srv/docker/jellyfin/config/metadata/Genre/Crime
+/srv/docker/jellyfin/config/metadata/Genre/Documentary
+/srv/docker/jellyfin/config/metadata/Genre/Drama
+/srv/docker/jellyfin/config/metadata/Genre/Earth
+/srv/docker/jellyfin/config/metadata/Genre/Family
+/srv/docker/jellyfin/config/metadata/Genre/Fantasy
+/srv/docker/jellyfin/config/metadata/Genre/fictional location
+/srv/docker/jellyfin/config/metadata/Genre/friendship
+/srv/docker/jellyfin/config/metadata/Genre/Horror
+/srv/docker/jellyfin/config/metadata/Genre/Japan
+/srv/docker/jellyfin/config/metadata/Genre/love polygon
+/srv/docker/jellyfin/config/metadata/Genre/maid
+/srv/docker/jellyfin/config/metadata/Genre/Mystery
+/srv/docker/jellyfin/config/metadata/Genre/present
+/srv/docker/jellyfin/config/metadata/Genre/Romance
+/srv/docker/jellyfin/config/metadata/Genre/Science Fiction
+/srv/docker/jellyfin/config/metadata/Genre/Sci-Fi & Fantasy
+/srv/docker/jellyfin/config/metadata/Genre/Thriller
+/srv/docker/jellyfin/config/metadata/Genre/time travel
+/srv/docker/jellyfin/config/metadata/Genre/Western
+/srv/docker/jellyfin/config/metadata/library
+/srv/docker/jellyfin/config/metadata/library/01
+/srv/docker/jellyfin/config/metadata/library/02
+/srv/docker/jellyfin/config/metadata/library/04
+/srv/docker/jellyfin/config/metadata/library/07
+/srv/docker/jellyfin/config/metadata/library/08
+/srv/docker/jellyfin/config/metadata/library/09
+/srv/docker/jellyfin/config/metadata/library/0a
+/srv/docker/jellyfin/config/metadata/library/0b
+/srv/docker/jellyfin/config/metadata/library/0c
+/srv/docker/jellyfin/config/metadata/library/0d
+/srv/docker/jellyfin/config/metadata/library/0e
+/srv/docker/jellyfin/config/metadata/library/0f
+/srv/docker/jellyfin/config/metadata/library/11
+/srv/docker/jellyfin/config/metadata/library/13
+/srv/docker/jellyfin/config/metadata/library/15
+/srv/docker/jellyfin/config/metadata/library/18
+/srv/docker/jellyfin/config/metadata/library/1c
+/srv/docker/jellyfin/config/metadata/library/1d
+/srv/docker/jellyfin/config/metadata/library/1e
+/srv/docker/jellyfin/config/metadata/library/1f
+/srv/docker/jellyfin/config/metadata/library/21
+/srv/docker/jellyfin/config/metadata/library/23
+/srv/docker/jellyfin/config/metadata/library/24
+/srv/docker/jellyfin/config/metadata/library/25
+/srv/docker/jellyfin/config/metadata/library/26
+/srv/docker/jellyfin/config/metadata/library/28
+/srv/docker/jellyfin/config/metadata/library/2d
+/srv/docker/jellyfin/config/metadata/library/2e
+/srv/docker/jellyfin/config/metadata/library/2f
+/srv/docker/jellyfin/config/metadata/library/30
+/srv/docker/jellyfin/config/metadata/library/31
+/srv/docker/jellyfin/config/metadata/library/33
+/srv/docker/jellyfin/config/metadata/library/34
+/srv/docker/jellyfin/config/metadata/library/35
+/srv/docker/jellyfin/config/metadata/library/36
+/srv/docker/jellyfin/config/metadata/library/37
+/srv/docker/jellyfin/config/metadata/library/38
+/srv/docker/jellyfin/config/metadata/library/39
+/srv/docker/jellyfin/config/metadata/library/3a
+/srv/docker/jellyfin/config/metadata/library/3b
+/srv/docker/jellyfin/config/metadata/library/3c
+/srv/docker/jellyfin/config/metadata/library/3d
+/srv/docker/jellyfin/config/metadata/library/3e
+/srv/docker/jellyfin/config/metadata/library/3f
+/srv/docker/jellyfin/config/metadata/library/40
+/srv/docker/jellyfin/config/metadata/library/43
+/srv/docker/jellyfin/config/metadata/library/44
+/srv/docker/jellyfin/config/metadata/library/47
+/srv/docker/jellyfin/config/metadata/library/48
+/srv/docker/jellyfin/config/metadata/library/49
+/srv/docker/jellyfin/config/metadata/library/4a
+/srv/docker/jellyfin/config/metadata/library/4b
+/srv/docker/jellyfin/config/metadata/library/4e
+/srv/docker/jellyfin/config/metadata/library/4f
+/srv/docker/jellyfin/config/metadata/library/50
+/srv/docker/jellyfin/config/metadata/library/51
+/srv/docker/jellyfin/config/metadata/library/52
+/srv/docker/jellyfin/config/metadata/library/54
+/srv/docker/jellyfin/config/metadata/library/55
+/srv/docker/jellyfin/config/metadata/library/58
+/srv/docker/jellyfin/config/metadata/library/59
+/srv/docker/jellyfin/config/metadata/library/5b
+/srv/docker/jellyfin/config/metadata/library/5c
+/srv/docker/jellyfin/config/metadata/library/5e
+/srv/docker/jellyfin/config/metadata/library/60
+/srv/docker/jellyfin/config/metadata/library/61
+/srv/docker/jellyfin/config/metadata/library/63
+/srv/docker/jellyfin/config/metadata/library/64
+/srv/docker/jellyfin/config/metadata/library/66
+/srv/docker/jellyfin/config/metadata/library/67
+/srv/docker/jellyfin/config/metadata/library/68
+/srv/docker/jellyfin/config/metadata/library/69
+/srv/docker/jellyfin/config/metadata/library/6a
+/srv/docker/jellyfin/config/metadata/library/6e
+/srv/docker/jellyfin/config/metadata/library/70
+/srv/docker/jellyfin/config/metadata/library/73
+/srv/docker/jellyfin/config/metadata/library/74
+/srv/docker/jellyfin/config/metadata/library/75
+/srv/docker/jellyfin/config/metadata/library/78
+/srv/docker/jellyfin/config/metadata/library/7b
+/srv/docker/jellyfin/config/metadata/library/7c
+/srv/docker/jellyfin/config/metadata/library/7e
+/srv/docker/jellyfin/config/metadata/library/7f
+/srv/docker/jellyfin/config/metadata/library/80
+/srv/docker/jellyfin/config/metadata/library/81
+/srv/docker/jellyfin/config/metadata/library/82
+/srv/docker/jellyfin/config/metadata/library/83
+/srv/docker/jellyfin/config/metadata/library/84
+/srv/docker/jellyfin/config/metadata/library/85
+/srv/docker/jellyfin/config/metadata/library/86
+/srv/docker/jellyfin/config/metadata/library/87
+/srv/docker/jellyfin/config/metadata/library/88
+/srv/docker/jellyfin/config/metadata/library/8a
+/srv/docker/jellyfin/config/metadata/library/8b
+/srv/docker/jellyfin/config/metadata/library/8d
+/srv/docker/jellyfin/config/metadata/library/8f
+/srv/docker/jellyfin/config/metadata/library/91
+/srv/docker/jellyfin/config/metadata/library/93
+/srv/docker/jellyfin/config/metadata/library/95
+/srv/docker/jellyfin/config/metadata/library/96
+/srv/docker/jellyfin/config/metadata/library/99
+/srv/docker/jellyfin/config/metadata/library/9b
+/srv/docker/jellyfin/config/metadata/library/9d
+/srv/docker/jellyfin/config/metadata/library/9f
+/srv/docker/jellyfin/config/metadata/library/a1
+/srv/docker/jellyfin/config/metadata/library/a2
+/srv/docker/jellyfin/config/metadata/library/a3
+/srv/docker/jellyfin/config/metadata/library/a5
+/srv/docker/jellyfin/config/metadata/library/a6
+/srv/docker/jellyfin/config/metadata/library/a9
+/srv/docker/jellyfin/config/metadata/library/aa
+/srv/docker/jellyfin/config/metadata/library/ad
+/srv/docker/jellyfin/config/metadata/library/ae
+/srv/docker/jellyfin/config/metadata/library/b0
+/srv/docker/jellyfin/config/metadata/library/b3
+/srv/docker/jellyfin/config/metadata/library/b5
+/srv/docker/jellyfin/config/metadata/library/b7
+/srv/docker/jellyfin/config/metadata/library/b8
+/srv/docker/jellyfin/config/metadata/library/ba
+/srv/docker/jellyfin/config/metadata/library/bb
+/srv/docker/jellyfin/config/metadata/library/bc
+/srv/docker/jellyfin/config/metadata/library/bd
+/srv/docker/jellyfin/config/metadata/library/bf
+/srv/docker/jellyfin/config/metadata/library/c0
+/srv/docker/jellyfin/config/metadata/library/c3
+/srv/docker/jellyfin/config/metadata/library/c5
+/srv/docker/jellyfin/config/metadata/library/c6
+/srv/docker/jellyfin/config/metadata/library/cb
+/srv/docker/jellyfin/config/metadata/library/cc
+/srv/docker/jellyfin/config/metadata/library/ce
+/srv/docker/jellyfin/config/metadata/library/d0
+/srv/docker/jellyfin/config/metadata/library/d1
+/srv/docker/jellyfin/config/metadata/library/d2
+/srv/docker/jellyfin/config/metadata/library/d3
+/srv/docker/jellyfin/config/metadata/library/d4
+/srv/docker/jellyfin/config/metadata/library/d5
+/srv/docker/jellyfin/config/metadata/library/d7
+/srv/docker/jellyfin/config/metadata/library/d9
+/srv/docker/jellyfin/config/metadata/library/da
+/srv/docker/jellyfin/config/metadata/library/db
+/srv/docker/jellyfin/config/metadata/library/de
+/srv/docker/jellyfin/config/metadata/library/e2
+/srv/docker/jellyfin/config/metadata/library/e3
+/srv/docker/jellyfin/config/metadata/library/e4
+/srv/docker/jellyfin/config/metadata/library/e5
+/srv/docker/jellyfin/config/metadata/library/e6
+/srv/docker/jellyfin/config/metadata/library/e7
+/srv/docker/jellyfin/config/metadata/library/e8
+/srv/docker/jellyfin/config/metadata/library/e9
+/srv/docker/jellyfin/config/metadata/library/ea
+/srv/docker/jellyfin/config/metadata/library/eb
+/srv/docker/jellyfin/config/metadata/library/ec
+/srv/docker/jellyfin/config/metadata/library/ed
+/srv/docker/jellyfin/config/metadata/library/ee
+/srv/docker/jellyfin/config/metadata/library/ef
+/srv/docker/jellyfin/config/metadata/library/f1
+/srv/docker/jellyfin/config/metadata/library/f2
+/srv/docker/jellyfin/config/metadata/library/f3
+/srv/docker/jellyfin/config/metadata/library/f4
+/srv/docker/jellyfin/config/metadata/library/f6
+/srv/docker/jellyfin/config/metadata/library/f7
+/srv/docker/jellyfin/config/metadata/library/f8
+/srv/docker/jellyfin/config/metadata/library/f9
+/srv/docker/jellyfin/config/metadata/library/fa
+/srv/docker/jellyfin/config/metadata/library/fb
+/srv/docker/jellyfin/config/metadata/library/fc
+/srv/docker/jellyfin/config/metadata/library/fe
+/srv/docker/jellyfin/config/metadata/library/ff
+/srv/docker/jellyfin/config/metadata/People
+/srv/docker/jellyfin/config/metadata/People/4
+/srv/docker/jellyfin/config/metadata/People/A
+/srv/docker/jellyfin/config/metadata/People/B
+/srv/docker/jellyfin/config/metadata/People/C
+/srv/docker/jellyfin/config/metadata/People/D
+/srv/docker/jellyfin/config/metadata/People/E
+/srv/docker/jellyfin/config/metadata/People/F
+/srv/docker/jellyfin/config/metadata/People/G
+/srv/docker/jellyfin/config/metadata/People/H
+/srv/docker/jellyfin/config/metadata/People/I
+/srv/docker/jellyfin/config/metadata/People/J
+/srv/docker/jellyfin/config/metadata/People/K
+/srv/docker/jellyfin/config/metadata/People/L
+/srv/docker/jellyfin/config/metadata/People/M
+/srv/docker/jellyfin/config/metadata/People/N
+/srv/docker/jellyfin/config/metadata/People/O
+/srv/docker/jellyfin/config/metadata/People/P
+/srv/docker/jellyfin/config/metadata/People/Q
+/srv/docker/jellyfin/config/metadata/People/R
+/srv/docker/jellyfin/config/metadata/People/S
+/srv/docker/jellyfin/config/metadata/People/T
+/srv/docker/jellyfin/config/metadata/People/V
+/srv/docker/jellyfin/config/metadata/People/W
+/srv/docker/jellyfin/config/metadata/People/X
+/srv/docker/jellyfin/config/metadata/People/Y
+/srv/docker/jellyfin/config/metadata/People/Z
+/srv/docker/jellyfin/config/metadata/Studio
+/srv/docker/jellyfin/config/metadata/Studio/1492 Pictures
+/srv/docker/jellyfin/config/metadata/Studio/Adult Swim
+/srv/docker/jellyfin/config/metadata/Studio/Alliance Films
+/srv/docker/jellyfin/config/metadata/Studio/Alphaville Films
+/srv/docker/jellyfin/config/metadata/Studio/Arclight Films
+/srv/docker/jellyfin/config/metadata/Studio/Arthur Sarkissian Productions
+/srv/docker/jellyfin/config/metadata/Studio/Atlas Entertainment
+/srv/docker/jellyfin/config/metadata/Studio/AT-X
+/srv/docker/jellyfin/config/metadata/Studio/Aura Films
+/srv/docker/jellyfin/config/metadata/Studio/Babelsberg Film
+/srv/docker/jellyfin/config/metadata/Studio/Bluegrass Films
+/srv/docker/jellyfin/config/metadata/Studio/BS Fuji
+/srv/docker/jellyfin/config/metadata/Studio/Casey Silver Productions
+/srv/docker/jellyfin/config/metadata/Studio/CBS
+/srv/docker/jellyfin/config/metadata/Studio/China Film Co-Production
+/srv/docker/jellyfin/config/metadata/Studio/China Film Group Corporation
+/srv/docker/jellyfin/config/metadata/Studio/DC Entertainment
+/srv/docker/jellyfin/config/metadata/Studio/dentsu
+/srv/docker/jellyfin/config/metadata/Studio/di Bonaventura Pictures
+/srv/docker/jellyfin/config/metadata/Studio/Distant Planet Productions
+/srv/docker/jellyfin/config/metadata/Studio/Doom Productions
+/srv/docker/jellyfin/config/metadata/Studio/Emperor Motion Pictures
+/srv/docker/jellyfin/config/metadata/Studio/GK Films
+/srv/docker/jellyfin/config/metadata/Studio/Goldcrest Film Finance
+/srv/docker/jellyfin/config/metadata/Studio/Grindstone Entertainment Group
+/srv/docker/jellyfin/config/metadata/Studio/Hakuhodo DY Media Partners
+/srv/docker/jellyfin/config/metadata/Studio/Hanna-Barbera Cartoons
+/srv/docker/jellyfin/config/metadata/Studio/Heyi Pictures
+/srv/docker/jellyfin/config/metadata/Studio/Huahua Media
+/srv/docker/jellyfin/config/metadata/Studio/Huayi Brothers Pictures
+/srv/docker/jellyfin/config/metadata/Studio/Imprint Entertainment
+/srv/docker/jellyfin/config/metadata/Studio/Infinitum Nihil
+/srv/docker/jellyfin/config/metadata/Studio/JCE Movies
+/srv/docker/jellyfin/config/metadata/Studio/J&J Project
+/srv/docker/jellyfin/config/metadata/Studio/John Wells Productions
+/srv/docker/jellyfin/config/metadata/Studio/Juno Pix
+/srv/docker/jellyfin/config/metadata/Studio/Kalima Productions
+/srv/docker/jellyfin/config/metadata/Studio/KBS Kyoto
+/srv/docker/jellyfin/config/metadata/Studio/Lionsgate
+/srv/docker/jellyfin/config/metadata/Studio/Lionsgate Premiere
+/srv/docker/jellyfin/config/metadata/Studio/Mandate International
+/srv/docker/jellyfin/config/metadata/Studio/Mango Entertainment
+/srv/docker/jellyfin/config/metadata/Studio/Maple Cage Productions
+/srv/docker/jellyfin/config/metadata/Studio/Maverick Films
+/srv/docker/jellyfin/config/metadata/Studio/Mitsubishi
+/srv/docker/jellyfin/config/metadata/Studio/Mosaic Media Group
+/srv/docker/jellyfin/config/metadata/Studio/MTV
+/srv/docker/jellyfin/config/metadata/Studio/NBC
+/srv/docker/jellyfin/config/metadata/Studio/New Line Cinema
+/srv/docker/jellyfin/config/metadata/Studio/Nippon Television Network Corporation
+/srv/docker/jellyfin/config/metadata/Studio/OLM
+/srv/docker/jellyfin/config/metadata/Studio/One Race
+/srv/docker/jellyfin/config/metadata/Studio/Original Film
+/srv/docker/jellyfin/config/metadata/Studio/Paramount Pictures
+/srv/docker/jellyfin/config/metadata/Studio/Perfect Village Entertainment
+/srv/docker/jellyfin/config/metadata/Studio/Perfect World Pictures
+/srv/docker/jellyfin/config/metadata/Studio/Principato-Young Entertainment
+/srv/docker/jellyfin/config/metadata/Studio/Production I.G
+/srv/docker/jellyfin/config/metadata/Studio/RatPac Entertainment
+/srv/docker/jellyfin/config/metadata/Studio/Reaper Productions
+/srv/docker/jellyfin/config/metadata/Studio/Reel FX Creative Studios
+/srv/docker/jellyfin/config/metadata/Studio/Relativity Media
+/srv/docker/jellyfin/config/metadata/Studio/Revolution Studios
+/srv/docker/jellyfin/config/metadata/Studio/Rideback
+/srv/docker/jellyfin/config/metadata/Studio/Robert Simonds Productions
+/srv/docker/jellyfin/config/metadata/Studio/Roger Birnbaum Productions
+/srv/docker/jellyfin/config/metadata/Studio/Roth-Kirschenbaum Films
+/srv/docker/jellyfin/config/metadata/Studio/Rox Productions
+/srv/docker/jellyfin/config/metadata/Studio/Salon Films
+/srv/docker/jellyfin/config/metadata/Studio/Shanghai Film Group
+/srv/docker/jellyfin/config/metadata/Studio/Sheen Michaels Entertainment
+/srv/docker/jellyfin/config/metadata/Studio/Silver Link
+/srv/docker/jellyfin/config/metadata/Studio/Sparkle Roll Media
+/srv/docker/jellyfin/config/metadata/Studio/Spy Next Door
+/srv/docker/jellyfin/config/metadata/Studio/Stillking Films
+/srv/docker/jellyfin/config/metadata/Studio/Studio Ghibli
+/srv/docker/jellyfin/config/metadata/Studio/Summit Entertainment
+/srv/docker/jellyfin/config/metadata/Studio/Sunswept Entertainment
+/srv/docker/jellyfin/config/metadata/Studio/Sun TV
+/srv/docker/jellyfin/config/metadata/Studio/Temple Hill Entertainment
+/srv/docker/jellyfin/config/metadata/Studio/The CW
+/srv/docker/jellyfin/config/metadata/Studio/The Weinstein Company
+/srv/docker/jellyfin/config/metadata/Studio/The Zanuck Company
+/srv/docker/jellyfin/config/metadata/Studio/TOHO
+/srv/docker/jellyfin/config/metadata/Studio/Tokuma Shoten
+/srv/docker/jellyfin/config/metadata/Studio/Tokyo MX
+/srv/docker/jellyfin/config/metadata/Studio/TV Aichi
+/srv/docker/jellyfin/config/metadata/Studio/Universal Pictures
+/srv/docker/jellyfin/config/metadata/Studio/Unlike Film Productions
+/srv/docker/jellyfin/config/metadata/Studio/UPN
+/srv/docker/jellyfin/config/metadata/Studio/Village Roadshow Pictures
+/srv/docker/jellyfin/config/metadata/Studio/Walt Disney Japan
+/srv/docker/jellyfin/config/metadata/Studio/Walt Disney Pictures
+/srv/docker/jellyfin/config/metadata/Studio/Walt Disney Productions
+/srv/docker/jellyfin/config/metadata/Studio/Warner Animation Group
+/srv/docker/jellyfin/config/metadata/Studio/Warner Bros. Animation
+/srv/docker/jellyfin/config/metadata/Studio/Warner Bros. Pictures
+/srv/docker/jellyfin/config/metadata/Studio/WWE Studios
+/srv/docker/jellyfin/config/metadata/views
+/srv/docker/jellyfin/config/metadata/views/livetv
+/srv/docker/jellyfin/config/plugins
+/srv/docker/jellyfin/config/plugins/AniDB_11.0.0.0
+/srv/docker/jellyfin/config/plugins/Artwork_2.0.0.0
+/srv/docker/jellyfin/config/plugins/Bookshelf_13.0.0.0
+/srv/docker/jellyfin/config/plugins/configurations
+/srv/docker/jellyfin/config/plugins/configurations/Jellyfin.Plugin.ServerSync.Keys
+/srv/docker/jellyfin/config/plugins/Fanart_14.0.0.0
+/srv/docker/jellyfin/config/plugins/Playback Reporting_17.0.0.0
+/srv/docker/jellyfin/config/plugins/Server Sync_10.11.66.3
+/srv/docker/jellyfin/config/plugins/Webhook_21.0.0.0
+/srv/docker/jellyfin/config/root
+/srv/docker/jellyfin/config/root/default
+/srv/docker/jellyfin/config/root/default/Collections
+/srv/docker/jellyfin/config/root/default/Movies
+/srv/docker/jellyfin/config/root/default/Shows

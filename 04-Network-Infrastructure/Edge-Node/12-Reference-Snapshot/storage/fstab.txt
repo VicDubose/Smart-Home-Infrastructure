@@ -1,0 +1,14 @@
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+# / was on /dev/nvme0n1p2 during installation
+UUID=860240be-ee1b-494f-b871-f706f00fbac7 /               ext4    errors=remount-ro 0       1
+# /boot/efi was on /dev/nvme0n1p1 during installation
+UUID=B6FE-BA9C  /boot/efi       vfat    umask=0077      0       1
+/swapfile                                 none            swap    sw              0       0
+/var/lib/caleb-arm-staging.img /srv/staging ext4 loop,nofail 0 2
+UUID=afeecb37-f7ee-4ebe-9c79-f495fb1e55ea /srv/media/External ext4 nofail,x-systemd.automount,x-systemd.device-bound,x-systemd.device-timeout=10s,x-systemd.mount-timeout=30s,x-systemd.idle-timeout=0 0 2

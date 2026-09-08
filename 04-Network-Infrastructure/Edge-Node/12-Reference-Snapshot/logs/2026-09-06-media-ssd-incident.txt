@@ -1,0 +1,7 @@
+Sep 06 23:07:49 caleb-HP-EliteBook-840-G7-Notebook-PC kernel: squashfs: version 4.0 (2009/01/31) Phillip Lougher
+Sep 06 23:07:49 caleb-HP-EliteBook-840-G7-Notebook-PC kernel: Write protecting the kernel read-only data: 43008k
+Sep 06 23:07:49 caleb-HP-EliteBook-840-G7-Notebook-PC kernel: scsi host0: uas
+Sep 06 23:07:49 caleb-HP-EliteBook-840-G7-Notebook-PC kernel: usbcore: registered new interface driver uas
+Sep 06 23:07:49 caleb-HP-EliteBook-840-G7-Notebook-PC kernel:  sda: sda1
+Sep 06 23:07:49 caleb-HP-EliteBook-840-G7-Notebook-PC kernel: ee1004 2-0050: 512 byte EE1004-compliant SPD EEPROM, read-only
+Sep 07 00:11:42 caleb-HP-EliteBook-840-G7-Notebook-PC kernel: EXT4-fs (sda1): mounted filesystem afeecb37-f7ee-4ebe-9c79-f495fb1e55ea r/w with ordered data mode. Quota mode: none.

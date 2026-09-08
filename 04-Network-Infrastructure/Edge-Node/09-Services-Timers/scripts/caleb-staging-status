@@ -1,0 +1,75 @@
+#!/bin/bash
+
+STAGING="/srv/staging"
+
+echo
+echo "========================================================================"
+echo " STAGING / ARM / MAKEMKV"
+echo "========================================================================"
+
+echo
+echo "Staging filesystem:"
+findmnt "$STAGING" 2>/dev/null || echo "WARNING: staging filesystem NOT mounted"
+
+echo
+echo "Capacity:"
+df -h "$STAGING" 2>/dev/null || true
+
+echo
+echo "Directory usage:"
+
+for d in \
+    "$STAGING/Raw_Rips" \
+    "$STAGING/Raw_Rips/DVD" \
+    "$STAGING/Raw_Rips/Bluray" \
+    "$STAGING/Transfer_Queue" \
+    "$STAGING/Confirmed" \
+    "$STAGING/Failed"
+do
+    if [ -d "$d" ]; then
+        SIZE=$(du -sh "$d" 2>/dev/null | awk '{print $1}')
+        COUNT=$(find "$d" -type f 2>/dev/null | wc -l)
+        printf "%-38s size=%-8s files=%s\n" "$d" "$SIZE" "$COUNT"
+    else
+        printf "%-38s MISSING\n" "$d"
+    fi
+done
+
+echo
+echo "72-hour confirmed cleanup:"
+systemctl is-enabled caleb-staging-flush.timer 2>/dev/null \
+    | sed 's/^/enabled=/' || true
+
+systemctl is-active caleb-staging-flush.timer 2>/dev/null \
+    | sed 's/^/active=/' || true
+
+NEXT=$(
+    systemctl list-timers caleb-staging-flush.timer \
+      --no-legend 2>/dev/null | head -1
+)
+
+[ -n "$NEXT" ] && echo "next=$NEXT"
+
+echo
+echo "Recent cleanup activity:"
+if [ -f /var/log/caleb-confirmed-flush.log ]; then
+    tail -10 /var/log/caleb-confirmed-flush.log
+else
+    echo "No confirmed-flush log entries yet."
+fi
+
+echo
+echo "Safety state:"
+
+if mountpoint -q "$STAGING"; then
+    echo "STAGING_MOUNT=OK"
+else
+    echo "STAGING_MOUNT=FAILED"
+fi
+
+AVAIL_KB=$(df --output=avail "$STAGING" 2>/dev/null | tail -1 | tr -d ' ')
+
+if [[ "$AVAIL_KB" =~ ^[0-9]+$ ]]; then
+    AVAIL_GB=$((AVAIL_KB / 1024 / 1024))
+    echo "STAGING_FREE≈${AVAIL_GB}GiB"
+fi

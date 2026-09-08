@@ -1,0 +1,15 @@
+Container: homeassistant
+
+Name=/homeassistant
+Image=ghcr.io/home-assistant/home-assistant:stable
+ImageID=sha256:59aa8824955c9db491b75d2eebe42bd68494f80c2ec69ec0d66d9dae37d37514
+Created=2026-06-16T14:37:43.277648182Z
+RestartPolicy=unless-stopped
+NetworkMode=host
+
+MOUNTS:
+/srv/docker/homeassistant -> /config RW=true
+
+
+PORTS:
+{}

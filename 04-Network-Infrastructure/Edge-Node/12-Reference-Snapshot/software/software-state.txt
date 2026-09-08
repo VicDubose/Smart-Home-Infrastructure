@@ -1,0 +1,10 @@
+===== PENDING APT UPDATES =====
+Listing...
+
+===== FLATPAK =====
+
+===== PYTHON =====
+Python 3.12.3
+
+===== DOCKER =====
+Docker version 29.8.0, build 88096ef

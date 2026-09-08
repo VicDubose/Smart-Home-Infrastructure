@@ -1,0 +1,24 @@
+# Never commit private recovery material
+*.key
+*.pem
+*.p12
+*.pfx
+*.ovpn
+*.env
+secrets.yaml
+id_rsa*
+id_ed25519*
+credentials*
+private/
+private-backup/
+
+# Runtime / media
+*.part
+*.mkv
+*.mp4
+*.iso
+*.img
+*.db
+*.db-shm
+*.db-wal
+__pycache__/

@@ -1,0 +1,26 @@
+[Unit]
+Description=Caleb Remote Media Node API
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=simple
+User=caleb
+Group=caleb
+WorkingDirectory=/home/caleb/caleb-node-api
+EnvironmentFile=/home/caleb/caleb-node-api/.env
+ExecStart=/home/caleb/caleb-node-api/target/release/caleb-node-api
+Restart=always
+RestartSec=5
+
+# Read-only hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=/mnt/appdata/caleb-media/status
+SupplementaryGroups=docker
+
+[Install]
+WantedBy=multi-user.target

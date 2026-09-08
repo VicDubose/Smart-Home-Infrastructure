@@ -1,0 +1,12 @@
+[Unit]
+Description=Caleb Sunday Wednesday 6AM Maintenance Release
+
+[Timer]
+OnCalendar=Sun,Wed *-*-* 06:00:00
+Persistent=true
+AccuracySec=1min
+WakeSystem=true
+Unit=caleb-local-events-morning-release.service
+
+[Install]
+WantedBy=timers.target

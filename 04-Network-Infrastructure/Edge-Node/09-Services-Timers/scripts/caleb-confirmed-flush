@@ -1,0 +1,21 @@
+#!/bin/bash
+
+CONFIRMED="/srv/staging/Confirmed"
+LOG="/var/log/caleb-confirmed-flush.log"
+
+echo "==================================================" >> "$LOG"
+echo "$(date) — confirmed-media cleanup started" >> "$LOG"
+
+# ONLY data already confirmed received by Jarvis is eligible.
+# Delete confirmed files after 72 hours.
+find "$CONFIRMED" -mindepth 1 \
+    \( -type f -o -type l \) \
+    -mmin +4320 \
+    -print -delete >> "$LOG" 2>&1
+
+# Clean empty directories afterward.
+find "$CONFIRMED" -mindepth 1 \
+    -type d -empty \
+    -delete 2>/dev/null
+
+echo "$(date) — confirmed-media cleanup finished" >> "$LOG"

@@ -1,0 +1,68 @@
+===== CALEB SERVICES =====
+srv-staging.mount                                                             generated       -
+caleb-edge-guard.service                                                      static          -
+caleb-edge-health.service                                                     static          -
+caleb-edge-maintenance.service                                                static          -
+caleb-edge-pull.service                                                       disabled        enabled
+caleb-jarvis-ai-tunnel.service                                                static          -
+caleb-local-events-ai-via-jarvis.service                                      disabled        enabled
+caleb-local-events-expiry-cleanup.service                                     static          -
+caleb-local-events-morning-release.service                                    static          -
+caleb-local-events-overnight.service                                          static          -
+caleb-node-api.service                                                        enabled         enabled
+caleb-staging-flush.service                                                   static          -
+jarvis-vpn-start.service                                                      static          -
+jarvis-vpn-stop.service                                                       static          -
+local-events-dashboard.service                                                enabled         enabled
+openvpn-client@.service                                                       disabled        enabled
+openvpn-server@.service                                                       disabled        enabled
+openvpn.service                                                               enabled         enabled
+openvpn@.service                                                              disabled        enabled
+caleb-edge-guard.timer                                                        enabled         enabled
+caleb-edge-health.timer                                                       enabled         enabled
+caleb-edge-maintenance.timer                                                  enabled         enabled
+caleb-local-events-expiry-cleanup.timer                                       enabled         enabled
+caleb-local-events-morning-release.timer                                      enabled         enabled
+caleb-local-events-overnight.timer                                            enabled         enabled
+caleb-staging-flush.timer                                                     enabled         enabled
+jarvis-vpn-start.timer                                                        disabled        enabled
+jarvis-vpn-stop.timer                                                         disabled        enabled
+
+===== CALEB ACTIVE UNITS =====
+  dev-disk-by\x2ddiskseq-10\x2dpart1.device                                                                             loaded    active   plugged   CT500P3SSD8 CALEB_EDGE_MEDIA
+  dev-disk-by\x2did-ata\x2dCT500P3SSD8_24514D3594E2\x2dpart1.device                                                     loaded    active   plugged   CT500P3SSD8 CALEB_EDGE_MEDIA
+  dev-disk-by\x2did-usb\x2dCT500P3S_SD8_013117100578\x2d0:0\x2dpart1.device                                             loaded    active   plugged   CT500P3SSD8 CALEB_EDGE_MEDIA
+  dev-disk-by\x2dlabel-CALEB_ARM_STAGIN.device                                                                          loaded    active   plugged   /dev/disk/by-label/CALEB_ARM_STAGIN
+  dev-disk-by\x2dlabel-CALEB_EDGE_MEDIA.device                                                                          loaded    active   plugged   CT500P3SSD8 CALEB_EDGE_MEDIA
+  dev-disk-by\x2dloop\x2dref-\x5cx2fvar\x5cx2flib\x5cx2fcaleb\x2darm\x2dstaging.img.device                              loaded    active   plugged   /dev/disk/by-loop-ref/\x2fvar\x2flib\x2fcaleb-arm-staging.img
+  dev-disk-by\x2dpartlabel-primary.device                                                                               loaded    active   plugged   CT500P3SSD8 CALEB_EDGE_MEDIA
+  dev-disk-by\x2dpartuuid-65de3d38\x2d66ab\x2d4e47\x2da2f9\x2d17adc04ae9be.device                                       loaded    active   plugged   CT500P3SSD8 CALEB_EDGE_MEDIA
+  dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2dusb\x2d0:2.4:1.0\x2dscsi\x2d0:0:0:0\x2dpart1.device                        loaded    active   plugged   CT500P3SSD8 CALEB_EDGE_MEDIA
+  dev-disk-by\x2dpath-pci\x2d0000:00:0d.0\x2dusbv3\x2d0:2.4:1.0\x2dscsi\x2d0:0:0:0\x2dpart1.device                      loaded    active   plugged   CT500P3SSD8 CALEB_EDGE_MEDIA
+  dev-disk-by\x2duuid-afeecb37\x2df7ee\x2d4ebe\x2d9c79\x2df495fb1e55ea.device                                           loaded    active   plugged   CT500P3SSD8 CALEB_EDGE_MEDIA
+  dev-sda1.device                                                                                                       loaded    active   plugged   CT500P3SSD8 CALEB_EDGE_MEDIA
+  sys-devices-pci0000:00-0000:00:0d.0-usb2-2\x2d2-2\x2d2.4-2\x2d2.4:1.0-host0-target0:0:0-0:0:0:0-block-sda-sda1.device loaded    active   plugged   CT500P3SSD8 CALEB_EDGE_MEDIA
+  home-caleb-thinclient_drives.mount                                                                                    loaded    active   mounted   /home/caleb/thinclient_drives
+  srv-staging.mount                                                                                                     loaded    active   mounted   /srv/staging
+  session-20.scope                                                                                                      loaded    active   running   Session 20 of User caleb
+  session-21.scope                                                                                                      loaded    active   running   Session 21 of User caleb
+  session-c1.scope                                                                                                      loaded    active   running   Session c1 of User caleb
+  session-c2.scope                                                                                                      loaded    active   running   Session c2 of User caleb
+  caleb-edge-guard.service                                                                                              loaded    inactive dead      Caleb Jellyfin Edge storage safety guard
+  caleb-edge-health.service                                                                                             loaded    inactive dead      Caleb Jellyfin Edge daily health snapshot
+  caleb-edge-maintenance.service                                                                                        loaded    inactive dead      Caleb Edge twice-monthly media maintenance
+  caleb-edge-pull.service                                                                                               loaded    active   running   Caleb Edge reliable Core media pull
+  caleb-local-events-expiry-cleanup.service                                                                             loaded    inactive dead      Caleb Local Events Daily Expired Event Cleanup
+  caleb-local-events-morning-release.service                                                                            loaded    inactive dead      Caleb 6AM Maintenance Resource Release
+  caleb-local-events-overnight.service                                                                                  loaded    inactive dead      Caleb Overnight Media + Local Events Maintenance
+  caleb-node-api.service                                                                                                loaded    active   running   Caleb Remote Media Node API
+  caleb-staging-flush.service                                                                                           loaded    inactive dead      Caleb confirmed Jarvis transfers 72-hour cleanup
+  local-events-dashboard.service                                                                                        loaded    active   running   Local Events Intelligence Board
+  openvpn.service                                                                                                       loaded    active   exited    OpenVPN service
+  caleb-edge-guard.timer                                                                                                loaded    active   waiting   Check Caleb Edge storage safety every 5 minutes
+  caleb-edge-health.timer                                                                                               loaded    active   waiting   Daily Caleb Edge health check
+  caleb-edge-maintenance.timer                                                                                          loaded    active   waiting   Caleb Edge media maintenance — 1st and 15th
+  caleb-local-events-expiry-cleanup.timer                                                                               loaded    active   waiting   Caleb Local Events Daily 10PM Expiry Cleanup
+  caleb-local-events-morning-release.timer                                                                              loaded    active   waiting   Caleb Sunday Wednesday 6AM Maintenance Release
+  caleb-local-events-overnight.timer                                                                                    loaded    active   waiting   Caleb Sunday Wednesday Overnight Maintenance
+  caleb-staging-flush.timer                                                                                             loaded    active   waiting   Check confirmed Caleb transfers for expiration

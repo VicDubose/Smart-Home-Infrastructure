@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+source /usr/local/sbin/caleb-edge-common
+
+SYNC_ID="$(task_id "Sync Content" 2>/dev/null || true)"
+
+[ -z "$SYNC_ID" ] && exit 0
+
+STATE="$(task_state_by_id "$SYNC_ID" 2>/dev/null || true)"
+
+MOVIE_FREE="$(free_gib "$MOVIES_PATH")"
+SHOW_FREE="$(free_gib "$SHOWS_PATH")"
+
+REASON=""
+
+if ! jellyfin_healthy; then
+    REASON="Jellyfin unhealthy"
+elif ! movies_mounted; then
+    REASON="Movies filesystem missing"
+elif ! shows_mounted; then
+    REASON="Shows filesystem missing"
+elif [ "${MOVIE_FREE:-0}" -lt "$MOVIE_RESERVE_GIB" ]; then
+    REASON="Movies free space below ${MOVIE_RESERVE_GIB} GiB"
+elif [ "${SHOW_FREE:-0}" -lt "$SHOW_RESERVE_GIB" ]; then
+    REASON="Shows free space below ${SHOW_RESERVE_GIB} GiB"
+fi
+
+if [ -n "$REASON" ]; then
+    log "GUARD: $REASON. Sync state=$STATE."
+
+    if [ "$STATE" = "Running" ]; then
+        log "GUARD: cancelling Sync Content."
+        cancel_task "$SYNC_ID" || true
+    fi
+fi

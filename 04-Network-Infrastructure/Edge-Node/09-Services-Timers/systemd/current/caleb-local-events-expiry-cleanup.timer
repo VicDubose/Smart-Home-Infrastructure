@@ -1,0 +1,11 @@
+[Unit]
+Description=Caleb Local Events Daily 10PM Expiry Cleanup
+
+[Timer]
+OnCalendar=*-*-* 22:00:00
+Persistent=true
+AccuracySec=1min
+Unit=caleb-local-events-expiry-cleanup.service
+
+[Install]
+WantedBy=timers.target

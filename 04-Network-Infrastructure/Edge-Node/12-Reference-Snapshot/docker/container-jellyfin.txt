@@ -1,0 +1,17 @@
+Container: jellyfin
+
+Name=/jellyfin
+Image=jellyfin/jellyfin
+ImageID=sha256:aefb67e6a7ff1debdd154a78a7bbb780fd0c873d8639210a7f6a2016ad2b35db
+Created=2026-06-09T14:29:53.377314786Z
+RestartPolicy=unless-stopped
+NetworkMode=bridge
+
+MOUNTS:
+/srv/docker/jellyfin/cache -> /cache RW=true
+/srv/docker/jellyfin/config -> /config RW=true
+/srv/media -> /media RW=true
+
+
+PORTS:
+{"8096/tcp":[{"HostIp":"0.0.0.0","HostPort":"8096"},{"HostIp":"::","HostPort":"8096"}]}

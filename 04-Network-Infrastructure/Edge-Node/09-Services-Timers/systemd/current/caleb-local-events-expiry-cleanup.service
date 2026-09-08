@@ -1,0 +1,10 @@
+[Unit]
+Description=Caleb Local Events Daily Expired Event Cleanup
+
+[Service]
+Type=oneshot
+User=caleb
+Group=caleb
+WorkingDirectory=/opt/local-events
+Environment=PYTHONPATH=/opt/local-events
+ExecStart=/opt/local-events/.venv/bin/python /opt/local-events/bin/caleb_expiry_cleanup.py

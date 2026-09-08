@@ -1,0 +1,9 @@
+[Unit]
+Description=Caleb Overnight Media + Local Events Maintenance
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/opt/local-events/.venv/bin/python /opt/local-events/bin/caleb_overnight_maintenance.py
+TimeoutStopSec=60
+KillMode=control-group

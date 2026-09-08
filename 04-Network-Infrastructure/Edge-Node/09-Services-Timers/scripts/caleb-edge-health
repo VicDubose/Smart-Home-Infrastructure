@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+source /usr/local/sbin/caleb-edge-common
+
+MOVIE_FREE="$(free_gib "$MOVIES_PATH")"
+SHOW_FREE="$(free_gib "$SHOWS_PATH")"
+
+MOVIES="$(
+find "$MOVIES_PATH" -type f \
+  \( -iname '*.mkv' -o -iname '*.mp4' -o -iname '*.m4v' \
+     -o -iname '*.avi' -o -iname '*.m2ts' \) \
+  2>/dev/null | wc -l
+)"
+
+SHOWS="$(
+find "$SHOWS_PATH" -type f \
+  \( -iname '*.mkv' -o -iname '*.mp4' -o -iname '*.m4v' \
+     -o -iname '*.avi' -o -iname '*.m2ts' \) \
+  2>/dev/null | wc -l
+)"
+
+JF="BAD"
+jellyfin_healthy && JF="OK"
+
+VPN="BAD"
+vpn_ok && core_ok && VPN="OK"
+
+log "HEALTH Jellyfin=$JF CoreVPN=$VPN Movies=$MOVIES Episodes=$SHOWS MovieFree=${MOVIE_FREE}GiB ShowFree=${SHOW_FREE}GiB"

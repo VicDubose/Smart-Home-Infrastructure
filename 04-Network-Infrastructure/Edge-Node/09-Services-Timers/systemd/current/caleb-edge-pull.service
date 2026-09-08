@@ -1,0 +1,22 @@
+[Unit]
+Description=Caleb Edge reliable Core media pull
+After=network-online.target docker.service
+Wants=network-online.target
+RequiresMountsFor=/srv/media/External
+
+[Service]
+Type=simple
+
+ExecStartPre=/usr/bin/mountpoint -q /srv/media/External
+
+ExecStart=/usr/local/sbin/caleb-edge-pull
+
+Restart=on-failure
+RestartSec=5min
+
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=6
+
+[Install]
+WantedBy=multi-user.target

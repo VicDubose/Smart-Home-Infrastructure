@@ -1,0 +1,11 @@
+[Unit]
+Description=Caleb Edge media maintenance — 1st and 15th
+
+[Timer]
+OnCalendar=*-*-01 03:30:00
+OnCalendar=*-*-15 03:30:00
+Persistent=true
+RandomizedDelaySec=15m
+
+[Install]
+WantedBy=timers.target

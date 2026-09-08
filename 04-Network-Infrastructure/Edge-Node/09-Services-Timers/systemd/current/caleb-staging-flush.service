@@ -1,0 +1,6 @@
+[Unit]
+Description=Caleb confirmed Jarvis transfers 72-hour cleanup
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/caleb-confirmed-flush

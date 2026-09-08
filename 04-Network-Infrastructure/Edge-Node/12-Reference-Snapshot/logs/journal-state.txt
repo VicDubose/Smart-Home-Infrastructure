@@ -1,0 +1,5 @@
+===== JOURNAL STORAGE =====
+Archived and active journals take up 822.2M in the file system.
+
+Persistent journal directory:
+823M	/var/log/journal

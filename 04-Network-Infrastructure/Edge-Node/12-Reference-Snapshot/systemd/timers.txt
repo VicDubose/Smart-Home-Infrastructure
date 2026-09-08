@@ -1,0 +1,22 @@
+NEXT                                 LEFT LAST                              PASSED UNIT                                     ACTIVATES
+Mon 2026-09-07 05:01:51 CDT            3s Mon 2026-09-07 04:56:51 CDT 4min 56s ago caleb-edge-guard.timer                   caleb-edge-guard.service
+Mon 2026-09-07 05:02:06 CDT           19s Mon 2026-09-07 04:02:22 CDT    59min ago caleb-staging-flush.timer                caleb-staging-flush.service
+Mon 2026-09-07 05:18:55 CDT         17min Mon 2026-09-07 04:41:48 CDT    19min ago fwupd-refresh.timer                      fwupd-refresh.service
+Mon 2026-09-07 05:36:20 CDT         34min Sun 2026-09-06 00:28:26 CDT            - man-db.timer                             man-db.service
+Mon 2026-09-07 06:01:30 CDT         59min Sun 2026-09-06 06:03:13 CDT            - caleb-edge-health.timer                  caleb-edge-health.service
+Mon 2026-09-07 06:12:39 CDT      1h 10min Sun 2026-09-06 03:03:48 CDT            - plocate-updatedb.timer                   plocate-updatedb.service
+Mon 2026-09-07 06:55:43 CDT      1h 53min Sun 2026-09-06 06:42:32 CDT            - apt-daily-upgrade.timer                  apt-daily-upgrade.service
+Mon 2026-09-07 07:34:45 CDT      2h 32min Sun 2026-09-06 23:30:48 CDT 5h 30min ago anacron.timer                            anacron.service
+Mon 2026-09-07 12:55:12 CDT            7h Sun 2026-09-06 22:25:32 CDT            - apt-daily.timer                          apt-daily.service
+Mon 2026-09-07 15:58:00 CDT           10h Mon 2026-09-07 03:18:49 CDT 1h 42min ago motd-news.timer                          motd-news.service
+Mon 2026-09-07 22:00:00 CDT           16h Sun 2026-09-06 22:00:01 CDT            - caleb-local-events-expiry-cleanup.timer  caleb-local-events-expiry-cleanup.service
+Mon 2026-09-07 23:22:48 CDT           18h Sun 2026-09-06 23:22:48 CDT 5h 38min ago systemd-tmpfiles-clean.timer             systemd-tmpfiles-clean.service
+Tue 2026-09-08 00:00:00 CDT           18h Mon 2026-09-07 00:00:01 CDT  5h 1min ago dpkg-db-backup.timer                     dpkg-db-backup.service
+Tue 2026-09-08 00:00:00 CDT           18h Mon 2026-09-07 00:00:01 CDT  5h 1min ago logrotate.timer                          logrotate.service
+Wed 2026-09-09 01:00:00 CDT     1 day 19h -                                      - caleb-local-events-overnight.timer       caleb-local-events-overnight.service
+Wed 2026-09-09 06:00:00 CDT        2 days Sun 2026-09-06 07:03:32 CDT            - caleb-local-events-morning-release.timer caleb-local-events-morning-release.service
+Sun 2026-09-13 03:10:30 CDT        5 days Sun 2026-09-06 03:10:09 CDT            - e2scrub_all.timer                        e2scrub_all.service
+Mon 2026-09-14 01:27:32 CDT        6 days Mon 2026-09-07 01:27:59 CDT 3h 33min ago fstrim.timer                             fstrim.service
+Tue 2026-09-15 03:31:26 CDT 1 week 0 days Sat 2026-09-05 01:59:32 CDT            - caleb-edge-maintenance.timer             caleb-edge-maintenance.service
+
+19 timers listed.

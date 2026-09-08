@@ -1,0 +1,28 @@
+#!/bin/bash
+
+STAGING="/srv/staging"
+LOG="/var/log/caleb-staging-flush.log"
+
+echo "==================================================" >> "$LOG"
+echo "$(date) — staging cleanup started" >> "$LOG"
+
+BEFORE=$(du -sb "$STAGING" 2>/dev/null | awk '{print $1}')
+
+# Delete files and symlinks older than exactly 72 hours.
+find "$STAGING" -mindepth 1 \
+    \( -type f -o -type l \) \
+    -mmin +4320 \
+    -print -delete >> "$LOG" 2>&1
+
+# Remove empty subdirectories older than 72 hours,
+# but preserve the permanent staging structure.
+find "$STAGING/Raw_Rips" "$STAGING/Transfer_Queue" \
+     "$STAGING/Completed" "$STAGING/Failed" \
+     -mindepth 1 -type d -empty -mmin +4320 \
+     -delete 2>/dev/null
+
+AFTER=$(du -sb "$STAGING" 2>/dev/null | awk '{print $1}')
+
+echo "Before: ${BEFORE:-0} bytes" >> "$LOG"
+echo "After:  ${AFTER:-0} bytes" >> "$LOG"
+echo "$(date) — staging cleanup complete" >> "$LOG"

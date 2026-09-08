@@ -1,0 +1,283 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.dashboard_jellyfin",
+  "data": {
+    "config": {
+      "title": "Caleb Media Command Center",
+      "button_card_templates": {
+        "media_panel": {
+          "show_icon": false,
+          "show_name": false,
+          "show_state": false,
+          "styles": {
+            "card": [
+              {
+                "padding": 0
+              },
+              {
+                "overflow": "hidden"
+              },
+              {
+                "border-radius": "16px"
+              },
+              {
+                "background": "linear-gradient(145deg, rgba(10,17,27,.99), rgba(3,8,14,.99))"
+              },
+              {
+                "border": "1px solid rgba(78,145,235,.22)"
+              },
+              {
+                "box-shadow": "inset 0 1px 0 rgba(255,255,255,.025), 0 9px 28px rgba(0,0,0,.34)"
+              }
+            ]
+          }
+        }
+      },
+      "views": [
+        {
+          "title": "Jellyfin & Ingest",
+          "path": "jellyfin-ingest",
+          "icon": "mdi:jellyfish",
+          "type": "custom:grid-layout",
+          "layout": {
+            "grid-template-columns": "minmax(350px, 1.05fr) minmax(380px, 1.15fr) minmax(330px, .95fr)",
+            "grid-template-areas": "\"header header header\"\n\"ingest streams server\"\n\"activity pipeline library\"\n\"staging errors storage\"\n\"hardware hardware hardware\"\n",
+            "grid-auto-rows": "min-content",
+            "grid-gap": "10px",
+            "width": "min(1680px, calc(100% - 18px))",
+            "margin": "8px auto",
+            "align-items": "start",
+            "mediaquery": {
+              "(max-width: 1180px)": {
+                "grid-template-columns": "1fr 1fr",
+                "grid-template-areas": "\"header header\"\n\"ingest streams\"\n\"server server\"\n\"activity pipeline\"\n\"library library\"\n\"staging errors\"\n\"storage storage\"\n\"hardware hardware\"\n"
+              },
+              "(max-width: 780px)": {
+                "grid-template-columns": "1fr",
+                "grid-template-areas": "\"header\"\n\"ingest\"\n\"streams\"\n\"server\"\n\"activity\"\n\"pipeline\"\n\"library\"\n\"staging\"\n\"errors\"\n\"storage\"\n\"hardware\"\n"
+              }
+            }
+          },
+          "cards": [
+            {
+              "type": "custom:button-card",
+              "template": "media_panel",
+              "view_layout": {
+                "grid-area": "header"
+              },
+              "entity": "sensor.caleb_node_status",
+              "custom_fields": {
+                "content": "[[[\n  const n = entity?.attributes?.node ?? {};\n  const j = entity?.attributes?.jellyfin ?? {};\n  const v = entity?.attributes?.network?.vpn ?? {};\n  const updated = entity?.attributes?.updated_at ?? 'unknown';\n  const online = n.online === true;\n  const jf = j.online === true;\n\n  return `\n    <div class=\"hero\">\n      <div class=\"hero-brand\">\n        <div class=\"hero-logo\">\n          <ha-icon icon=\"mdi:jellyfish\"></ha-icon>\n        </div>\n        <div>\n          <b>CALEB'S MEDIA COMMAND CENTER</b>\n          <span>Jellyfin • DVD ingest • Remote node operations</span>\n        </div>\n      </div>\n\n      <div class=\"hero-stat\">\n        <span>NODE</span>\n        <b style=\"color:${online ? '#39d46b' : '#ff5f67'}\">\n          ${online ? 'ONLINE' : 'OFFLINE'}\n        </b>\n      </div>\n\n      <div class=\"hero-stat\">\n        <span>JELLYFIN</span>\n        <b style=\"color:${jf ? '#39d46b' : '#ff5f67'}\">\n          ${jf ? 'HEALTHY' : 'OFFLINE'}\n        </b>\n      </div>\n\n      <div class=\"hero-stat\">\n        <span>VPN</span>\n        <b style=\"color:${v.connected ? '#39d46b' : '#ffb63e'}\">\n          ${v.connected ? v.ip || 'ACTIVE' : 'DOWN'}\n        </b>\n      </div>\n\n      <div class=\"hero-stat\">\n        <span>UPDATED</span>\n        <b>${updated === 'unknown' ? 'UNKNOWN' : new Date(updated).toLocaleTimeString([], {hour:'numeric', minute:'2-digit'})}</b>\n      </div>\n    </div>\n  `;\n]]]\n"
+              },
+              "styles": {
+                "custom_fields": {
+                  "content": [
+                    {
+                      "width": "100%"
+                    }
+                  ]
+                }
+              },
+              "extra_styles": ".hero {\n  display: grid;\n  grid-template-columns: minmax(360px,1.8fr) repeat(4,minmax(120px,.55fr));\n  width: 100%;\n}\n.hero > div {\n  min-width: 0;\n  padding: 17px;\n  border-right: 1px solid rgba(255,255,255,.07);\n}\n.hero > div:last-child {\n  border-right: none;\n}\n.hero-brand {\n  display: flex;\n  align-items: center;\n  gap: 14px;\n}\n.hero-logo {\n  width: 58px;\n  height: 58px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: 50%;\n  background: radial-gradient(circle, rgba(132,70,255,.25), rgba(4,9,16,.98) 70%);\n  border: 1px solid rgba(140,78,255,.42);\n}\n.hero-logo ha-icon {\n  width: 38px;\n  color: #9a62ff;\n}\n.hero-brand b {\n  display: block;\n  color: #f5f7fb;\n  font-size: 21px;\n}\n.hero-brand span,\n.hero-stat span {\n  display: block;\n  margin-top: 5px;\n  color: rgba(255,255,255,.48);\n  font-size: 9px;\n}\n.hero-stat {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n}\n.hero-stat b {\n  display: block;\n  margin-top: 6px;\n  color: rgba(255,255,255,.92);\n  font-size: 14px;\n}\n@media(max-width:1000px) {\n  .hero {\n    grid-template-columns: 1fr 1fr;\n  }\n  .hero-brand {\n    grid-column: 1 / -1;\n  }\n}\n"
+            },
+            {
+              "type": "custom:button-card",
+              "template": "media_panel",
+              "view_layout": {
+                "grid-area": "ingest"
+              },
+              "entity": "sensor.caleb_node_status",
+              "custom_fields": {
+                "content": "[[[\n  const i = entity?.attributes?.ingest ?? {};\n  const active = i.active === true;\n  const progress = Number(i.progress ?? 0);\n  const stage = String(i.stage ?? 'idle').toUpperCase();\n  const disc = i.disc ?? 'No disc currently ingesting';\n  const message = i.message ?? 'Waiting for the next disc';\n\n  const stages = ['detected','checking','ripping','transferring','completed'];\n  const current = Math.max(0, stages.indexOf(String(i.stage ?? 'idle').toLowerCase()));\n\n  return `\n    <div class=\"panel\">\n      <div class=\"section-title\">\n        <span>CURRENT INGEST PIPELINE</span>\n        <b class=\"${active ? 'warn' : 'ok'}\">${active ? stage : 'IDLE'}</b>\n      </div>\n\n      <div class=\"ingest-disc\">\n        <div class=\"disc-icon\">\n          <ha-icon icon=\"mdi:disc\"></ha-icon>\n        </div>\n        <div>\n          <b>${disc}</b>\n          <span>${message}</span>\n        </div>\n      </div>\n\n      <div class=\"progress-head\">\n        <span>Progress</span>\n        <b>${Number.isFinite(progress) ? progress.toFixed(0) : 0}%</b>\n      </div>\n\n      <div class=\"bar\">\n        <div style=\"width:${Math.max(0, Math.min(100, progress))}%\"></div>\n      </div>\n\n      <div class=\"stage-row\">\n        ${stages.map((s, idx) => `\n          <div class=\"${idx < current ? 'done' : idx === current && active ? 'active' : ''}\">\n            <span>${idx < current ? '✓' : idx === current && active ? '●' : '○'}</span>\n            <b>${s}</b>\n          </div>\n        `).join('')}\n      </div>\n    </div>\n  `;\n]]]\n"
+              },
+              "styles": {
+                "custom_fields": {
+                  "content": [
+                    {
+                      "width": "100%"
+                    }
+                  ]
+                }
+              },
+              "extra_styles": ".panel { padding: 17px; }\n.section-title {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 10px;\n}\n.section-title > span {\n  color: #5aa7ff;\n  font-size: 14px;\n  font-weight: 800;\n}\n.section-title b {\n  padding: 5px 9px;\n  border-radius: 6px;\n  font-size: 9px;\n}\n.section-title .ok {\n  color: #39d46b;\n  background: rgba(57,212,107,.12);\n  border: 1px solid rgba(57,212,107,.28);\n}\n.section-title .warn {\n  color: #ffb63e;\n  background: rgba(255,182,62,.12);\n  border: 1px solid rgba(255,182,62,.34);\n}\n.ingest-disc {\n  display: grid;\n  grid-template-columns: 76px minmax(0,1fr);\n  align-items: center;\n  gap: 13px;\n  margin-top: 18px;\n}\n.disc-icon {\n  width: 70px;\n  height: 70px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: 50%;\n  background: radial-gradient(circle, rgba(91,166,255,.3), rgba(5,11,18,.98) 70%);\n  border: 1px solid rgba(91,166,255,.4);\n}\n.disc-icon ha-icon {\n  width: 46px;\n  color: #dbe8f7;\n}\n.ingest-disc b {\n  display: block;\n  color: rgba(255,255,255,.94);\n  font-size: 19px;\n}\n.ingest-disc span {\n  display: block;\n  margin-top: 6px;\n  color: rgba(255,255,255,.53);\n  font-size: 11px;\n}\n.progress-head {\n  display: flex;\n  justify-content: space-between;\n  margin-top: 20px;\n}\n.progress-head span {\n  color: rgba(255,255,255,.62);\n  font-size: 10px;\n}\n.progress-head b {\n  color: #ffb63e;\n  font-size: 24px;\n}\n.bar {\n  height: 9px;\n  margin-top: 8px;\n  overflow: hidden;\n  border-radius: 10px;\n  background: rgba(255,255,255,.07);\n}\n.bar div {\n  height: 100%;\n  background: linear-gradient(90deg,#278cff,#5aa7ff);\n}\n.stage-row {\n  display: grid;\n  grid-template-columns: repeat(5,1fr);\n  gap: 5px;\n  margin-top: 20px;\n}\n.stage-row > div {\n  text-align: center;\n  color: rgba(255,255,255,.35);\n}\n.stage-row span {\n  display: block;\n  font-size: 19px;\n}\n.stage-row b {\n  display: block;\n  margin-top: 4px;\n  font-size: 7px;\n  text-transform: capitalize;\n}\n.stage-row .done { color: #39d46b; }\n.stage-row .active { color: #ffb63e; }\n"
+            },
+            {
+              "type": "entities",
+              "view_layout": {
+                "grid-area": "streams"
+              },
+              "title": "Active Jellyfin Streams",
+              "entities": [
+                {
+                  "entity": "sensor.caleb_jellyfin_active_streams",
+                  "name": "Active Streams"
+                },
+                {
+                  "entity": "sensor.caleb_jellyfin_transcodes",
+                  "name": "Active Transcodes"
+                },
+                {
+                  "type": "attribute",
+                  "entity": "sensor.caleb_node_status",
+                  "attribute": "jellyfin",
+                  "name": "Session Details"
+                }
+              ],
+              "card_mod": {
+                "style": "ha-card {\n  background: linear-gradient(145deg, rgba(10,17,27,.99), rgba(3,8,14,.99)) !important;\n  color: #fff !important;\n  border: 1px solid rgba(140,78,255,.22) !important;\n  border-radius: 16px !important;\n}\n"
+              }
+            },
+            {
+              "type": "entities",
+              "view_layout": {
+                "grid-area": "server"
+              },
+              "title": "Jellyfin Server Status",
+              "entities": [
+                "binary_sensor.caleb_jellyfin_online",
+                "binary_sensor.caleb_jellyfin_container_healthy",
+                "sensor.caleb_jellyfin_version",
+                "sensor.caleb_node_uptime",
+                "sensor.caleb_cpu_usage",
+                "sensor.caleb_memory_usage",
+                "sensor.caleb_disk_usage",
+                "sensor.caleb_cpu_temperature"
+              ],
+              "card_mod": {
+                "style": "ha-card {\n  background: linear-gradient(145deg, rgba(10,17,27,.99), rgba(3,8,14,.99)) !important;\n  color: #fff !important;\n  border: 1px solid rgba(57,212,107,.22) !important;\n  border-radius: 16px !important;\n}\n"
+              }
+            },
+            {
+              "type": "entities",
+              "view_layout": {
+                "grid-area": "activity"
+              },
+              "title": "Recent Ingest Activity",
+              "entities": [
+                "sensor.caleb_ingest_disc",
+                "sensor.caleb_ingest_stage",
+                "sensor.caleb_ingest_progress",
+                "sensor.caleb_ingest_message"
+              ],
+              "card_mod": {
+                "style": "ha-card {\n  background: linear-gradient(145deg, rgba(10,17,27,.99), rgba(3,8,14,.99)) !important;\n  color: #fff !important;\n  border: 1px solid rgba(78,145,235,.22) !important;\n  border-radius: 16px !important;\n}\n"
+              }
+            },
+            {
+              "type": "custom:button-card",
+              "template": "media_panel",
+              "view_layout": {
+                "grid-area": "pipeline"
+              },
+              "entity": "sensor.caleb_node_status",
+              "custom_fields": {
+                "content": "[[[\n  const i = entity?.attributes?.ingest ?? {};\n  return `\n    <div class=\"pipeline-card\">\n      <b>INGEST PIPELINE</b>\n      <div class=\"flow\">\n        <div><ha-icon icon=\"mdi:disc\"></ha-icon><span>Rip</span></div>\n        <i>→</i>\n        <div><ha-icon icon=\"mdi:movie-open-cog\"></ha-icon><span>Encode</span></div>\n        <i>→</i>\n        <div><ha-icon icon=\"mdi:shield-check\"></ha-icon><span>Verify</span></div>\n        <i>→</i>\n        <div><ha-icon icon=\"mdi:folder-move\"></ha-icon><span>Organize</span></div>\n        <i>→</i>\n        <div><ha-icon icon=\"mdi:magnify-scan\"></ha-icon><span>Library Scan</span></div>\n      </div>\n      <dl>\n        <dt>Pipeline status</dt><dd>${i.active ? 'Active' : 'Idle'}</dd>\n        <dt>Current task</dt><dd>${i.message ?? 'Waiting'}</dd>\n        <dt>Stage</dt><dd>${i.stage ?? 'idle'}</dd>\n        <dt>Destination</dt><dd>/srv/media</dd>\n      </dl>\n    </div>\n  `;\n]]]\n"
+              },
+              "styles": {
+                "custom_fields": {
+                  "content": [
+                    {
+                      "width": "100%"
+                    }
+                  ]
+                }
+              },
+              "extra_styles": ".pipeline-card { padding: 17px; }\n.pipeline-card > b { color: #9a62ff; font-size: 14px; }\n.flow {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 5px;\n  margin-top: 20px;\n}\n.flow > div { text-align: center; }\n.flow ha-icon { width: 28px; color: #5aa7ff; }\n.flow span { display: block; margin-top: 5px; color: rgba(255,255,255,.55); font-size: 7px; }\n.flow i { color: rgba(255,255,255,.3); font-style: normal; }\ndl {\n  display: grid;\n  grid-template-columns: 115px minmax(0,1fr);\n  gap: 8px 12px;\n  margin-top: 22px;\n}\ndt { color: rgba(255,255,255,.45); font-size: 9px; }\ndd { margin: 0; color: rgba(255,255,255,.83); font-size: 9px; overflow-wrap: anywhere; }\n"
+            },
+            {
+              "type": "entities",
+              "view_layout": {
+                "grid-area": "library"
+              },
+              "title": "Jellyfin Library Overview",
+              "entities": [
+                {
+                  "type": "attribute",
+                  "entity": "sensor.caleb_node_status",
+                  "attribute": "jellyfin",
+                  "name": "Libraries and Recently Added"
+                }
+              ],
+              "card_mod": {
+                "style": "ha-card {\n  min-height: 250px;\n  background: linear-gradient(145deg, rgba(10,17,27,.99), rgba(3,8,14,.99)) !important;\n  color: #fff !important;\n  border: 1px solid rgba(78,145,235,.22) !important;\n  border-radius: 16px !important;\n}\n"
+              }
+            },
+            {
+              "type": "entities",
+              "view_layout": {
+                "grid-area": "staging"
+              },
+              "title": "Staging Drive",
+              "entities": [
+                "sensor.caleb_disk_usage",
+                "sensor.caleb_ingest_disc",
+                "sensor.caleb_ingest_progress"
+              ],
+              "card_mod": {
+                "style": "ha-card {\n  background: linear-gradient(145deg, rgba(10,17,27,.99), rgba(3,8,14,.99)) !important;\n  color: #fff !important;\n  border: 1px solid rgba(255,182,62,.22) !important;\n  border-radius: 16px !important;\n}\n"
+              }
+            },
+            {
+              "type": "entities",
+              "view_layout": {
+                "grid-area": "errors"
+              },
+              "title": "Rip Errors",
+              "entities": [
+                "sensor.caleb_recent_error_count",
+                {
+                  "type": "attribute",
+                  "entity": "sensor.caleb_node_status",
+                  "attribute": "recent_errors",
+                  "name": "Recent Error Details"
+                }
+              ],
+              "card_mod": {
+                "style": "ha-card {\n  background: linear-gradient(145deg, rgba(10,17,27,.99), rgba(3,8,14,.99)) !important;\n  color: #fff !important;\n  border: 1px solid rgba(255,95,103,.24) !important;\n  border-radius: 16px !important;\n}\n"
+              }
+            },
+            {
+              "type": "entities",
+              "view_layout": {
+                "grid-area": "storage"
+              },
+              "title": "Server Storage",
+              "entities": [
+                "sensor.caleb_disk_usage",
+                {
+                  "type": "attribute",
+                  "entity": "sensor.caleb_node_status",
+                  "attribute": "storage",
+                  "name": "Storage Paths"
+                }
+              ],
+              "card_mod": {
+                "style": "ha-card {\n  background: linear-gradient(145deg, rgba(10,17,27,.99), rgba(3,8,14,.99)) !important;\n  color: #fff !important;\n  border: 1px solid rgba(78,145,235,.22) !important;\n  border-radius: 16px !important;\n}\n"
+              }
+            },
+            {
+              "type": "entities",
+              "view_layout": {
+                "grid-area": "hardware"
+              },
+              "title": "System and Hardware",
+              "entities": [
+                "sensor.caleb_cpu_usage",
+                "sensor.caleb_memory_usage",
+                "sensor.caleb_disk_usage",
+                "sensor.caleb_cpu_temperature",
+                "binary_sensor.caleb_vpn_connected",
+                "binary_sensor.caleb_jarvis_reachable",
+                "sensor.caleb_jarvis_latency"
+              ],
+              "card_mod": {
+                "style": "ha-card {\n  background: linear-gradient(145deg, rgba(10,17,27,.99), rgba(3,8,14,.99)) !important;\n  color: #fff !important;\n  border: 1px solid rgba(78,145,235,.22) !important;\n  border-radius: 16px !important;\n}\n"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

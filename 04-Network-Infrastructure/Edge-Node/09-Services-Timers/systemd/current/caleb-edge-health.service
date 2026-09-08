@@ -1,0 +1,7 @@
+[Unit]
+Description=Caleb Jellyfin Edge daily health snapshot
+After=docker.service network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/caleb-edge-health

@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+
+set +e
+set +u
+
+source /usr/local/sbin/caleb-edge-common || exit 1
+
+LOG="/var/log/caleb-edge/maintenance.log"
+
+logmsg() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S %Z') $*" |
+        tee -a "$LOG"
+}
+
+REFRESH_ID="a4f5be3846549cc7a873d3377fcfcc4a"
+
+logmsg "MAINTENANCE START"
+
+# Never interfere with an active population/download.
+if systemctl is-active --quiet caleb-edge-pull.service; then
+    logmsg "Pull already active; leaving current transfer untouched."
+    exit 0
+fi
+
+jellyfin_healthy || {
+    logmsg "BLOCK Jellyfin unhealthy"
+    exit 1
+}
+
+vpn_ok || {
+    logmsg "BLOCK VPN unavailable"
+    exit 1
+}
+
+core_ok || {
+    logmsg "BLOCK Core unavailable"
+    exit 1
+}
+
+space_ok || {
+    logmsg "BLOCK storage reserve check failed"
+    exit 1
+}
+
+mountpoint -q /srv/media || {
+    logmsg "BLOCK internal media mount missing"
+    exit 1
+}
+
+mountpoint -q /srv/media/External || {
+    logmsg "BLOCK external media mount missing"
+    exit 1
+}
+
+logmsg "Refreshing Server Sync discovery table"
+
+run_task "$REFRESH_ID"
+
+for i in $(seq 1 120); do
+    STATE="$(task_state_by_id "$REFRESH_ID" 2>/dev/null)"
+
+    if [ "$STATE" != "Running" ]; then
+        break
+    fi
+
+    sleep 5
+done
+
+STATE="$(task_state_by_id "$REFRESH_ID" 2>/dev/null)"
+
+if [ "$STATE" = "Running" ]; then
+    logmsg "BLOCK refresh task timed out"
+    exit 1
+fi
+
+logmsg "Discovery refresh complete"
+
+systemctl start caleb-edge-pull.service
+
+sleep 3
+
+STATE="$(systemctl is-active \
+    caleb-edge-pull.service 2>/dev/null)"
+
+logmsg "Pull worker state=$STATE"
+logmsg "MAINTENANCE COMPLETE"

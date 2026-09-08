@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+
+
+source /etc/caleb-edge/config
+source /etc/caleb-edge/maintenance.env
+
+log() {
+    mkdir -p "$(dirname "$LOG")"
+    printf '%s %s\n' "$(date '+%F %T %Z')" "$*" >> "$LOG"
+}
+
+jf_api() {
+    curl -fsS \
+      --connect-timeout 5 \
+      --max-time 20 \
+      "$@"
+}
+
+task_id() {
+    local NAME="$1"
+
+    jf_api "$JF_BASE/ScheduledTasks" |
+    python3 -c '
+import json,sys
+name=sys.argv[1]
+data=json.load(sys.stdin)
+for task in data:
+    if task.get("Name") == name:
+        print(task.get("Id",""))
+        break
+' "$NAME"
+}
+
+task_state_by_id() {
+    local ID="$1"
+
+    jf_api "$JF_BASE/ScheduledTasks" |
+    python3 -c '
+import json,sys
+tid=sys.argv[1]
+data=json.load(sys.stdin)
+for task in data:
+    if task.get("Id") == tid:
+        print(task.get("State","Unknown"))
+        break
+' "$ID"
+}
+
+run_task() {
+    local ID="$1"
+
+    curl -fsS \
+      --connect-timeout 5 \
+      --max-time 20 \
+      -X POST \
+      "$JF_BASE/ScheduledTasks/Running/$ID" \
+      -o /dev/null
+}
+
+cancel_task() {
+    local ID="$1"
+
+    curl -fsS \
+      --connect-timeout 5 \
+      --max-time 20 \
+      -X DELETE \
+      "$JF_BASE/ScheduledTasks/Running/$ID" \
+      -o /dev/null
+}
+
+jellyfin_healthy() {
+    [ "$(docker inspect -f '{{.State.Health.Status}}' jellyfin 2>/dev/null)" = "healthy" ]
+}
+
+vpn_ok() {
+    ip route get 192.168.50.51 2>/dev/null |
+        grep -q 'dev tun0'
+}
+
+core_ok() {
+    curl -fsS \
+      --connect-timeout 5 \
+      --max-time 10 \
+      "$CORE_BASE/System/Info/Public" \
+      -o /dev/null
+}
+
+movies_mounted() {
+    findmnt -rn -T "$MOVIES_PATH" >/dev/null 2>&1
+}
+
+shows_mounted() {
+    findmnt -rn -T "$SHOWS_PATH" >/dev/null 2>&1
+}
+
+free_gib() {
+    df -BG --output=avail "$1" 2>/dev/null |
+        tail -1 |
+        tr -dc '0-9'
+}
+
+space_ok() {
+    local MF SF
+
+    MF="$(free_gib "$MOVIES_PATH")"
+    SF="$(free_gib "$SHOWS_PATH")"
+
+    [ -n "$MF" ] &&
+    [ -n "$SF" ] &&
+    [ "$MF" -ge "$MOVIE_RESERVE_GIB" ] &&
+    [ "$SF" -ge "$SHOW_RESERVE_GIB" ]
+}

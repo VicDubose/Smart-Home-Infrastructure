@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Caleb Edge health check
+
+[Timer]
+OnCalendar=*-*-* 06:00:00
+Persistent=true
+RandomizedDelaySec=10m
+
+[Install]
+WantedBy=timers.target

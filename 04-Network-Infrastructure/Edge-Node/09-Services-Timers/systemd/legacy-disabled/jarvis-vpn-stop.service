@@ -1,0 +1,6 @@
+[Unit]
+Description=Stop Caleb VPN after weekly Jarvis maintenance
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/jarvis-vpn-stop.sh
