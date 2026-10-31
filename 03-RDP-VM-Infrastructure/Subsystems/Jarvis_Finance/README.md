@@ -3,15 +3,16 @@
 > **A local-first financial intelligence subsystem for SKYNET / JARVIS**  
 > Evidence collection · Reconciliation · Deterministic calculations · Guarded AI reasoning · Market intelligence · Home Assistant visualization
 
-<!-- DASHBOARD IMAGE: add your approved, sanitized screenshot to
-     subsystems/finance/assets/finance-command-center.png.
-     Do not publish live balances, personal names, account numbers, tokens, or private LAN addresses. -->
+<!-- Dashboard screenshot intentionally omitted until a sanitized image is uploaded.
+     When ready, add 03-RDP-VM-Infrastructure/Subsystems/Jarvis_Finance/assets/finance-command-center.png,
+     then uncomment the Markdown image line below. Never publish live balances,
+     personal names, account numbers, tokens, or private LAN addresses. -->
 
-![JARVIS Finance Command Center — replace with your sanitized dashboard screenshot](./assets/finance-command-center.png)
+<!-- ![JARVIS Finance Command Center](./assets/finance-command-center.png) -->
 
 <p align="center"><em>The JARVIS Finance Command Center — Finance Chief · Market Watch · Cash Flow & Debt · Strategy Lab</em></p>
 
-**Documentation checkpoint:** October 29, 2026 · **System:** SKYNET-CORE / JARVIS · **Repository location:** `subsystems/finance/README.md`  
+**Documentation checkpoint:** October 29, 2026 · **System:** SKYNET-CORE / JARVIS · **Repository location:** `03-RDP-VM-Infrastructure/Subsystems/Jarvis_Finance/README.md`<br>
 **Overall state:** **Integration in progress — NOT end-to-end production accepted**  
 **Financial execution:** **DISABLED — advisory and observation only**
 
@@ -635,7 +636,7 @@ An eventual **Decision Journal** should record accepted evidence hashes, source 
 **Deployment architecture:** `jarvis-finance-command-center.service` is installed on SKYNET-CORE; the dashboard is served at **port 8792** on the local network and embedded as Home Assistant iframe views. The deployed project directory is `finance/dashboard/command_center/v0_1`. Historic deployment evidence recorded an enabled/active service, health checks, 44 Python passes and 7 JavaScript passes.
 
 > [!NOTE]
-> The real dashboard screenshot belongs in `assets/finance-command-center.png` next to this README. Use a sanitized screenshot in any public repository; internal hostnames, IPs, personal balances and account identities should be removed or masked.
+> A sanitized dashboard screenshot can be added at `assets/finance-command-center.png` next to this README and enabled by uncommenting the image link near the top. Do not publish internal hostnames, IPs, personal balances or account identities.
 
 ### Publication contract
 
@@ -825,7 +826,7 @@ A failed refresh must not destroy or relabel the previous result as current. A m
 
 ### Public repository versus SKYNET private storage
 
-| May belong in public `subsystems/finance/` | Must stay in private SKYNET storage |
+| May belong in public `03-RDP-VM-Infrastructure/Subsystems/Jarvis_Finance/` | Must stay in private SKYNET storage |
 |---|---|
 | Architecture diagrams, schemas without private examples | Actual bank/loan/payroll records and bank transaction IDs |
 | Sanitized screenshots and illustrative fixtures | Real income, balances, debt principal, family property agreement |
@@ -977,11 +978,12 @@ The following tree distinguishes **known paths** from **documentation or future 
 
 ```text
 <repository-root>/
-└── subsystems/
-    └── finance/
-        ├── README.md                          # this page
-        └── assets/
-            └── finance-command-center.png     # ADD sanitized dashboard image
+└── 03-RDP-VM-Infrastructure/
+    └── Subsystems/
+        └── Jarvis_Finance/
+            ├── README.md                      # this page
+            └── assets/
+                └── finance-command-center.png # ADD sanitized image when ready
 
 SKYNET-CORE (separate working tree and private state)
 $HOME/rdp-scripts/Jarvis/
@@ -1004,8 +1006,8 @@ $HOME/.local/share/jarvis-finance-private/
 
 1. Capture the approved four-view Finance Command Center screenshot.
 2. Mask financial figures, names, account identities, device IPs, internal hostnames, private folders and service tokens.
-3. Save it as `subsystems/finance/assets/finance-command-center.png`.
-4. Commit the sanitized screenshot alongside this README; GitHub will render it at the top automatically.
+3. Save it as `03-RDP-VM-Infrastructure/Subsystems/Jarvis_Finance/assets/finance-command-center.png`.
+4. Commit the sanitized screenshot, then uncomment the Markdown image line near the top of this README to display it on GitHub.
 
 ### Updating this document
 
