@@ -2,6 +2,11 @@
 
 > **A local-first financial intelligence subsystem for SKYNET / JARVIS**  
 > Evidence collection · Reconciliation · Deterministic calculations · Guarded AI reasoning · Market intelligence · Home Assistant visualization
+> ## JARVIS Finance Command Center
+
+![JARVIS Finance Command Center Dashboard](<Screenshots/JARVIS Finance Command Center Dashboard (1).png>)
+
+*JARVIS Finance Command Center — Main Dashboard Overview.*
 
 <!-- Dashboard screenshot intentionally omitted until a sanitized image is uploaded.
      When ready, add 03-RDP-VM-Infrastructure/Subsystems/Jarvis_Finance/assets/finance-command-center.png,
