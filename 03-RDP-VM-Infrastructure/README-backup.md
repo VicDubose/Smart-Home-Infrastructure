@@ -110,16 +110,16 @@ This architecture allows the entire infrastructure environment to be accessed fr
 
 This infrastructure layer is organized into dedicated subsystems for clarity and separation of concerns:
 
-- **Docker Layer**  
-  Containerized service infrastructure (Eufy bridge, Jellyfin, Alabama Power scraper)  
+- **Docker Layer**
+  Containerized service infrastructure (Eufy bridge, Jellyfin, Alabama Power scraper)
   → [`Docker/README.md`](./Docker/README.md)
 
-- **Host System**  
-  Ubuntu Server foundation, resource management, and system orchestration  
+- **Host System**
+  Ubuntu Server foundation, resource management, and system orchestration
   → [`Host-System/README.md`](./Host-System/README.md)
 
-- **Virtualization Layer**  
-  KVM-based virtual machines including Windows Admin VM and EVE-NG lab  
+- **Virtualization Layer**
+  KVM-based virtual machines including Windows Admin VM and EVE-NG lab
   → [`Virtualization/README.md`](./Virtualization/README.md)
 
 ---
@@ -148,14 +148,14 @@ The system is capable of running **multiple virtual machines and containers simu
 
 Memory Allocation
 * Windows 11 VM: 10 GB
-* EVE-NG VM: 14 GB 
+* EVE-NG VM: 14 GB
 * Host + Docker: Remaining (~8 GB)
-	
+
 
 ⸻
 
 CPU Allocation
-* Windows 11 VM: 2 vCPU 
+* Windows 11 VM: 2 vCPU
 * EVE-NG VM: 4 vCPU
 * Host + Docker: Remaining threads
 
@@ -165,7 +165,7 @@ Storage Allocation
 * EVE-NG VM: 170 GB
 * Remaining SSD storage: reserved for host system, Docker, and future expansion
 * 1TB HDD: dedicated to Jellyfin media storage
-	
+
 ---
 
 # Host Operating System
@@ -206,7 +206,7 @@ Containerization allows services to operate independently while maintaining effi
 | --------------------- | ------------------------------------------------- |
 | Jellyfin              | Media streaming server                            |
 | Eufy Bridge           | Integrates Eufy cameras with Home Assistant       |
-| Alabama Power Scraper | Collects daily utility usage data for automation  | 
+| Alabama Power Scraper | Collects daily utility usage data for automation  |
 
 Containers provide several advantages:
 
@@ -314,14 +314,14 @@ Cockpit eliminates the need for separate hypervisor dashboards or container mana
 The system includes a self-hosted Jellyfin media server running in a Docker container.
 
 Jellyfin provides:
-• centralized media library management  
-• streaming to local and remote clients  
-• hardware-accelerated playback (when available)  
-• user profile and access control  
-• metadata aggregation (posters, descriptions, subtitles)  
+• centralized media library management
+• streaming to local and remote clients
+• hardware-accelerated playback (when available)
+• user profile and access control
+• metadata aggregation (posters, descriptions, subtitles)
 
-Example access endpoint:  
-http://server-ip:8096  
+Example access endpoint:
+http://server-ip:8096
 
 Jellyfin operates on a dedicated storage volume to prevent interference with virtual machine workloads and system performance.
 
@@ -336,14 +336,14 @@ Jellyfin operates on a dedicated storage volume to prevent interference with vir
 The infrastructure includes an EVE-NG virtual machine used for network engineering labs and testing.
 
 EVE-NG provides:
-• emulation of enterprise network devices (Cisco, Fortinet, etc.)  
-• topology-based lab design and testing  
-• support for hybrid environments (virtual + physical devices)  
-• persistent lab environments for CCNA/CCNP-level scenarios  
-• browser-based access to console sessions  
+• emulation of enterprise network devices (Cisco, Fortinet, etc.)
+• topology-based lab design and testing
+• support for hybrid environments (virtual + physical devices)
+• persistent lab environments for CCNA/CCNP-level scenarios
+• browser-based access to console sessions
 
-Example access endpoint:  
-http://server-ip  
+Example access endpoint:
+http://server-ip
 
 EVE-NG allows the infrastructure to function as a full network simulation lab without requiring dedicated physical hardware for every scenario.
 
