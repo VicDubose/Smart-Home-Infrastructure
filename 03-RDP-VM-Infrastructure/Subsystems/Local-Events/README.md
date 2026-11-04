@@ -6,11 +6,9 @@
 **Documentation checkpoint:** November 3, 2026 · **System:** SKYNET / JARVIS · **Repository location:** `03-RDP-VM-Infrastructure/Subsystems/Local-Events/README.md`<br>
 **Owner:** Tyrone · **Primary area:** Dolomite / Birmingham, Alabama<br>
 **Platform:** Home Assistant Green · Python collectors/application services on SKYNET · iPad kiosk<br>
-**Documented state (Nov 3–4, 2026):** **Core board and deterministic pipeline operational in recorded tests** · **AI campaign hardening / backlog processing ongoing**
 
 > [!IMPORTANT]
-> Statuses summarize the dated checks in [Evidence and provenance](#14-evidence-and-provenance); they are **not live health checks**. Verify exact schedules with installed systemd timers. A test PASS does not guarantee a currently running service. Home coordinates, LAN addresses, credentials, tokens, and other private host details must not be committed.
-
+> Statuses summarize the dated checks in [Evidence and provenance](#14-evidence-and-provenance); they are **not live health checks**. 
 ---
 
 ## Table of contents
@@ -202,7 +200,6 @@ Some feeds surface events outside their home city (for example Lake Buena Vista 
 > "Healthy + empty" is only trustworthy if the parser can't invent rows. Before the November fix, several seasonal sources reported events out of season because undated text was being stamped with today's date. See [section 6](#6-data-quality-gate).
 
 ---
-
 ## 5. Distance model
 
 The project moved from named city lists to **deterministic distance from the Home Assistant home location**. The home coordinates are fetched privately from HA and never sent to public geocoders.
@@ -274,7 +271,6 @@ sqlite3 data/local_events.db "UPDATE events SET active=1, suppressed_reason=NULL
 ```
 
 ---
-
 ## 7. AI classification campaign
 
 ### Policy
