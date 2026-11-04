@@ -408,9 +408,6 @@ flowchart LR
     E --> C["jarvis-confidence"]
     C --> X["jarvis-escalation / review"]
 ```
-
-The command names reflect the documented JARVIS architecture and need to be checked against deployed versions when auditing operational readiness. This diagram describes an intended governed path, **not** a claim that every Finance or other domain task is end-to-end accepted.
-
 ### Domain extensions and separation of responsibilities
 
 | Extension | Core responsibility | Governing boundary |
