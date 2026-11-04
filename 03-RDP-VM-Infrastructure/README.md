@@ -123,37 +123,63 @@ The infrastructure follows a layered architecture separating:
 * the JARVIS AI layer
 * management interfaces
 
+
 ```mermaid
+flowchart TD
+    ADMIN["Administrator Workstation"]
+    MOBA["MobaXterm<br/>Unified Access Dashboard"]
+    UBUNTU["SKYNET-CORE<br/>Ubuntu Server Host"]
 
-    flowchart TD
+    ADMIN --> MOBA
 
-    ADMIN[Administrator Workstation]
+    MOBA --> RDP["RDP → Windows VM"]
+    MOBA --> WEB1["Cockpit Web UI"]
+    MOBA --> WEB2["EVE-NG Portal"]
+    MOBA --> WEB3["Jellyfin Portal"]
 
-    ADMIN --> MOBA[MobaXterm<br/>Unified Access Dashboard]
+    WEB1 --> UBUNTU
 
-    MOBA --> RDP[RDP → Windows VM]
-    MOBA --> WEB1[Cockpit Web UI]
-    MOBA --> WEB2[EVE-NG Portal]
-    MOBA --> WEB3[Jellyfin Portal]
+    UBUNTU --> DOCKER["Docker Engine<br/>6 Containers Observed"]
+    UBUNTU --> KVM["KVM Virtualization"]
+    UBUNTU --> JARVIS["JARVIS AI Platform"]
 
-    WEB1 --> UBUNTU[Ubuntu Server Host]
+    subgraph CONTAINERS["Docker Container Services"]
+        JELLYFIN["Jellyfin<br/>Media Server"]
+        EUFY["eufy_ws<br/>Eufy Security Bridge"]
+        WEBUI["open-webui<br/>Local AI Interface"]
+        ACTUAL["Actual Budget<br/>Financial Ledger"]
+        GUSTO["gusto-agent<br/>Gusto Stage 1 Dispatcher"]
+        WATCH["watchstate<br/>Media Watch-State Tracking"]
+    end
 
-    UBUNTU --> DOCKER[Docker Containers]
-    UBUNTU --> KVM[KVM Virtualization]
-    UBUNTU --> JARVIS[JARVIS AI Node]
+    DOCKER --> JELLYFIN
+    DOCKER --> EUFY
+    DOCKER --> WEBUI
+    DOCKER --> ACTUAL
+    DOCKER --> GUSTO
+    DOCKER --> WATCH
 
-    DOCKER --> JELLYFIN[Jellyfin Media Server]
-    DOCKER --> EUFY[Eufy Bridge]
-    DOCKER --> POWER[Alabama Power Scraper]
-    DOCKER --> WEBUI[Open WebUI]
+    KVM --> WINDOWSVM["Windows 11<br/>Administration VM"]
+    KVM --> EVENGVM["EVE-NG<br/>Network Simulation Lab"]
 
-    KVM --> WINDOWSVM[Windows 11 Admin VM]
-    KVM --> EVENGVM[EVE-NG Network Lab VM]
+    JARVIS --> HARNESS["Central AI Harness<br/>Routing · Scheduling · Policy<br/>Thermal · CPU · Recovery"]
 
-    JARVIS --> HARNESS[AI Harness<br/>router · windows · thermal · core split]
-    HARNESS --> OLLAMA[Ollama<br/>local models]
-    JARVIS --> SUBS[JARVIS subsystems<br/>Finance · Local Events · HVAC · Media]
-    SUBS --> HARNESS
+    HARNESS --> OLLAMA["Ollama<br/>Local Model Runtime"]
+
+    JARVIS --> SUBS["JARVIS Subsystems"]
+
+    SUBS --> FIN["Finance"]
+    SUBS --> EVENTS["Local Events"]
+    SUBS --> HVAC["HVAC Engineering"]
+    SUBS --> MEDIA["Media Automation"]
+
+    FIN -.-> ACTUAL
+    FIN -.-> GUSTO
+
+    MEDIA -.-> WATCH
+    MEDIA -.-> JELLYFIN
+
+    HARNESS -.-> WEBUI
 
     RDP --> WINDOWSVM
     WEB2 --> EVENGVM
