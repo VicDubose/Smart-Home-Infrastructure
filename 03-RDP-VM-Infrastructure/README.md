@@ -216,11 +216,11 @@ This infrastructure layer is organized into dedicated subsystems for clarity and
   | Subsystem | Purpose | Page |
   |---|---|---|
   | JARVIS Finance | Local-first financial evidence, reconciliation and guarded advisory AI | [`Subsystems/Jarvis_Finance/README.md`](./Subsystems/Jarvis_Finance/README.md) |
-  | Local Events | Rolling 30-day, distance-aware event board for Home Assistant | [`Subsystems/Local-Events.md`](./Subsystems/Local-Events.md) |
-  | Media Pipeline | Disc ingest, ripping and Jellyfin library automation | [`Subsystems/Media-Pipeline.md`](./Subsystems/Media-Pipeline.md) |
-  | Caleb Remote Node | Remote node and its heavy-AI maintenance windows | [`Subsystems/Caleb-Remote-Node.md`](./Subsystems/Caleb-Remote-Node.md) |
-  | CCNA-Jarvis | Network-engineering study and lab assistant | [`Subsystems/CCNA-Jarvis.md`](./Subsystems/CCNA-Jarvis.md) |
-  | Home Assistant Integration | How JARVIS publishes entities and dashboards into HA | [`Subsystems/Home-Assistant-Integration.md`](./Subsystems/Home-Assistant-Integration.md) |
+  | Local Events | Rolling 30-day, distance-aware event board for Home Assistant | [`Subsystems/Local-Events/README.md`](./Subsystems/Local-Events/README.md) |
+  | Media Pipeline | Disc ingest, ripping and Jellyfin library automation | [`Subsystems/Media-Pipeline/README.md`](./Subsystems/Media-Pipeline/README.md) |
+  | Caleb Remote Node | Remote node and its heavy-AI maintenance windows | [`Subsystems/Caleb-Remote-Node/README.md`](./Subsystems/Caleb-Remote-Node/README.md) |
+  | CCNA-Jarvis | Network-engineering study and lab assistant | [`Subsystems/CCNA-Jarvis/README.md`](./Subsystems/CCNA-Jarvis/README.md) |
+  | Home Assistant Integration | How JARVIS publishes entities and dashboards into HA | [`Subsystems/Home-Assistant-Integration/README.md`](./Subsystems/Home-Assistant-Integration/README.md) |
 
 ---
 
@@ -413,11 +413,11 @@ flowchart LR
 | Extension | Core responsibility | Governing boundary |
 |---|---|---|
 | [Finance](./Subsystems/Jarvis_Finance/README.md) | Private financial evidence, market sources, budgets and decision support | Advisory/read-only; accepted data and model validation required before publication |
-| [Local Events](./Subsystems/Local-Events.md) | Event discovery and distance-aware Home Assistant board | Deterministic event filtering and separately scheduled semantic enrichment |
+| [Local Events](./Subsystems/Local-Events/README.md) | Event discovery and distance-aware Home Assistant board | Deterministic event filtering and separately scheduled semantic enrichment |
 | HVAC audits | Recovery, comfort and runtime engineering evidence | Existing Source A/B/C/D audit workflow; model interpretation on weekly audit, not on dashboard loads |
-| [Media pipeline](./Subsystems/Media-Pipeline.md) | Disc-watch and media library operations | Optical drive, ripping and transcode exclusivity |
-| [CCNA-Jarvis](./Subsystems/CCNA-Jarvis.md) | Networking questions and network lab assistance | Study/lab domain; no implicit production network access |
-| [Home Assistant integration](./Subsystems/Home-Assistant-Integration.md) | Entities and embedded dashboards | Publish accepted saved data; production changes require approval |
+| [Media pipeline](./Subsystems/Media-Pipeline/README.md) | Disc-watch and media library operations | Optical drive, ripping and transcode exclusivity |
+| [CCNA-Jarvis](./Subsystems/CCNA-Jarvis/README.md) | Networking questions and network lab assistance | Study/lab domain; no implicit production network access |
+| [Home Assistant integration](./Subsystems/Home-Assistant-Integration/README.md) | Entities and embedded dashboards | Publish accepted saved data; production changes require approval |
 
 > [!NOTE]
 > **Integration is not acceptance.** JARVIS Finance's October 29 handoff describes an operational dashboard and some validated source collectors, but does **not** establish the complete fresh collection → reconciliation → deterministic decisions → guarded Chief → dashboard publication path. See the Finance README for its workstream-level status and evidence.
