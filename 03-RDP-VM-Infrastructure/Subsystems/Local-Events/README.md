@@ -32,6 +32,19 @@
 15. [Design principles and lessons](#15-design-principles-and-lessons)
 
 ---
+## Local Events Intelligence Dashboard
+
+<p align="center">
+  <img src="Screenshots/Screenshot%202026-11-04%20011631.png"
+       alt="JARVIS Local Events Intelligence Dashboard"
+       width="900"/>
+</p>
+
+<p align="center">
+  <em>Local Events Intelligence Board — automated event discovery,
+  geographic prioritization, seasonal scoring, and event recommendations
+  integrated with Home Assistant.</em>
+</p>
 
 ## 1. Purpose
 
