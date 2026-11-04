@@ -89,9 +89,18 @@ These labels summarize the documented system and October 26, 2026 repair handoff
 | HA status / notifications / eject | **Partial or planned** | Do not imply end-to-end automation. |
 | Blank optical-disc writing | **Not verified** | Outside the accepted ingest path. |
 
-### Operational caution
+## JARVIS Media Library — Jellyfin
 
-The previous USB fault could put processes in uninterruptible kernel I/O wait. A hardened script cannot guarantee recovery from a stuck kernel/USB operation. **Software repair does not equal hardware acceptance.**
+<p align="center">
+  <img src="Screenshots/Screenshot%202026-11-04%20010316.png"
+       alt="JARVIS Jellyfin Media Library"
+       width="900"/>
+</p>
+
+<p align="center">
+  <em>JARVIS Media Library — centralized Movies, Anime, Music,
+  Music Videos, Collections, and TV series managed through Jellyfin.</em>
+</p>
 
 ---
 
