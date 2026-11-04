@@ -10,7 +10,6 @@
 **DVD recovery target:** **November 27, 2026**, after Thanksgiving
 
 > [!IMPORTANT]
-> This document merges the subsystem overview with the October 26 DVD-repair and media-architecture handoff. Implementation and health statements are **historical evidence**, not a live audit of the server. In particular, the HP optical drive is deliberately deauthorized and its watcher disabled. **Do not restart, reauthorize, or probe the drive as part of README work.**
 >
 > **Sacred move rule: NO VALIDATION PASS = NO FINAL LIBRARY MOVE.** A language model cannot approve its own filesystem changes, overwrite existing media, or bypass deterministic checks.
 
