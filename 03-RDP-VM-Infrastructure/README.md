@@ -12,8 +12,7 @@ This server functions as a **central infrastructure node** within the smart home
 **Acceptance boundary:** Architecture documentation and dated test findings; not a live operational health report.
 
 > [!IMPORTANT]
-> This is the **master infrastructure page**. JARVIS Finance, Local Events, HVAC, Media and CCNA-Jarvis are domain extensions that reuse the central JARVIS control plane. Do not infer that every subsystem or model workflow is production accepted just because an architecture diagram, scheduler, dashboard or local test exists.
-
+> This is the **master infrastructure page**. JARVIS Finance, Local Events, HVAC, Media and CCNA-Jarvis are domain extensions that reuse the central JARVIS control plane. 
 ## Table of contents
 
 <!-- TOC_START -->
