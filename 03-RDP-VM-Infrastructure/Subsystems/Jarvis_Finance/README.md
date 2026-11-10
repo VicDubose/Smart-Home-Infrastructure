@@ -137,6 +137,7 @@ Every number the harness reports traces back to one of six source types, all sto
 
 Code lives under `FINANCE_ROOT` (collectors, publisher, harness, dashboard). Private data lives under `FINANCE_PRIVATE`. Only `FINANCE_ROOT` content that passes the section 16 rules may be published.
 
+![JARVIS Finance Sources of Truth PDFs](<Screenshots/Screenshot 2026-11-09 232709.png>)
 ---
 
 ## 3. End-to-end architecture
