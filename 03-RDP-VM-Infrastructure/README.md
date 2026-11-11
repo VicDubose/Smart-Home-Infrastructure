@@ -82,17 +82,52 @@ Remote access is provided through **ASUS Instant Guard VPN**, which creates a se
 
 #### Access Flow
 
-```
-Remote device (iPad / iPhone / laptop)
-        │
-        ▼
-ASUS Instant Guard VPN tunnel
-        │
-        ▼
-Home LAN
-        │
-        ├── Cockpit · Jellyfin · EVE-NG · RDP
-        └── JARVIS dashboards (Home Assistant iframe views)
+
+#### Access Flow
+
+```mermaid
+flowchart TD
+    A["Remote Devices"]
+
+    A --> B["iPhone / iPad"]
+    A --> C["Laptops / Edge Servers"]
+
+    B --> D["ASUS Instant Guard VPN"]
+    C --> E["OpenVPN Client"]
+
+    D --> F["ASUS Routers<br/>VPN Hosts"]
+    E --> F
+
+    F --> G["Home LAN"]
+
+    G --> H["SKYNET-CORE<br/>Ubuntu Linux"]
+    G --> I["Home Assistant Green"]
+
+    subgraph SKYNET["SKYNET-CORE Services"]
+        J["Cockpit / Docker"]
+        K["Jellyfin / EVE-NG / RDP"]
+        L["JARVIS AI Orchestration"]
+        M["Financial Collectors<br/>Models / Validation"]
+        N["JARVIS Dashboard Services"]
+    end
+
+    H --> J
+    H --> K
+    H --> L
+    L --> M
+    M --> N
+
+    subgraph HA["Home Assistant Services"]
+        O["Smart Home Controls"]
+        P["HVAC / Energy Monitoring"]
+        Q["JARVIS Dashboard<br/>iframe Views"]
+    end
+
+    I --> O
+    I --> P
+    I --> Q
+
+    N -. "Embedded via iframe" .-> Q
 ```
 
 #### Key Characteristics
