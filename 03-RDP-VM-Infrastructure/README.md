@@ -82,9 +82,6 @@ Remote access is provided through **ASUS Instant Guard VPN**, which creates a se
 
 #### Access Flow
 
-
-#### Access Flow
-
 ```mermaid
 flowchart TD
     A["Remote Devices"]
