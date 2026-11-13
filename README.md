@@ -377,7 +377,7 @@ flowchart TB
     ET1 -. Wi-Fi .- WIFI["Phones · Apple Home hubs<br/>Wi-Fi IoT"]
 
     REMOTE["Admin laptop / phone<br/>(remote)"] -. "Instant Guard VPN" .-> ET1
-    CALEB["Caleb edge node<br/>(remote site)"] -. "OpenVPN" .-> ET1
+    CALEB["Caleb edge node + Admin PC<br/>(remote site)"] -. "OpenVPN" .-> ET1
 ```
 
 > VLAN 50 is a separate broadcast domain for lab work. Being attached to both VLANs does **not** mean SKYNET routes between them; any VLAN 50 gateway or route must be documented and verified on its own. See [Network Design](04-Network-Infrastructure/README.md).
