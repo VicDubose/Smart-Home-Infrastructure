@@ -376,7 +376,7 @@ flowchart TB
     SW --> V50
     ET1 -. Wi-Fi .- WIFI["Phones · Apple Home hubs<br/>Wi-Fi IoT"]
 
-    REMOTE["Admin laptop / phone<br/>(remote)"] -. "Instant Guard VPN" .-> ET1
+    REMOTE["Onsite Tablet / phone<br/>(remote)"] -. "Instant Guard VPN" .-> ET1
     CALEB["Caleb edge node + Admin PC<br/>(remote site)"] -. "OpenVPN" .-> ET1
 ```
 
