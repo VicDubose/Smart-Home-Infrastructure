@@ -76,7 +76,7 @@ The Windows VM is used for:
 
 - daily system administration of SKYNET, Home Assistant and the network
 - **remote access to the Cisco switch** through MobaXterm
-- VS Code development and GitHub repository management
+- VS Code development and GitHub repository management, GitBash functions as the sudo backend for github access
 - MobaXterm as the SSH / RDP / serial access hub
 - browser access to every infrastructure web service
 - running Windows-only tools
