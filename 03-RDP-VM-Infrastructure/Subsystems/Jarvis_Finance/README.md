@@ -17,13 +17,6 @@
 
 <p align="center"><em>The JARVIS Finance Command Center — Finance Chief · Market Watch · Cash Flow & Debt · Strategy Lab</em></p>
 
-**Documentation checkpoint:** October 29, 2026 · **System:** SKYNET-CORE / JARVIS · **Repository location:** `03-RDP-VM-Infrastructure/Subsystems/Jarvis_Finance/README.md`<br>
-**Overall state:** **Integration in progress — NOT end-to-end production accepted**  
-**Financial execution:** **DISABLED — advisory and observation only**
-
-> [!IMPORTANT]
-> This page documents the architecture, delivered components, observed test evidence, and outstanding integration work. A passing unit test, source scrape, running container, or dashboard page **does not** independently prove a fresh, reconciled, production-ready financial pipeline. Status labels refer to the dated handoffs listed in [Evidence and provenance](#21-evidence-and-provenance), not a live status query.
-
 ---
 
 ## Table of contents
@@ -88,27 +81,33 @@ It is intended to answer questions that individual financial tools cannot answer
 
 The project is organized into **A–F**, with a shared Finance RAG knowledge layer. *Specialist closure* and *end-to-end operational acceptance* are intentionally different concepts.
 
-| Workstream | Responsibility | Evidence-backed status as of Oct 29, 2026 | Next acceptance dependency |
+| Workstream | Responsibility | Verified status as of Nov 17, 2026 | Next acceptance dependency |
 |---|---|---|---|
-| **A — Financial Strategy & Intent** | User goals, policy, debt priorities, reserves, real estate | Strategy documented; typed decision contract **design approved** | Bind accepted profile and policy to verified sources, without treating goals as balances |
-| **B — Account Collectors** | Bank inflows, Actual/Simply Budget, debt, payroll-related evidence | Specialist conversation **closed with exceptions**; partial read-only evidence | Demonstrate fresh Regions/SoFi deposits, daily budget extraction, monthly Nelnet refresh and coverage receipts |
-| **C — Consolidation** | Canonical financial state, transfer matching, reconciled snapshots | **End-to-end acceptance not evidenced** | Reconcile accepted B inputs; publish source-aware, schema-valid snapshot |
-| **D — Market Watch** | Public filings, rates, indices, ETF data, public portfolios | Several **live collection paths accepted**; v1.8.1 timer release locally tested | Activate and prove unattended timer execution; finish M1, Form 4 and recurring 13F adapters |
-| **E — Finance Intelligence** | Deterministic decision engine, Fin-R1, Qwen3, trusted validation | Contract design **approved for isolated testing**; general runtime acceptance **blocked** | Pass semantic engine gates; bind central policy and RAG; guarded model and end-to-end tests |
-| **F — Dashboard & HA** | Finance Command Center and Home Assistant iframe views | **UI/deployment accepted**; finance data integration **pending** | Map accepted snapshot and review-only Chief evidence without running models on page loads |
-| **Finance RAG V0.8E** | Source-of-truth reference PDFs and search | **10-document indexing and retrieval accepted** | E must prove bounded retrieval and source-cited model use |
+| **A: Financial Strategy & Intent** | User goals, policy, debt priorities, reserves, real estate | Owner intent registry + bill schedule in use by the bills guard; catch-up plans recorded with owner-stated dates | Bind policy to the typed decision contract (still design-only) |
+| **B: Account Collectors** | Bank inflows, Actual Budget ledger, debt, payroll evidence | **OPERATIONAL.** SimpleFIN Bridge → Actual imports twice daily with receipts; automated bank re-auth job; curated categorization rules (v2.1) | Add the remaining accounts (installment loan, HSA after transfer, peer-payment app); student-loan monthly refresh |
+| **C: Consolidation** | Canonical state, transfer matching, reconciled snapshots | **OPERATIONAL (ledger-based).** Own-account moves linked as real transfers twice daily; duplicate/stale cleanup; loans off-budget; bills verified from the ledger 16/18; integrity scan twice daily | Exempt debt/transfer group from the wrong-way category check; full typed snapshot contract |
+| **D: Market Watch** | Public filings, rates, indices, ETF data, public portfolios | **OPERATIONAL.** ARKK / Treasury / FDIC / FRED twice daily, M1 public pies twice daily, Form 4 twice daily, 13F new-filing watcher daily (installed Nov 17) | Automate the 13F quarter-over-quarter compare; list all 13F form types (amendment check) |
+| **E: Finance Intelligence** | Deterministic engine, Fin-R1, Qwen3, trusted validation | **WEEKLY HARNESS OPERATIONAL (advisory).** T0 math → Phi-4 → Fin-R1 → Qwen3 Chief with fact-lock gate, Sundays; first full run Nov 2 answered all 4 questions. Typed decision contract still design-only | General deterministic engine (G4), central policy binding (G6) |
+| **F: Dashboard & HA** | Finance Command Center and Home Assistant iframe views | **OPERATIONAL.** Live snapshot published twice daily; Data Freshness tiles; alerts panel + guard-checked Upcoming Bills | Owner notifications (channel being chosen: private email from SKYNET or HA phone push) |
+| **Finance RAG V0.8E** | Source-of-truth reference PDFs and search | **10-document indexing and retrieval accepted**; Phi-4 reads it in the weekly harness | Page-cited retrieval acceptance in Chief answers |
 
-### What already works — within its documented scope
+### What works today, verified on SKYNET
 
-- Finance Command Center local service and its **four Home Assistant views** have been visually verified. Dashboard checks recorded **44 Python tests** on SKYNET and **7 JavaScript tests** in the build environment.
-- The Finance RAG reference corpus has **10 registered PDFs**, **279 searchable page-documents**, and successful retrieval from the new educational sources.
-- Market Watch has observed live official-source pulls for ARKK holdings, U.S. Treasury references, FDIC national reference rates, and FRED benchmarks; SEC 13F historical XML analysis has been staged and qualified.
-- The Finance decision contract has a **separate, hash-bound design approval**, but its general decision engine has not earned production acceptance.
-- Gusto Stage 1 remains operational as a **time-clock / dispatcher** service. It must not be confused with optional Gusto Stage 2 payroll-PDF capture.
+- **Unattended daily pipeline** (America/Chicago): bank re-auth → Actual import → auto-link transfers → market refresh → bills guard → alerts feed → snapshot publish → doctor health check. See [section 14](#14-scheduling-and-unattended-operations) for the installed timers.
+- **Ledger accuracy fixes:** account starting balances excluded from spending, split paychecks grouped into one pay event, one-offs removed from everyday spending, own-account money no longer counted as income (integrity score raised from 32 to 53/56).
+- **Bills guard v1.4:** on-time checks, catch-up plans, Pay-in-4 tracking, 7-day funds check, returned-payment detection, and **two-sided payment proof**. A payment counts as confirmed when both the bank debit and the lender-side credit are seen. A bank debit that pairs with a lender credit is claimed by that bill, so payments to one creditor with several accounts are not double-counted. 17 self-tests.
+- **Alerts feed** `jarvis.finance.alerts.v1` (hourly): urgent / reminder items, bill states, plans, funds, bank connections, data freshness, snooze; served read-only to the dashboard.
+- **Data freshness:** per-source limits set by publication cycle (FDIC monthly, 13F quarterly, Form 4 by last check). All tiles CURRENT at the Nov 13 check.
+- **Market Watch:** 13F watcher found the Q3 2026 filings from two of three tracked managers on Nov 13 and Nov 16. The third manager's latest original 13F-HR is still Q1 and is flagged for an amendment/form-type check.
+- **Weekly AI questions** on Sundays and an on-demand Open WebUI finance model; answers carry a *from your data* or *hypothetical* label.
+- Gusto Stage 1 remains a separate time-clock / dispatcher service.
 
-### What does **not** yet work as one accepted system
+### What is still not proven
 
-No evidence supplied so far demonstrates the entire path from **unattended fresh account acquisition → canonical reconciliation → general deterministic decisions → guarded Fin-R1/Qwen3 → accepted current dashboard publication**. The missing proof is the Master integration task, not a reason to discard completed specialist work.
+- The **typed decision contract** (G4) and **central JARVIS policy binding** (G6) are design-only; the weekly harness uses its own fact-lock gate instead.
+- **Coverage gaps:** an installment loan, the HSA (transfer in progress) and a peer-payment app are not yet in the ledger; the mortgage servicer's lender-side feed depends on a weekly-limited re-authentication.
+- **Owner notifications:** the alerts feed exists, but nothing delivers it off the dashboard yet. Home Assistant discovery (Nov 17) confirmed packages are enabled and documented the HomeKit Bridge pattern; the owner prefers a private channel over shared Apple Home notifications.
+- **Formal recovery tests (G8):** last-good is kept on failure, but the full adverse-case suite has not been run.
 
 ### Sources of truth and local storage (harness implementation)
 
@@ -200,12 +199,12 @@ flowchart TB
     classDef done fill:#d6f3df,stroke:#277b48,color:#1d5032
     classDef partial fill:#fff1cf,stroke:#a7780b,color:#6c4b06
     classDef blocked fill:#fce0e0,stroke:#b74444,color:#702525
-    class R,F,HA done
-    class B,D,A,ME partial
-    class C,T0,FR,G1,CHIEF,G2,SNAP blocked
+    class R,F,HA,B,D,C,ME,SNAP done
+    class A,T0,FR,G1,CHIEF partial
+    class G2 blocked
 ```
 
-**Diagram key:** green = delivered within a limited scope; amber = partial or source-dependent; red = integrated acceptance not yet established. These colors represent documented status, not service health telemetry.
+**Diagram key (Nov 17, 2026):** green = operating unattended with verified receipts; amber = operating in the weekly advisory harness, formal contract acceptance pending; red = central policy clearance not established. These colors represent documented status, not live service health.
 
 ### Architectural boundaries
 
@@ -260,17 +259,19 @@ Other existing interfaces include `jarvis-service`, `jarvis-confidence-observe`,
 
 ### Source inventory and current evidence
 
-| Source / lane | Intended evidence | Most recent documented result | Production-readiness qualification |
+| Source / lane | Intended evidence | Most recent verified result (Nov 2026) | Remaining qualification |
 |---|---|---|---|
-| **Regions** | Posted bank deposits, debit/credit transactions, available balances | Selected as primary cash-received payroll evidence | Actual recurring feed freshness and payroll mapping **not yet proven** |
-| **SoFi** | Posted deposits, savings/checking, split payroll and transfers | Selected as primary cash-received payroll evidence | Must prove source timestamps, status, split-paycheck matching and dedup |
-| **Actual / Simply Budget** | Ledger, categorized spending, budgets, account views | Private read-only snapshot on Oct 25: **10 accounts / 315 transactions**; v0.2 bridge is offline `GETTERS_ONLY_NO_BANK_SYNC` | **Daily unattended extraction and upstream bank-sync freshness not demonstrated**; snapshot is historical |
-| **Nelnet** | Student-loan groups, statements, balances, payment obligations | Historical evidence and validator exist | **Monthly authenticated collector, timer and fresh receipt not demonstrated** |
-| **Gusto Stage 1** | Time-clock / schedule dispatcher | Existing container and dispatcher timer running | Preserve unchanged; **not** payroll or payslip acquisition |
-| **Gusto Stage 2** | Optional PDF paystub source for earnings reconciliation | Staged runner and UI inspection; no accepted paystub PDF | **Explicitly deferred**; not a blocker to verified bank-based cash-received reporting |
-| **Other debt/bank sources** | Cards, vehicle, mortgage, project obligations | Included in source inventory / desired coverage | Live per-source acceptance must be demonstrated, not inferred |
-| **Investment / HSA providers** | Private holdings, contributions, statements | Included in longer-term integration plan | Do not infer live holdings from market reference PDFs |
-| **Rocket Money** | Older aggregator proposal | Removed from preferred Collector B architecture | **Out of scope**; do not quietly reintroduce |
+| **Regions** | Posted deposits, transactions, balances | Imported twice daily via SimpleFIN; savings reconciles to the bank to the cent | Daily re-auth prompts; automated re-auth uses stored keywords (encrypted on SKYNET) |
+| **SoFi** | Checking/savings, split payroll, transfers | Imported twice daily; split paychecks grouped into one pay event | None blocking |
+| **Actual Budget** | Ledger, categories, transfers | **OPERATIONAL:** twice-daily import with receipts; rules v2.1 categorize on import; transfers linked automatically | Rename/off-budget housekeeping for new investment accounts |
+| **Card / auto / mortgage lenders** | Lender-side payment credits | Card and auto loan confirmed from both ends; mortgage confirmed from the bank side | Mortgage servicer feed needs re-auth (weekly limit) |
+| **Investment / HSA** | Holdings, contributions | Brokerage + rollover IRA linked off-budget; HSA transfer in progress | Add HSA when the provider exposes it |
+| **Nelnet** | Student-loan balances | Repayment expected after grace period; tracked as a planned obligation | Monthly authenticated collector not demonstrated |
+| **Gusto Stage 1** | Time-clock / schedule dispatcher | Running; separate from finance | Preserve unchanged; not payroll acquisition |
+| **Gusto Stage 2** | Optional paystub PDFs | Deferred | Not a blocker; payroll is evidenced by bank deposits |
+| **Peer-payment app** | Transfers and app payouts | Connection removed after a broken link | Re-add; monthly CSV import as a fallback |
+| **PayPal** | Bill payments routed through PayPal | Not linkable via SimpleFIN | Handled by rules on the funding accounts |
+| **Rocket Money** | Older aggregator proposal | Removed from Collector B | **Out of scope** |
 
 **Ledger decision:** The most recent Collector B closeout identifies **Actual/Simply Budget as the preferred aggregation / ledger path**, subject to verified data freshness. The historical architecture notes also contain a *Firefly III-first proposal*; that older proposal is **not evidence of an accepted Firefly ledger migration**. Avoid two conflicting authoritative ledgers.
 
@@ -307,7 +308,7 @@ flowchart TD
 - Treat incomplete ledger coverage as **unknown scope**, not proof that other accounts or bills do not exist.
 - Do not restart Gusto Stage 2 Chromium/CDP debugging as a mandatory prerequisite for the bank-based V1 pipeline.
 
-**Collector B specialist closeout:** **CLOSED WITH EXCEPTIONS**. Its deferred freshness/coverage obligations move to Master integration; they are **not** successful end-to-end tests.
+**Collector B status:** specialist chat closed with exceptions (Oct 29). The freshness obligations it deferred were met by the Nov 3 milestone: twice-daily SimpleFIN → Actual import with `RECEIPT_STATUS=PASS`. The remaining items are account coverage, listed above.
 
 ---
 
@@ -315,17 +316,17 @@ flowchart TD
 
 **Role:** Collect original public-market observations and preserve source-specific meanings. D is an evidence producer, **not** a trading engine, holdings importer, Finance Chief opinion, or dashboard publisher.
 
-### Observed evidence through October 29, 2026
+### Verified evidence through November 17, 2026
 
-| Feed | Dated collection evidence | What it actually represents | Remaining gate |
+| Feed | Installed schedule | What it represents | Latest verified result / remaining gate |
 |---|---|---|---|
-| **ARKK official holdings** | **46 rows / 100% weight**, observed Oct 29; live run passed | ETF holdings, **not** any private person's positions | Freshness/receipt publication and schedule acceptance |
-| **U.S. Treasury par-yield curve** | **14 maturities**, observed Oct 29; live run passed | Published reference par yields, not a personal executable quote | Retain `SHADOW_REVIEW_REQUIRED` if emitted by source |
-| **FDIC national CD reference** | **8 terms**, source as-of Oct 19; live run passed | National reference averages, **not** available bank offers | Freshness by source period; monthly source cadence |
-| **FRED S&P 500 / Nasdaq-100** | Both through Oct 28; **2,512** exact common-date observations | Price-index series; no implied dividends / total return | Confirm terms of use and downstream publication basis |
-| **SEC Form 13F** | **22/22** XML exact parity; **12** full-key historical comparisons | Delayed filed institutional holdings; not real-time manager trades | Quarantined ARK partials, amendments and quarterly discovery |
-| **M1 public pies** | Target/label validation previously passed | Public allocation targets; not verified client account holdings | Unattended browser/session collection, dedup, retry |
-| **SEC Form 4 (Musk / Ternus)** | Prior historical rows/filings collected | Insider filing observations with transaction-code context | Unattended accession discovery, amendment handling and dedup |
+| **ARKK official holdings** | 07:00 / 19:00 daily | ETF holdings, **not** any private person's positions | CURRENT (within the 5-day limit) |
+| **U.S. Treasury par-yield curve** | 07:00 / 19:00 daily | Published reference par yields | CURRENT |
+| **FDIC national CD reference** | Inside the refresh job | National reference averages, **not** offers | CURRENT within its 40-day monthly limit |
+| **FRED S&P 500 / Nasdaq-100** | 07:00 / 19:00 daily + before each weekly run | Price indices; no implied dividends / total return | CURRENT (soft-fail keeps last good) |
+| **SEC Form 13F** | New-filing watcher daily 06:30 (Nov 17) | Delayed quarterly institutional holdings | New Q3 filings detected; **compare step not yet automated**; one manager flagged for a form-type/amendment check |
+| **M1 public pies** | 06:50 / 18:50 daily | Public allocation targets, not client holdings | CURRENT |
+| **SEC Form 4** | 06:55 / 18:55 daily | Insider filing observations | **Fixed Nov 13** (run-folder bug); FORM4=PASS |
 
 ### Why 13F treatment is intentionally conservative
 
@@ -356,11 +357,11 @@ flowchart TB
     REC -->|"after downstream acceptance"| VIEW["Market evidence consumer"]
 ```
 
-### Market Watch D v1.8.1 deployment boundary
+### Market Watch deployment state
 
-The **timer wrapper release is prepared and locally tested** (**11/11** local tests). As of the October 29 handoff, **its SKYNET timers were not yet shown as installed, enabled, or successful unattended jobs**. A schedule in a ZIP file is not an active scheduler.
+The Oct 29 handoff noted the v1.8.1 timers were prepared but not shown as installed. **As of Nov 13, `jarvis-marketd-refresh` runs unattended twice daily** with soft-fail behavior that keeps the last good snapshot. The original Mon/Wed/Fri proposal was replaced by the twice-daily schedule in [section 14](#14-scheduling-and-unattended-operations).
 
-Unfinished work includes: first and second unattended receipts, M1 public-pie recurring ingestion, Form 4 live accession discovery, 13F quarterly discovery, failure recovery, dashboard source mapping, and explicit Master ownership/policy reconciliation.
+Still open: automate the 13F quarter-over-quarter compare, list all 13F form types (amendments), and reconcile the collection-only policy exception with the central JARVIS policy record.
 
 ---
 
@@ -655,18 +656,18 @@ An eventual **Decision Journal** should record accepted evidence hashes, source 
 
 ## 12. F — Finance Command Center and Home Assistant
 
-**F dashboard UI and local Home Assistant deployment: ACCEPTED.** **Live current financial snapshot mapping: PENDING.** This separation is intentional.
+**F dashboard: OPERATIONAL.** A live snapshot is published twice daily; the four Home Assistant iframe views read only saved files.
 
 ### Delivered interface
 
-| View | Intended presentation | Accepted evidence |
+| View | Presentation | Verified state (Nov 2026) |
 |---|---|---|
-| **Finance Chief** | Trusted analysis, limitations, limited review-only recommendations | UI verified; no accepted current Chief feed yet |
-| **Market Watch** | Public market snapshots, filings, source dates, review/quarantine state | UI verified; D source mapping not accepted |
-| **Cash Flow & Debt** | Inflows, spending, reserves, debt by verified as-of date | UI verified; B/C current snapshot absent |
-| **Strategy Lab** | Deterministic scenario comparisons and allocations | UI verified; live validated scenario engine not accepted |
+| **Finance Chief** | Weekly report, limitations, review-only suggestions | Weekly Questions pinned; Chief brief Sundays |
+| **Market Watch** | Market snapshots, filings, Data Freshness tiles | All sources mapped with per-source freshness limits |
+| **Cash Flow & Debt** | Inflows, spending, reserves, debt | Monthly Money Plan; debts outside Actual labelled |
+| **Command Center** | Alerts panel, Upcoming Bills (guard-checked), Goals & Constraints | Alerts patch v1.3 live: it hides dashboard elements rather than removing them, after v1.0–1.2 emptied the page |
 
-**Deployment architecture:** `jarvis-finance-command-center.service` is installed on SKYNET-CORE; the dashboard is served at **port 8792** on the local network and embedded as Home Assistant iframe views. The deployed project directory is `finance/dashboard/command_center/v0_1`. Historic deployment evidence recorded an enabled/active service, health checks, 44 Python passes and 7 JavaScript passes.
+**Deployment architecture:** `jarvis-finance-command-center.service` on SKYNET-CORE serves the dashboard on port 8792 on the local network. Home Assistant shows it as iframe views (`type: panel`). A read-only aux endpoint serves the alerts feed from a whitelist. **JARVIS never changes Home Assistant configuration;** any HA additions are handed to the owner as YAML to review and install.
 
 > [!NOTE]
 > A sanitized dashboard screenshot can be added at `assets/finance-command-center.png` next to this README and enabled by uncommenting the image link near the top. Do not publish internal hostnames, IPs, personal balances or account identities.
@@ -769,32 +770,29 @@ A snapshot should be marked publishable only when its sources, contract version,
 
 **Schedule policy:** use `America/Chicago` consistently, retain Tuesday as a discretionary JARVIS rest day, and reserve weekends for separately inventoried heavy processing. The presence of a schedule in documentation does not prove it is installed.
 
-### D v1.8.1 collection-only timer proposal — prepared, not commissioned
+### Installed timers: verified unit list (Nov 13, plus the 13F watcher on Nov 17)
 
-| Unit / step | Proposed local schedule | Activity | Acceptance status |
-|---|---|---|---|
-| `jarvis-marketd-check.timer` | Monday / Wednesday / Friday **08:15, 12:00, 15:45** | Deterministic on-disk snapshot-age check; no fetch | Local tests only; not shown installed |
-| `jarvis-marketd-refresh.timer` | Monday / Wednesday / Friday **21:15**, Thursday **22:00** | Pinned official ARKK / Treasury / FRED collectors and alignment | Local tests only; unattended run not proven |
-| FDIC step within refresh | **Fourth Thursday** inside Thursday 22:00 job | Published FDIC reference collection | No separate competing timer |
-| Tuesday | **No D timer work** | Rest-day policy | Prepared schedule design only |
-| Saturday / Sunday | **Unscheduled heavy work** | Must be inventoried and explicitly approved | No inferred jobs |
-
-Timer wrapper behavior: explicit Central timezone, exclusive lock to prevent concurrent runs, no Tuesday catch-up from missed timers (`Persistent=false`), pinned collector hashes, and immutable success/failure receipts. The handoff documents a collection-only policy exception to a broader `READ_ONLY_SHADOW` source policy; **Master must reconcile this exception with the central JARVIS policy record** before sign-off.
-
-### Other desired cadences (not evidence of installed automation)
-
-| Source / workload | Desired or source-appropriate refresh | Open operational proof |
+| Time (America/Chicago) | Unit | Activity |
 |---|---|---|
-| Actual/Simply Budget | **Daily** extraction if bank sync is fresh | Timer/job, complete scope, upstream bank sync and receipt |
-| Regions / SoFi | Refresh suitable for posted deposit reporting | Authenticated date/ID evidence and de-dup across refreshes |
-| Nelnet | **Monthly** | Authenticated monthly worker and loan-group comparison |
-| SEC 13F | New filings/amendments when published; quarter-aware | Discovery, idempotency, amendment reconciliation |
-| SEC Form 4 | Event/filing cadence | Live accession discovery, persistent dedup and retry |
-| M1 public pies | Weekly public target updates | Session-resilient unattended browser/flattening and dedup |
-| Finance Chief | Only from validated evidence and approved route | Deterministic engine + central policy + guarded model acceptance |
-| Dashboard | Saved-read refresh | No evidence-producing side effects during page requests |
+| 05:20 / 17:20 + every 3 h at :40 | `jarvis-bridge-reauth@daily` / `@reactive` | SimpleFIN Bridge re-auth (per-institution attempt caps: max 2 per day; mortgage servicer Mon/Wed/Fri) |
+| 06:30 | `jarvis-finance-sec13f-watch` | SEC 13F new-filing watcher |
+| 06:40 / 18:40 | `jarvis-finance-actual-auto` | Bank import into Actual; rules categorize on import |
+| 06:50 / 18:50 | `jarvis-finance-m1` | Public pie targets |
+| 06:55 / 18:55 | `jarvis-finance-form4` | SEC Form 4 chain |
+| 06:58 / 18:58 | `jarvis-finance-auto-link` | Transfer twins merge + own-account moves → real transfers (max 20/run, journaled) |
+| 07:00 / 19:00 | `jarvis-marketd-refresh` | ARKK, Treasury, FDIC, FRED |
+| 07:05 / 19:05 | `jarvis-finance-bills-guard` | Bills guard v1.4 |
+| hourly :12 (integrity scan 07:12 / 19:12) | `jarvis-finance-alerts` | Builds the alerts feed |
+| 07:20 / 19:20 | `jarvis-finance-master-projection` | Publishes the dashboard snapshot |
+| 07:35 / 19:35 | `jarvis-finance-doctor` | Health check (warn-only) |
+| Sunday 13:10 | `jarvis-finance-weekly-questions` | Weekly AI questions (Phi-4 → Fin-R1 → Qwen3, about 2.5 h on CPU) |
+| Sunday 20:10 | Chief brief | Weekly Chief summary |
 
-The authoritative scheduler inventory should be obtained from **actual SKYNET unit states and central JARVIS job registry**, not inferred from old design notes or a packaged timer manifest.
+Wrapper behavior: explicit Central timezone, exclusive locks (collectors wait for the import lock), soft-fail with last-good retained, journaled writes with undo. Heavy AI work is kept to the weekend.
+
+**Open:** the Tuesday rest-day policy and the twice-daily collectors have not been reconciled. Decide whether collection may run on Tuesday, or exempt read-only collection explicitly.
+
+The authoritative inventory is `systemctl list-timers` on SKYNET, not this table.
 
 ---
 
@@ -958,27 +956,34 @@ flowchart TB
     FULL --> ACCEPT["Master end-to-end acceptance<br/>and separately approved advisory promotion"]
 ```
 
-### Finish line 1 — useful, validated financial visibility
+### Finish line 1: useful, validated financial visibility (**reached Nov 3, 2026**)
 
-- [ ] Verify Regions and SoFi posted deposits with original posting time/account provenance.
-- [ ] Prove Actual/Simply Budget **fresh upstream bank sync**, daily read-only extraction and complete scope receipts.
-- [ ] Prove Nelnet monthly source evidence or show its balance **last verified as of** the previous authenticated date.
-- [ ] Establish C's canonical normalization, economic-event dedup, transfer and payroll reconciliation.
-- [ ] Publish **only** typed, current-or-qualified financial view facts to `jarvis.finance.dashboard_snapshot.v0_1`.
-- [ ] Verify Cash Flow & Debt / non-AI parts of the Dashboard using accurate as-of, coverage and degradation labels.
+- [x] Regions and SoFi posted deposits imported with posting dates and account provenance (twice daily).
+- [x] Actual fresh upstream bank sync, unattended import, receipts (`RECEIPT_STATUS=PASS`).
+- [ ] Nelnet monthly source evidence (tracked as a planned obligation until repayment starts).
+- [x] Ledger-based transfer and payroll reconciliation (split paychecks grouped; own-account moves linked as transfers).
+- [x] Snapshot published twice daily with as-of and freshness labels.
+- [x] Cash Flow & Debt and non-AI dashboard panels verified (HTTP 200 on the published files; visual check).
 
-**This milestone does not require Gusto Stage 2 PDF capture**, Fin-R1 production acceptance, or completion of every optional Market Watch adapter.
+### Hardening round 2 (Nov 13–17, 2026)
 
-### Finish line 2 — full evidence-backed Finance Intelligence
+- [x] Curated categorization rules v2 / v2.1 (journaled, undoable; scoped rules for side-income deposits).
+- [x] Duplicate/stale cleanup, transfer auto-link, budget doctor (loans off-budget).
+- [x] Bills guard v1.4 with two-sided payment proof; alerts feed v1; dashboard alerts panel.
+- [x] Freshness thresholds by publication cycle; Form 4 repaired; 13F new-filing watcher.
+- [ ] Owner notification channel (private email from SKYNET or HA phone push).
+- [ ] Remaining accounts: installment loan, HSA, peer-payment app.
 
-- [ ] Complete D's timer activation, first and second unattended receipts, remaining M1/Form 4/13F discovery, and failure recovery.
-- [ ] Complete E's general decision engine; pass all mandatory cases and semantic negatives.
-- [ ] Bind exact real JARVIS router/policy/confidence/escalation contracts and immutable approval receipts.
-- [ ] Integrate the accepted RAG corpus through bounded, page-cited retrieval.
-- [ ] Pass authorized guarded synthetic Fin-R1/Qwen3 inference and independent holdout evaluation.
-- [ ] Connect accepted Chief outputs to the existing Finance Chief / Strategy Lab views.
-- [ ] Prove end-to-end scheduler → evidence → C → T0 → guarded Chief → stored snapshot → HA behavior.
-- [ ] Run adverse-case and restart/recovery acceptance before requesting production advisory authorization.
+### Finish line 2: full evidence-backed Finance Intelligence
+
+- [x] D timer activation and repeated unattended receipts.
+- [ ] Automated 13F compare and amendment handling.
+- [ ] E general decision engine; all mandatory cases and semantic negatives.
+- [ ] Real JARVIS router/policy/confidence/escalation binding and approval receipts.
+- [ ] Bounded, page-cited RAG use in Chief answers (Phi-4 reads the corpus today; citation acceptance not yet tested).
+- [x] Weekly guarded Phi-4 → Fin-R1 → Qwen3 run with fact-lock gate (first full run Nov 2).
+- [ ] Independent holdout evaluation of model answers.
+- [ ] Adverse-case and restart/recovery acceptance.
 
 ### Defer rather than block V1
 
@@ -994,18 +999,18 @@ flowchart TB
 
 **Master acceptance** requires operational evidence—not a consolidated screenshot, passing archive verifier, or one-off successful script.
 
-| Gate | What must be proved | Status from handoffs |
+| Gate | What must be proved | Status (Nov 17, 2026) |
 |---|---|---|
-| **G0 — Specialist contracts** | Exact version/hash, accepted source ownership, no incompatible changes | Partial; RAG, F UI and contract design have bounded acceptances |
-| **G1 — Collector health** | Real unattended successful source refresh, correct source time and source scope | **OPEN** for B recurring freshness and D timers |
-| **G2 — Reconciliation** | No duplicate paycheck/transfer/credit-card or loan counting; traceable parents | **OPEN** |
-| **G3 — Canonical snapshot** | Correct schema, coverage, source lineage, stale/unknown handling and last-good state | **OPEN** |
-| **G4 — Deterministic engine** | 40 specified cases + all semantic negatives + independent boundaries with zero hard failures | **OPEN** |
-| **G5 — RAG + AI** | Exact cited retrieval, guarded Fin-R1/Qwen3, independent scoring | **OPEN** (RAG indexing itself accepted) |
-| **G6 — Central policy** | Real route/confidence/escalation binding and approval receipt | **OPEN** |
-| **G7 — Dashboard evidence** | Four views read saved truthful data; no data collection on refresh | UI **DONE**; data wiring **OPEN** |
-| **G8 — Recovery** | Failure, timeout, missing account, stale data, restart, idempotent second run | **OPEN** |
-| **G9 — Release authorization** | Separate Master review and explicit advisory-only approval | **NOT GRANTED** |
+| **G0: Specialist contracts** | Version/hash, source ownership, no incompatible changes | Partial: every installer self-tests, backs up and has a rollback path |
+| **G1: Collector health** | Unattended successful refresh, source time and scope | **PASSED for connected sources** (twice-daily receipts; re-auth automated); coverage gaps listed in section 5 |
+| **G2: Reconciliation** | No duplicate paycheck / transfer / card / loan counting | **PASSED (ledger-based):** transfers linked, split pay grouped, two-sided bill proof, integrity 53/56 |
+| **G3: Canonical snapshot** | Schema, coverage, lineage, stale/unknown handling, last-good | **Operational:** freshness per source; last-good retained on soft-fail |
+| **G4: Deterministic engine** | 40 cases + semantic negatives + boundaries | **OPEN** (weekly harness uses T0 math + fact-lock instead) |
+| **G5: RAG + AI** | Cited retrieval, guarded models, independent scoring | Partial: guarded weekly run operating; citation acceptance and holdout scoring open |
+| **G6: Central policy** | Route/confidence/escalation binding, approval receipt | **OPEN** |
+| **G7: Dashboard evidence** | Views read saved truthful data; no collection on refresh | **PASSED** |
+| **G8: Recovery** | Failure, timeout, stale data, restart, idempotent re-run | Partial: soft-fail, locks, journals and undo in place; formal adverse suite not run |
+| **G9: Release authorization** | Separate review and advisory-only approval | Operational advisory use approved by the owner (Nov 3); formal Master sign-off not granted |
 
 ### Mandatory adverse-case tests
 
@@ -1070,7 +1075,7 @@ On every accepted specialist handoff, update: **as-of date**, workstream status 
 
 ## 21. Evidence and provenance
 
-This README is based on specialist documentation and terminal evidence through **October 29, 2026**, not a fresh authenticated query to SKYNET. The dated source set includes:
+This README is based on specialist documentation and terminal evidence through **November 17, 2026** (earlier checkpoint: October 29, 2026). The dated source set includes:
 
 | Record | Scope and disposition |
 |---|---|
@@ -1083,6 +1088,9 @@ This README is based on specialist documentation and terminal evidence through *
 | **Collector B OneNote Closeout — Oct 29** | Specialist chat closed with Gusto Stage 2 deferred; recurring bank/Actual/Nelnet collection still unverified |
 | **Market Watch D v1.8.1 Rebuilt Handoff — Oct 29** | Live source-collection evidence and prepared timer release; **server activation/unattended acceptance not yet verified** |
 | **Market Watch D v1.1 shadow README / SKYNET transcript — Oct 27** | Historical staged SEC alignment and 15/15 regression tests, with zero publishable SEC events |
+| **Nov 3 Operational Milestone** | Daily SimpleFIN → Actual sync with receipts, ledger bill verification, ledger facts v1.2, first full weekly AI run (all 4 answered), money plan panel |
+| **Hardening Round 2 + Alerts Handoff: Nov 13** | Installed timer inventory, rules v2, transfer auto-link, budget doctor, alerts feed v1, dashboard alerts panel lesson, freshness fix, Form 4 repair, re-auth permission fix |
+| **SKYNET terminal evidence: Nov 17** | 13F watcher install (daily 06:30), bills guard v1.4 (17 tests), rules v2.1 scoped rule (9 tests), Home Assistant read-only discovery (packages enabled, HomeKit Bridge layout) |
 
 Where these sources disagree in maturity, use the **latest explicit acceptance claim** in the relevant specialist lane. For example, the historical Firefly-first proposal does not override the later Collector B Actual/Simply Budget preference; similarly the Market Watch v1.8.1 live source successes do not prove timers were activated.
 
