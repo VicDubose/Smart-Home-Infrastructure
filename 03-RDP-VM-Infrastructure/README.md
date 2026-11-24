@@ -320,34 +320,149 @@ The host operates as a **headless infrastructure server** without a graphical de
 
 ---
 
-## 5. Docker and container services
+## 5. Docker and Container Services
+
 ### Container runtime
 
-<p align="center">
-  <img src="Screenshots/IMG_1354.png" width="300"/>
-</p>
+Services that must run continuously but need few resources run as **Docker containers** on the SKYNET host.
 
+Containers use **OS-level virtualization**: each service gets its own isolated filesystem, process space, and network namespace, but all of them **share the host's Linux kernel**. That makes them far lighter than virtual machines. A container starts in seconds and uses megabytes of overhead, where a VM needs gigabytes and boots a full operating system.
 
-Services that require continuous operation but minimal resources run in **Docker containers**.
+| | Docker container | KVM virtual machine |
+|---|---|---|
+| Kernel | Shares the host kernel | Runs its own kernel |
+| Typical memory overhead | Tens to hundreds of MB | Several GB |
+| Start time | Seconds | Tens of seconds to minutes |
+| Isolation | Process and filesystem level | Full operating-system boundary |
+| Used here for | Single Linux services | Windows 11, EVE-NG |
 
-Containerization allows services to operate independently while maintaining efficient resource usage.
+**Rule used on SKYNET:** one Linux service → container; needs its own OS or hypervisor → virtual machine.
 
-#### Containerized Services
+---
 
-| Service               | Purpose                                                  |
-| --------------------- | -------------------------------------------------------- |
-| Jellyfin              | Media streaming server                                   |
-| Eufy Bridge           | Integrates Eufy cameras with Home Assistant              |
-| Alabama Power Scraper | Collects daily utility usage data for automation         |
-| Open WebUI            | Chat front-end for local models (uses JARVIS read-only tools) |
+### Containerized services
 
-Containers provide several advantages:
+| Service | Image | Purpose | Lifecycle | Network exposure | Health check |
+|---|---|---|---|---|---|
+| **Jellyfin** | `jellyfin/jellyfin` | Media streaming server for the home library | Always on | LAN | ✅ |
+| **Eufy bridge** (`eufy_ws`) | `bropat/eufy-security-ws` | Connects Eufy cameras and security mode to Home Assistant; part of the **presence chain** | Always on | LAN, consumed by Home Assistant | — |
+| **Open WebUI** | `open-webui/open-webui` | Chat front end for the local models, with read-only JARVIS tools | Always on | LAN | ✅ |
+| **WatchState** | `arabcoders/watchstate` | Syncs watched/unwatched state across media players | Always on | Host LAN address only | ✅ |
+| **Actual Budget** (`jarvis-finance-actual`) | `actualbudget/actual-server` | Self-hosted budget ledger for the JARVIS Finance subsystem | Always on | **Localhost only** | ✅ |
+| **Gusto agent** | Custom JARVIS build | Browser automation for the shift time-clock workflow | Runs around scheduled shifts | **Localhost only** | Monitored by `skynet-check` |
+| **ARM** (Automatic Ripping Machine) | ARM | Disc ripping for the media pipeline | **On demand**, normally stopped | — | Expected-stopped in `skynet-check` |
+| **Alabama Power importer** | Custom | Pulls daily utility usage into Home Assistant long-term statistics | **Scheduled job**: starts, runs, exits | — | Job result in logs |
 
-* minimal resource overhead
-* simplified deployment
-* service isolation
-* fast restart and recovery
+Six services run at all times. ARM and the Alabama Power importer only appear while they are working.
 
+---
+
+### Network exposure model
+
+Each container publishes only what it needs, at the narrowest scope that still works:
+
+| Scope | Meaning | Services |
+|---|---|---|
+| **Localhost only** | Reachable only from SKYNET itself; nothing else on the network can connect | Actual Budget, Gusto agent |
+| **Host LAN address** | Bound to SKYNET's home-network address only | WatchState |
+| **All host interfaces** | Reachable from the home network | Jellyfin, Open WebUI, Eufy bridge |
+
+None of these ports are forwarded to the internet. Remote access goes through the ASUS Instant Guard VPN only.
+
+```mermaid
+flowchart LR
+    subgraph LAN["Home network (VLAN 10) / VPN clients"]
+        U["Browsers · TVs ·<br/>phones"]
+        HA["Home Assistant Green"]
+    end
+
+    subgraph SKY["SKYNET host"]
+        subgraph PUB["Reachable on the LAN"]
+            JF["Jellyfin"]
+            OW["Open WebUI"]
+            EW["eufy_ws"]
+            WS["WatchState"]
+        end
+        subgraph LOC["Localhost only"]
+            AB["Actual Budget"]
+            GA["Gusto agent"]
+        end
+        OL["Ollama<br/>(localhost)"]
+        JV["JARVIS services"]
+    end
+
+    U --> JF
+    U --> OW
+    U --> WS
+    HA --> EW
+    OW --> OL
+    JV --> AB
+    JV --> GA
+    JV --> OL
+```
+
+---
+
+### Operations
+
+| Task | How |
+|---|---|
+| Health at a glance | `skynet-check`: counts running containers and knows which ones are *expected* to be stopped (ARM) |
+| List running containers | `docker ps` |
+| Include stopped containers | `docker ps -a` |
+| Resource use | `docker stats --no-stream` |
+| Logs for one service | `docker logs --tail 50 <name>` |
+| Restart one service | `docker restart <name>` |
+
+- **Restart policies** bring always-on containers back automatically after a crash or a reboot.
+- **Health checks** (shown as `healthy` in `docker ps`) let Docker and `skynet-check` tell a running container apart from a working one.
+- **Persistent data** (libraries, databases, settings) lives in bind-mounted host folders, so a container can be recreated or upgraded without losing data. It is covered by the SKYNET recovery backup.
+
+---
+
+### Why containers here
+
+- **Minimal overhead:** most services use well under 1 GB of memory.
+- **Simple deployment:** each service is defined by an image plus a Compose file.
+- **Isolation:** one service crashing or updating does not affect the others, the VMs, or the host.
+- **Fast recovery:** restart in seconds; upgrade by pulling a new image.
+- **Least exposure:** each service publishes only the ports it needs, at the narrowest scope.
+
+---
+
+## 5.1 Local AI Runtime (Ollama)
+
+Local language models run under **Ollama** directly on the host, not in a container, and listen on **localhost only**. Every model call goes through the JARVIS AI harness (window gate, thermal ladder, CPU core split, shared-pool router), so AI work can never starve the VMs or overheat the CPU.
+
+Open WebUI (above) is the chat front end; JARVIS services call Ollama directly.
+
+### Model library
+
+**13 models · ~78 GB on disk**
+
+| Model | Size | Class | Typical use |
+|---|---|---|---|
+| `qwen3:30b-a3b-instruct-2507` (Q4_K_M) | 18 GB | Mixture-of-experts (~3B active parameters) | Strong general reasoning at small-model speed |
+| `gpt-oss:20b` | 13 GB | Mixture-of-experts, open-weight | General reasoning and review |
+| `phi4:14b` | 9.1 GB | Dense 14B | Reasoning and structured output |
+| `qwen2.5-jarvis:14b` | 9.0 GB | Custom JARVIS variant of Qwen 2.5 14B (built from a Modelfile) | JARVIS-tuned reviews and summaries |
+| `qwen2.5:14b` | 9.0 GB | Dense 14B | Deep "chief" reviews, run when the server is cool |
+| `llama3:8b` | 4.7 GB | Dense 8B | Normal scheduled reviews |
+| Fin-R1 (`SUFE-AIFLM-Lab_Fin-R1`, Q4_K_M) | 4.7 GB | Finance-domain reasoning model | JARVIS Finance analysis |
+| `deepseek-coder:6.7b` | 3.8 GB | Code model | Code / YAML / script tasks only |
+| `phi3:mini` | 2.2 GB | Small model | Server health and status summaries |
+| `llama3.2:3b` | 2.0 GB | Small model | Fast, light tasks |
+| `gemma3:1b` | 815 MB | Tiny model | Very small formatting and classification jobs |
+| `deepseek-coder:latest` | 776 MB | Tiny code model | Formatting and parsing helper |
+| `embeddinggemma` | 621 MB | **Embedding model** (not a chat model) | Turns documents into vectors for search and retrieval over the knowledge sources |
+
+### How models are used
+
+- **Python first, AI second.** Scripts collect and compress evidence; models only see short briefs. Large prompts were the main cause of 94–95 °C CPU temperatures in early testing.
+- **Right-sized models.** Small models handle status and formatting; 8B–14B models handle reviews; the larger mixture-of-experts models are used deliberately, inside AI maintenance windows.
+- **Mixture-of-experts on a CPU-only server.** Models like `qwen3:30b-a3b` and `gpt-oss:20b` hold many parameters but activate only a few billion per token. That gives larger-model quality at closer to small-model speed, which suits a server with no GPU.
+- **Shared-pool routing.** The harness routes jobs through a shared model pool, so large models don't compete with each other or the VMs for memory.
+- **Advisory only.** AI output becomes reports and staged proposals. Nothing changes production systems without human approval.
 ---
 
 ## 6. KVM virtualization
