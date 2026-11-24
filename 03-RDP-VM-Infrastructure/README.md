@@ -450,9 +450,6 @@ flowchart LR
 | [CCNA-Jarvis](./Subsystems/CCNA-Jarvis/README.md) | Networking questions and network lab assistance | Study/lab domain; no implicit production network access |
 | [Home Assistant integration](./Subsystems/Home-Assistant-Integration/README.md) | Entities and embedded dashboards | Publish accepted saved data; production changes require approval |
 
-> [!NOTE]
-> **Integration is not acceptance.** JARVIS Finance's October 29 handoff describes an operational dashboard and some validated source collectors, but does **not** establish the complete fresh collection → reconciliation → deterministic decisions → guarded Chief → dashboard publication path. See the Finance README for its workstream-level status and evidence.
-
 ### Engineering principles
 
 | Principle | Meaning on this node |
