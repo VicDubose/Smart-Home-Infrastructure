@@ -78,7 +78,7 @@ The environment is intentionally designed to **minimize operational complexity**
 
 All infrastructure services are **restricted to the internal network** and are not exposed to the public internet.
 
-Remote access is provided through **ASUS Instant Guard VPN**, which creates a secure tunnel into the home network.
+Remote access is provided through **ASUS Instant Guard VPN, and OpenVPN server on ASUS router**, which creates a secure tunnel into the home network.
 
 #### Access Flow
 
