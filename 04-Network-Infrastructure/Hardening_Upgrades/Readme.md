@@ -78,44 +78,39 @@ A full three-tier design (separate core, distribution and access layers) pays of
 
 ```mermaid
 flowchart TD
-    ISP[Internet / ISP] --> FG[FortiGate 60F<br/>Firewall + router on a stick]
-    FG -. IPsec tunnel .- RS[Remote site<br/>FortiGate 60F]
-    FG ==>|LACP port channel<br/>2 x 1G trunk: 10, 20, 30, 40| SW[UniFi Pro Max 24 PoE<br/>Core switch]
-
-    SW -->|10G access, VLAN 10| NAS[UNAS Pro]
-    SW -->|10G access, VLAN 10| MAC[Mac Studio<br/>AI server]
-    SW -->|Trunk: 10, 20, 40| CORE[SKYNET-CORE<br/>Automations + VMs]
-    SW -->|Trunk: 20 native + 10| HA[HA Green<br/>Home Assistant]
-    SW -->|Access, VLAN 20| AP[ASUS in AP mode<br/>interim Wi-Fi]
-
-    MAC <-->|10G, same VLAN| NAS
+    ISP["Internet (ISP)"] --> FG["FortiGate 60F<br/>Firewall and router on a stick"]
+    FG -.-|"IPsec tunnel"| RS["Remote site<br/>FortiGate 60F"]
+    FG ---|"LACP port channel<br/>2 x 1G trunk: VLANs 10, 20, 30, 40"| SW["UniFi Pro Max 24 PoE<br/>Core switch"]
+    SW ---|"10G access: VLAN 10"| NAS["UNAS Pro"]
+    SW ---|"10G access: VLAN 10"| MAC["Mac Studio<br/>AI server"]
+    SW ---|"Trunk: 10 native, tagged 20 and 40"| CORE["SKYNET-CORE<br/>Automations and VMs"]
+    SW ---|"Trunk: 20 native, tagged 10"| HA["HA Green<br/>Home Assistant"]
+    SW ---|"Access: VLAN 20"| AP["ASUS in AP mode<br/>interim Wi-Fi"]
 ```
 
 ### Traffic flow
 
 ```mermaid
 flowchart LR
-    subgraph V10[VLAN 10 Base]
-        CORE10[SKYNET-CORE]
-        MAC10[Mac Studio]
-        NAS10[UNAS]
-        USERS[Phones / laptops]
+    subgraph V10["VLAN 10 Base"]
+        CORE10["SKYNET-CORE"]
+        MAC10["Mac Studio"]
+        NAS10["UNAS"]
+        USERS["Phones and laptops"]
     end
-    subgraph V20[VLAN 20 IoT]
-        HA20[HA Green]
-        IOT[Kasa / Shelly / Tuya / Tesla / Powerwall]
+    subgraph V20["VLAN 20 IoT"]
+        HA20["HA Green"]
+        IOT["Kasa, Shelly, Tuya, Tesla, Powerwall"]
     end
-    subgraph V40[VLAN 40 Cameras]
-        CAMS[UNVR Instant + cameras]
+    subgraph V40["VLAN 40 Cameras"]
+        CAMS["UNVR Instant and cameras"]
     end
-    subgraph V30[VLAN 30 Guest]
-        GUEST[Visitors]
+    subgraph V30["VLAN 30 Guest"]
+        GUEST["Visitors"]
     end
-
-    CORE10 ---|tagged leg| HA20
-    CORE10 ---|tagged leg| CAMS
-    HA20 ---|local, same VLAN| IOT
-    CORE10 -->|presence relay| HA20
+    CORE10 ---|"tagged leg, presence relay"| HA20
+    CORE10 ---|"tagged leg"| CAMS
+    HA20 ---|"same VLAN"| IOT
 ```
 
 - **SKYNET-CORE** is the only device that can see every working VLAN. It relays camera presence to Home Assistant and feeds the dashboards.
