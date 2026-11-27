@@ -83,9 +83,21 @@ flowchart TD
     FG ==>|LACP 2x1G trunk VLANs 10 20 30 40| SW[UniFi Pro Max 24 PoE core switch]
     SW -->|10G access VLAN 10| NAS[UNAS Pro]
     SW -->|10G access VLAN 10| MAC[Mac Studio AI server]
-    SW -->|Trunk native 10 tagged 20 and 40| CORE[SKYNET-CORE automations and VMs]
+    SW -->|Trunk native 10 tagged 20 and 40| HOST
     SW -->|Trunk native 20 tagged 10| HA[HA Green Home Assistant]
     SW -->|Access VLAN 20| AP[ASUS AP mode interim WiFi]
+    SW -.->|Access VLAN 40 later phase| NVR[UNVR Instant runs UniFi Protect]
+
+    subgraph SKY [SKYNET-CORE]
+        HOST[Host automations and camera relay]
+        UVM[UniFi OS Server VM runs UniFi Network]
+        FAZ[FortiAnalyzer VM]
+        WIN[Windows VM]
+    end
+
+    UVM -.->|manages| SW
+    FG -.->|logs| FAZ
+    HOST -.->|Protect API on VLAN 40| NVR
 ```
 
 ### Traffic flow
@@ -307,10 +319,31 @@ The Mac Studio sits on a plain VLAN 10 access port. It can reach VLAN 10 devices
 
 ## SKYNET-CORE virtual machines
 
-SKYNET-CORE is the most critical box in the design. Each VM attaches only to the VLAN bridges it needs.
+SKYNET-CORE is the most critical box in the design. It hosts three VMs plus the automations, and each VM attaches only to the VLAN bridges it needs.
 
-| Workload | Network | RAM (approx.) | Notes |
+| Workload | Network | RAM (approx.) | Role and notes |
 | --- | --- | --- | --- |
+| UniFi OS Server VM | VLAN 10 | 2–4 GB | Runs **UniFi Network**: adopts and manages the core switch, remote switches and APs. The network keeps forwarding if this VM is offline; only management and stats pause. |
+| FortiAnalyzer VM | VLAN 10 | ~8 GB | Collects logs from both FortiGates. Free trial license: 3 devices, 1 GB/day of logs. |
+| Windows VM | VLAN 10 only | 4–8 GB | Never bridged to IoT or Cameras. |
+| Host: automations, camera relay | VLANs 10, 20, 40 | Remainder | Jarvis automations; pulls camera events from UniFi Protect over the VLAN 40 leg and relays presence to HA Green. Host firewall per interface. |
+
+**Target:** at least 32 GB RAM.
+
+### Two UniFi consoles, two jobs
+
+UniFi Protect cannot be self-hosted, so the UniFi stack is split across two consoles:
+
+| Console | Where | Runs | Manages |
+| --- | --- | --- | --- |
+| UniFi OS Server | VM on SKYNET-CORE, VLAN 10 | UniFi Network | Switches and access points |
+| UNVR Instant (later phase) | Camera device, VLAN 40 | UniFi Protect | Cameras and recordings |
+
+- Both consoles can sign in to the same UI account, so they show up together in UniFi Site Manager.
+- The UNVR Instant has no internet path, so Protect is viewed locally: from VLAN 10 through one FortiGate rule (UNVR only), and by SKYNET-CORE directly over its VLAN 40 leg. Remote viewing through Ubiquiti's cloud is off by design.
+- Until the UNVR Instant arrives, only the UniFi OS Server VM exists.
+
+--- | --- | --- | --- |
 | FortiAnalyzer VM | VLAN 10 | ~8 GB | Free trial license (3 devices, 1 GB/day of logs); collects logs from both FortiGates |
 | Windows VM | VLAN 10 only | 4–8 GB | Never bridged to IoT or Cameras |
 | UniFi OS Server VM | VLAN 10 | 2–4 GB | Network controller; the network keeps running if it is offline |
